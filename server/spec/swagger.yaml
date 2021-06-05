@@ -2,9 +2,9 @@ swagger: "2.0"
 info:
   description: "This is a Electronic Instrument Adapter server."
   version: "1.0.0"
-  title: "Swagger Petstore"
+  title: "Swagger Electronic Instrument Adapter"
   contact:
-    email: "grobles@fi.uba.ar"
+    email: "ajalvarez@fi.uba.ar, grobles@fi.uba.ar"
   license:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
@@ -15,6 +15,12 @@ schemes:
 - "https"
 
 paths:
+  /health:
+    get:
+      summary: "Health check"
+      responses:
+        "200":
+          description: "server is up and running"
   /instrument:
     get:
       tags:
@@ -61,13 +67,13 @@ paths:
         "404":
           description: "Instrument not found"
 
-  /instrument/configuration/{instrumentId}:
+  /instrument/oscilloscope/{instrumentId}/configuration:
     post:
       tags:
       - "instrument"
-      summary: "Updates a instrument configuration"
+      summary: "Updates a oscilloscope configuration"
       description: ""
-      operationId: "updateInstrumentConfiguration"
+      operationId: "updateOscilloscopeConfiguration"
       consumes:
       - "application/json"
       produces:
@@ -75,16 +81,16 @@ paths:
       parameters:
       - name: "instrumentId"
         in: "path"
-        description: "ID of instrument that configuration needs to be updated"
+        description: "ID of oscilloscope that configuration needs to be updated"
         required: true
         type: "integer"
         format: "int64"
       - name: "config"
         in: "body"
-        description: "Updated config of the instrument"
+        description: "Updated config of the oscilloscope"
         required: true
         schema:
-          $ref: "#/definitions/InstrumentConfiguration"
+          $ref: "#/definitions/OscilloscopeConfiguration"
       responses:
         "405":
           description: "Invalid input"
@@ -102,8 +108,8 @@ definitions:
         example: 627134
       name:
         type: "string"
-        example: "doggie"
-  InstrumentConfiguration:
+        example: "Osciloscopio"
+  OscilloscopeConfiguration:
     type: "object"
     required:
     - "voltsScale"
