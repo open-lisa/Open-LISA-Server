@@ -10,11 +10,12 @@ source venv/bin/activate
 
 Desde la carpeta `sdk` ejecutar:
 ```
-python setup.py bdist_wheel
+python3 setup.py bdist_wheel
 ```
 
 ## Instalación
+
 Desde la carpeta `sdk` ejecutar:
 ```
-pip install dist/electronic_instrument_adapter_sdk-0.1.0-py3-none-any.whl.whl
+pip install dist/*.whl --force-reinstall
 ```
