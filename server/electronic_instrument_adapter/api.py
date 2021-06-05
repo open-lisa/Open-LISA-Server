@@ -22,7 +22,9 @@ class ElectronicInstrumentAdapter:
 
     def add_url_rules(self):
         self._app.add_url_rule('/ping', 'ping', self.ping, methods=["GET"])
-        self._app.add_url_rule('/instrument', 'instrument', self.instrument, methods=["GET"])
+        self._app.add_url_rule('/instrument', endpoint='instruments', view_func=self.instruments, methods=["GET"])
+        self._app.add_url_rule('/instrument/<id>', endpoint='instrument', view_func=self.instrument, methods=["GET"])
+
 
     def load_instruments(self):
         instruments = []
@@ -37,7 +39,7 @@ class ElectronicInstrumentAdapter:
     def ping(self):
         return "IM ALIVE"
 
-    def instrument(self):
+    def instruments(self):
         self._instruments = self.load_instruments()
         response = []
 
@@ -47,5 +49,19 @@ class ElectronicInstrumentAdapter:
         resp = flask.Response(json.dumps(response))
         resp.headers['Content-Type'] = 'application/json'
         return resp
+
+    def instrument(self, id):
+        resp = flask.Response(json.dumps({"msg": "instrument not found"}))
+        resp.status_code = 404
+
+        self._instruments = self.load_instruments()
+        for instrument in self._instruments:
+            if instrument.id == id:
+                resp = flask.Response(json.dumps(instrument.__dict__))
+                resp.status_code = 200
+
+        resp.headers['Content-Type'] = 'application/json'
+        return resp
+
 
 
