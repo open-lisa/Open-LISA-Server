@@ -105,12 +105,17 @@ definitions:
     - "name"
     properties:
       id:
-        type: "integer"
-        format: "int64"
-        example: 627134
-      name:
+        type: "string"
+        example: "USB0::0x0699::0x0363::C107676::INSTR"
+      type:
         type: "string"
         example: "Osciloscopio"
+      brand:
+        type: "string"
+        example: "tektronix"
+      model:
+        type: "string"
+        example: "tds1002b"
   OscilloscopeConfiguration:
     type: "object"
     required:

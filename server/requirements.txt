@@ -1,1 +1,3 @@
 flask
+pyvisa
+pyvisa-py
