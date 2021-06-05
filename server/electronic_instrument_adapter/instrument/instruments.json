@@ -1,0 +1,17 @@
+{
+  "oscilloscopes": [
+        {
+          "id": "USB0::0x0699::0x0363::C107676::INSTR",
+          "brand": "tektronix",
+          "model": "tsd1002b"
+        }
+  ],
+
+  "daq" : [
+
+  ],
+
+  "source": [
+
+  ]
+}
