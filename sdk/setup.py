@@ -2,14 +2,9 @@
 # https://medium.com/analytics-vidhya/how-to-create-a-python-library-7d5aea80cc3f
 
 from setuptools import find_packages, setup
-import pathlib
-import os
-
-root = pathlib.Path(__file__).parent
-os.chdir(str(root))
 
 setup(
-    name='eia',
+    name='electronic_instrument_adapter_sdk',
     packages=find_packages(),
     version='0.1.0',
     description='Electronic Instrument Adapter SDK',
