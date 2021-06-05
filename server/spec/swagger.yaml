@@ -4,7 +4,7 @@ info:
   version: "1.0.0"
   title: "Swagger Electronic Instrument Adapter"
   contact:
-    email: "ajalvarez@fi.uba.ar, grobles@fi.uba.ar"
+    email: "grobles@fi.uba.ar"
   license:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
@@ -15,7 +15,7 @@ schemes:
 - "https"
 
 paths:
-  /health:
+  /ping:
     get:
       summary: "Health check"
       responses:
@@ -36,7 +36,9 @@ paths:
         "200":
           description: "successful operation"
           schema:
-            $ref: "#/definitions/Instrument"
+            type: "array"
+            items:
+              $ref: "#/definitions/Instrument"
         "400":
           description: "Invalid ID supplied"
         "404":
