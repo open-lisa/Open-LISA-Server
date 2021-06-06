@@ -1,0 +1,33 @@
+%% My settings
+%
+os_settings.disp.num_channel = 1;  --> Preguntarle si usa este setting para algo.
+
+os_settings.channels.probe = [1 10 1 1]; --> set_channel_probe()
+
+os_settings.channels.range = {'50V' '50V' '1V' '1V'}; --> Creo que es corresponde con set_volts_scale()
+
+os_settings.timebase.mode = 'MAIN';  --> Es equivalente a DISplay:FORMat YT (YT = MAIN). Corresponde con set_timebase_mode()
+
+os_settings.timebase.Xsource = 'CHANNEL1'; --> set_timebase_x_channel()
+
+os_settings.timebase.Ysource = 'CHANNEL2'; --> set_timebase_y_channel()
+
+os_settings.timebase.range = 0.008; --> Preguntarle si usa este setting para algo.
+
+os_settings.timebase.scale = 0.0002; --> set_time_scale
+
+os_settings.acq.type = 'AVERAGE';
+os_settings.acq.count = 16;
+os_settings.acq.points = 64000;
+os_settings.acq.sRate = str2double(query(os, 'ACQUIRE:SRATE?'));
+os_settings.trig.force_flag = 0;
+os_settings.trig.sweep = 'NORMAL';
+os_settings.trig.mode = 'EDGE';
+os_settings.trig.slope = 'RISING';
+os_settings.trig.source = 'EXT'; % Also the waveform source
+os_settings.trig.level = 0.0;
+os_settings.waveform.format = 'ASCII'; %Default Byte
+os_settings.waveform.byteOrder = 'LITTLEENDIAN';
+os_settings.waveform.source = 'CHANNEL1';
+os_settings.waveform.mode = 'RAW';
+os_settings.waveform.wPoints = 16000;
