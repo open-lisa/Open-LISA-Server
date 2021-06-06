@@ -1,3 +1,5 @@
+https://github.com/fluidodinamica/EHD_MLC/blob/9d7860d99fcad39c972fdceb3fb5c50e3903ca30/MLC/connect_scope.m
+
 %% My settings
 %
 os_settings.disp.num_channel = 1;  --> Preguntarle si usa este setting para algo.
