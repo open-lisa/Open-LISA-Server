@@ -2,15 +2,15 @@ import flask
 import json
 
 from .instrument.instrument import InstrumentFactory
-from .instrument.oscilloscope.tektronix_tds1002b import Tektronix_TDS1002B
 
 
 class ElectronicInstrumentAdapter:
 
     def __init__(self, listening_port):
         self._listening_port = listening_port
-        self._instruments = self.load_instruments()
+        self._instruments = []
 
+        self.load_instruments()
         print("Instruments List: ******************************")
         for instrument in self._instruments:
             print(instrument)
@@ -30,7 +30,7 @@ class ElectronicInstrumentAdapter:
         self._app.add_url_rule('/instrument/oscilloscope/<id>/configuration', endpoint='oscilloscope_configuration', view_func=self.oscilloscope_configuration, methods=["POST", "GET"])
 
     def load_instruments(self):
-        instruments = []
+        self._instruments = []
         with open('electronic_instrument_adapter/instrument/instruments.json') as file:
             data = json.load(file)
 
@@ -39,16 +39,14 @@ class ElectronicInstrumentAdapter:
                                                raw_instrument["id"],
                                                raw_instrument["brand"],
                                                raw_instrument["model"])
-                instrument = Tektronix_TDS1002B(raw_instrument["id"], raw_instrument["brand"], raw_instrument["model"])
-                instruments.append(instrument)
 
-        return instruments
+                self._instruments.append(instrument)
 
     def ping(self):
         return "IM ALIVE"
 
     def instruments(self):
-        self._instruments = self.load_instruments()
+        self.load_instruments()
         response = []
 
         for instrument in self._instruments:
@@ -59,7 +57,7 @@ class ElectronicInstrumentAdapter:
         return resp
 
     def instrument(self, id):
-        self._instruments = self.load_instruments()
+        self.load_instruments()
         resp = flask.Response(json.dumps({"msg": "instrument not found"}))
         resp.status_code = 404
 
@@ -75,7 +73,7 @@ class ElectronicInstrumentAdapter:
         resp = flask.Response(json.dumps({"msg": "oscilloscope not found"}))
         resp.status_code = 404
 
-        self._instruments = self.load_instruments()
+        self.load_instruments()
         for instrument in self._instruments:
             if instrument.id == id and instrument.type == "oscilloscope":
                 if flask.request.method == "GET":

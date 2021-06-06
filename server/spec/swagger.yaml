@@ -133,7 +133,7 @@ definitions:
         type: "number"
         format: "floag64"
         example: 0.1
-        description: "Time scale in microseconds"
+        description: "Time scale in seconds"
 externalDocs:
   description: "Find out more about Swagger"
   url: "http://swagger.io"

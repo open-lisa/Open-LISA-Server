@@ -12,17 +12,19 @@ class Instrument:
         self.id = id
         self.brand = brand
         self.model = model
-        self.status = self.check_status()
         self.device = None
+        self.status = "UNAVAILABLE"
 
-    def check_status(self):
+        self.set_status()
+
+    def set_status(self):
         rm = pyvisa.ResourceManager()
         resources = rm.list_resources()
         if resources.__contains__(self.id):
             self.device = rm.open_resource(self.id)
-            return "AVAILABLE"
+            self.status = "AVAILABLE"
         else:
-            return "UNAVAILABLE"
+            self.status = "UNAVAILABLE"
 
 
 class Oscilloscope(Instrument):
@@ -30,6 +32,8 @@ class Oscilloscope(Instrument):
         super(Oscilloscope, self).__init__(id, brand, model)
         self.type = "oscilloscope"
         self.configuration = OscilloscopeConfiguration()
+        if self.status == "AVAILABLE":
+            self.set_initial_configuration()
 
     def __str__(self):
         return "Oscilloscope:\n\t" \
@@ -40,7 +44,7 @@ class Oscilloscope(Instrument):
                         self.brand,
                         self.model,
                         self.id,
-                        self.check_status())
+                        self.status)
 
     def as_dict(self):
         return {
@@ -63,11 +67,15 @@ class Oscilloscope(Instrument):
             }
         }
 
+    def set_initial_configuration(self):
+        self.set_volts_scale(1, self.configuration.volts_scale)
+        self.set_time_scale(self.configuration.time_scale)
+
     def set_volts_scale(self):
         raise Exception("NotImplementedException")
 
 
 class OscilloscopeConfiguration:
-    def __init__(self, volts_scale=5, time_scale=500):
+    def __init__(self, volts_scale=5, time_scale=0.000500):
         self.volts_scale = volts_scale  # in volts
-        self.time_scale = time_scale  # in micro seconds
+        self.time_scale = time_scale  # in seconds
