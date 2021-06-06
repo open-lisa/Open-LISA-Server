@@ -121,14 +121,19 @@ definitions:
     - "voltsScale"
     - "timeScale"
     properties:
+      id:
+        type: "string"
+        example: "USB0::0x0699::0x0363::C107676::INSTR"
       voltsScale:
         type: "number"
         format: "floag64"
         example: 0.5
+        description: "Voltage scale in volts"
       timeScale:
         type: "number"
         format: "floag64"
         example: 0.1
+        description: "Time scale in microseconds"
 externalDocs:
   description: "Find out more about Swagger"
   url: "http://swagger.io"

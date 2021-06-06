@@ -42,12 +42,13 @@ def initialize_log():
 
 def main():
     initialize_log()
-    params = parse_config_params()
+    #params = parse_config_params()
 
-    logging.info(params)
+    #logging.info(params)
 
     eia_server = ElectronicInstrumentAdapter(
-        params["listening_port"]
+        #params["listening_port"]
+        8080
     )
     eia_server.start()
 
