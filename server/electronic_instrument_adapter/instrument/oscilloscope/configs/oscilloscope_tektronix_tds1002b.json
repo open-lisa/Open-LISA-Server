@@ -1,0 +1,37 @@
+{
+  "acquisition": {
+    "modes": [
+      {
+        "value": "SAMple",
+        "description": "SAMple specifies that the displayed data point value is the first sampled value that was taken during the acquisition interval. The waveform data has 8 bits of precision in all acquisition modes. You can request 16 bit data with a CURVe? query, but the lower-order 8 bits of data will be zero. SAMple is the default mode."
+      },
+      {
+        "value": "PEAKdetect",
+        "description": "PEAKdetect specifies the display of the high-low range of the samples taken from a single waveform acquisition. The oscilloscope displays the high-low range as a vertical range that extends from the highest to the lowest value sampled during the acquisition interval. PEAKdetect mode can reveal the presence of aliasing."
+      },
+      {
+        "value": "AVErage",
+        "description": "AVErage specifies averaging mode, where the resulting waveform shows an average of SAMple data points from several separate waveform acquisitions. The number of waveform acquisitions that go into making up the average waveform is set or queried using the ACQuire:NUMAVg command."
+      }
+    ],
+
+    "average_mode_samples_amount": [
+      {
+        "value": "4",
+        "description": "Sets the number of oscilloscope waveform acquisitions that make up an averaged waveform to 4"
+      },
+      {
+        "value": "16",
+        "description": "Sets the number of oscilloscope waveform acquisitions that make up an averaged waveform to 16"
+      },
+      {
+        "value": "64",
+        "description": "Sets the number of oscilloscope waveform acquisitions that make up an averaged waveform to 64"
+      },
+      {
+        "value": "128",
+        "description": "Sets the number of oscilloscope waveform acquisitions that make up an averaged waveform to 128"
+      }
+    ]
+  }
+}

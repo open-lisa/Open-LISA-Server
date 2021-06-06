@@ -113,6 +113,18 @@ class Oscilloscope(Instrument):
     def stop_acquisitions(self):
         raise Exception("NotImplementedException")
 
+    def set_acquisition_mode(self, mode):
+        raise Exception("NotImplementedException")
+
+    def get_acquisition_mode(self):
+        raise Exception("NotImplementedException")
+
+    def set_average_acquisition_mode_samples_amount(self, amount):
+        raise Exception("NotImplementedException")
+
+    def set_acquisition_memory_depth(self, depth):
+        raise Exception("NotImplementedException")
+
 
 class OscilloscopeConfiguration:
     def __init__(self, volts_scale=5, time_scale=0.000500):

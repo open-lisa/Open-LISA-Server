@@ -18,10 +18,14 @@ os_settings.timebase.range = 0.008; --> Preguntarle si usa este setting para alg
 
 os_settings.timebase.scale = 0.0002; --> set_time_scale
 
-os_settings.acq.type = 'AVERAGE';
-os_settings.acq.count = 16;
-os_settings.acq.points = 64000;
-os_settings.acq.sRate = str2double(query(os, 'ACQUIRE:SRATE?'));
+os_settings.acq.type = 'AVERAGE'; --> set_acquisition_mode
+
+os_settings.acq.count = 16; --> set_average_acquisition_mode_samples_amount
+
+os_settings.acq.points = 64000; --> El TDS1002B no parece soportar esta configuracion o al menos no en la sección de ACQUISITION
+
+os_settings.acq.sRate = str2double(query(os, 'ACQUIRE:SRATE?')); --> Es una query y tiene el valor de la frecuencia del osciloscopio, no se utiliza en la config
+
 os_settings.trig.force_flag = 0;
 os_settings.trig.sweep = 'NORMAL';
 os_settings.trig.mode = 'EDGE';
