@@ -36,7 +36,6 @@ class Tektronix_TDS1002B(Oscilloscope):
 
         self.set_acquisition_mode("AVErage")
         self.set_average_acquisition_mode_samples_amount("16")
-        self.set_acquisition_memory_depth("64000")
 
     def clear_status(self):
         self.device.write("*CLS")
@@ -123,5 +122,5 @@ class Tektronix_TDS1002B(Oscilloscope):
             logging.warning("Samples amount {} is not supported".format(amount))
 
     def set_acquisition_memory_depth(self, depth):
-        logging.warning("set_acquisition_memory_depth primmitive is not supported")
+        logging.warning("set_acquisition_memory_depth primmitive is not supported, this osciloscope has fixed memory depth of 2.5K")
 
