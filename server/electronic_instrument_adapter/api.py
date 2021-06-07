@@ -35,10 +35,7 @@ class ElectronicInstrumentAdapter:
             data = json.load(file)
 
             for raw_instrument in data:
-                instrument = InstrumentFactory(raw_instrument["type"],
-                                               raw_instrument["id"],
-                                               raw_instrument["brand"],
-                                               raw_instrument["model"])
+                instrument = InstrumentFactory(raw_instrument["type"], raw_instrument["id"])
 
                 self._instruments.append(instrument)
 

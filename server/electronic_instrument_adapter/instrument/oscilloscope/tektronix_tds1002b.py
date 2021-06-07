@@ -1,18 +1,17 @@
 import json
 import logging
-from ..instrument import Oscilloscope
+from .oscilloscope import Oscilloscope
 
 
 class Tektronix_TDS1002B(Oscilloscope):
-    def __init__(self, id, brand, model):
+    def __init__(self, id):
+        super().__init__(id, "Tektronix", "TDS1002B")
         with open('electronic_instrument_adapter/instrument/oscilloscope/configs/oscilloscope_tektronix_tds1002b.json') as file:
             cfg = json.load(file)
             self._available_acquisition_modes = [mode["value"] for mode in cfg["acquisition"]["mode"]]
             self._available_average_acquisition_mode_samples_amount =[amount["value"] for amount in cfg["acquisition"]["average_mode_samples_amount"]]
         self._available_timebase_modes = ["YT", "XY"]
         self._available_channels = ["CH1", "CH2"]
-
-        super(Tektronix_TDS1002B, self).__init__(id, brand, model)
 
     def set_initial_configuration(self):
         self.configuration.volts_scale = 0.5

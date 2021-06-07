@@ -1,8 +1,6 @@
 [
   {
     "type": "oscilloscope",
-    "id": "USB0::0x0699::0x0363::C107676::INSTR",
-    "brand": "tektronix",
-    "model": "tds1002b"
+    "id": "USB0::0x0699::0x0363::C107676::INSTR"
   }
 ]
