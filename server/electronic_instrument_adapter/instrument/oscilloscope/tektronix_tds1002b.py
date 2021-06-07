@@ -10,8 +10,9 @@ class Tektronix_TDS1002B(Oscilloscope):
             cfg = json.load(file)
             self._available_acquisition_modes = [mode["value"] for mode in cfg["acquisition"]["mode"]]
             self._available_average_acquisition_mode_samples_amount =[amount["value"] for amount in cfg["acquisition"]["average_mode_samples_amount"]]
-        self._available_timebase_modes = ["YT", "XY"]
-        self._available_channels = ["CH1", "CH2"]
+            self._available_timebase_modes = [mode["value"] for mode in cfg["timebase"]["mode"]]
+            self._available_channels = [channel["value"] for channel in cfg["channels"]["amount"]]
+            self._available_channel_attenuations_factors = [attenuation["value"] for attenuation in cfg["channels"]["attenuation_factors"]]
 
     def set_initial_configuration(self):
         self.configuration.volts_scale = 0.5
@@ -20,11 +21,11 @@ class Tektronix_TDS1002B(Oscilloscope):
         self.stop_acquisitions()
         self.clear_status()
 
-        self.set_channel_probe(1, 1)
-        self.set_channel_probe(2, 1)
+        self.set_channel_probe("CH1", 1)
+        self.set_channel_probe("CH2", 1)
 
-        self.set_volts_scale(1, self.configuration.volts_scale)
-        self.set_volts_scale(2, self.configuration.volts_scale)
+        self.set_channel_volts_scale("CH1", self.configuration.volts_scale)
+        self.set_channel_volts_scale("CH2", self.configuration.volts_scale)
 
         self.set_timebase_mode("YT")
 
@@ -51,26 +52,87 @@ class Tektronix_TDS1002B(Oscilloscope):
     def get_is_in_acquisitions_state(self):
         return self.device.query("*OPC?") == 1
 
-    def set_volts_scale(self, channel, volts_scale):
-        self.device.write('CH' + str(channel) + ':VOLts ' + str(volts_scale))
 
-    def set_timebase_scale(self, seconds):
-        self.device.write('HORizontal:MAIn:SCAle ' + str(seconds))
+
+    """
+        BEGIN CHANNEL PRIMITIVES
+    """
+    def set_channel_volts_scale(self, channel, volts_scale):
+        """
+            Sets the vertical gain of the specified channel
+        """
+        channel = str(channel)
+        volts_scale = str(volts_scale)
+        if channel not in self._available_channels:
+            logging.warning("Not supported channel {}, supported are {}".format(channel, self._available_channels))
+            return
+
+        self.device.write('CH{}:VOLts {}'.format(channel, volts_scale))
 
     def set_channel_probe(self, channel, probe):
-        self.device.write('CH' + str(channel) + ':PRObe ' + str(probe))
+        """
+            Sets the attenuation factor of the specified channel or voltage probes.
+        """
+        channel = str(channel)
+        probe = str(probe)
+        if channel not in self._available_channels:
+            logging.warning("Not supported channel {}, supported are {}".format(channel, self._available_channels))
+            return
+
+        if probe not in self._available_channel_attenuations_factors:
+            logging.warning("Not supported attenuation factor {}, supported are".format(probe, self._available_channel_attenuations_factors))
+            return
+
+        self.device.write("{}:PRObe {}".format(channel, probe))
+    """
+        END CHANNEL PRIMITIVES
+    """
+
+
+
+    """
+        BEGIN TIMEBASE PRIMITIVES
+    """
+    def set_timebase_scale(self, seconds):
+        """
+            Sets the time per division for the main time base. The acceptable values are
+            in a 1–2.5–5 sequence. Other values are forced to the closest acceptable value.
+        """
+        seconds = str(seconds)
+        self.device.write('HORizontal:MAIn:SCAle {}'.format(seconds)))
 
     def set_timebase_mode(self, mode):
-        if self._available_timebase_modes.__contains__(str(mode)):
-            self.device.write('DISplay:FORMat ' + str(mode))
+        """
+            Sets the oscilloscope display format.
+        """
+        mode = str(mode)
+        if mode in self._available_timebase_modes:
+            self.device.write('DISplay:FORMat {}'.format(mode))
 
     def set_timebase_x_channel(self, channel):
-        if self._available_channels.__contains__(str(channel)):
-            self.device.write("MEASUrement:IMMed:SOUrce1 " + str(channel))
+        """
+            Sets the source for single-source immediate measure- ments.
+        """
+        channel = str(channel)
+        if channel in self._available_channels:
+            self.device.write("MEASUrement:IMMed:SOUrce1 {}".format(channel))
+        else:
+            logging.warning("Not supported channel {}, supported are {}".format(channel, self._available_channels))
 
     def set_timebase_y_channel(self, channel):
-        if self._available_channels.__contains__(str(channel)):
-            self.device.write("MEASUrement:IMMed:SOUrce2 " + str(channel))
+        """
+            Sets the secondary source for dual-source immediate measurements. For example, power analysis and phase angle measurements.
+            NOTE: This command is only available when the Power Analysis Module application key is installed.
+        """
+        channel = str(channel)
+        if channel in self._available_channels:
+            self.device.write("MEASUrement:IMMed:SOUrce2 {}".format(channel))
+        else:
+            logging.warning("Not supported channel {}, supported are {}".format(channel, self._available_channels))
+    """
+        END ACQUISITION PRIMITIVES
+    """
+
 
 
     """
@@ -95,7 +157,7 @@ class Tektronix_TDS1002B(Oscilloscope):
         if mode in self._available_acquisition_modes:
             self.device.write("ACQuire:MODe {}".format(mode))
         else:
-            logging.warning("Acquisition mode {} is not supported".format(mode))
+            logging.warning("Acquisition mode {} is not supported, supported are {}".format(mode, self._available_acquisition_modes))
 
     def get_acquisition_mode(self):
         """
@@ -118,8 +180,11 @@ class Tektronix_TDS1002B(Oscilloscope):
         if amount in self._available_average_acquisition_mode_samples_amount:
             self.device.write("ACQuire:NUMAVg {}".format(amount))
         else:
-            logging.warning("Samples amount {} is not supported".format(amount))
+            logging.warning("Samples amount {} is not supported, supported are {}".format(amount, self._available_average_acquisition_mode_samples_amount))
 
     def set_acquisition_memory_depth(self, depth):
         logging.warning("set_acquisition_memory_depth primmitive is not supported, this osciloscope has fixed memory depth of 2.5K")
+    """
+        END ACQUISITION PRIMITIVES
+    """
 

@@ -54,10 +54,15 @@ class Oscilloscope(Instrument):
     def get_identification(self):
         raise Exception("NotImplementedException")
 
+
     # Channel configuration primitives
+
+    def set_channel_volts_scale(self, channel, volts_scale):
+        raise Exception("NotImplementedException")
 
     def set_channel_probe(self, channel, probe):
         raise Exception("NotImplementedException")
+
 
     # Timebase primitives
 
@@ -73,10 +78,6 @@ class Oscilloscope(Instrument):
     def set_timebase_y_channel(self, channel):
         raise Exception("NotImplementedException")
 
-    # Volts primitives
-
-    def set_volts_scale(self, channel, volts_scale):
-        self.device.write('CH' + str(channel) + ':VOLts ' + str(volts_scale))
 
     # Acquisitions primitives
 

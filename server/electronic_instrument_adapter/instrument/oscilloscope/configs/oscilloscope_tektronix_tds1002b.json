@@ -1,4 +1,58 @@
 {
+  "channels": {
+    "amount": [
+      {
+        "value": "CH1",
+        "description": "Channel 1"
+      },
+      {
+        "value": "CH2",
+        "description": "Channel 2"
+      }
+    ],
+    "attenuation_factors": [
+      {
+        "value": "1",
+        "description": "1X attenuation"
+      },
+      {
+        "value": "10",
+        "description": "10X attenuation"
+      },
+      {
+        "value": "20",
+        "description": "20X attenuation"
+      },
+      {
+        "value": "50",
+        "description": "50X attenuation"
+      },
+      {
+        "value": "100",
+        "description": "100X attenuation"
+      },
+      {
+        "value": "500",
+        "description": "500X attenuation"
+      },
+      {
+        "value": "1000",
+        "description": "1000X attenuation"
+      }
+    ]
+  },
+  "timebase": {
+    "modes": [
+      {
+        "value": "XY",
+        "description": "XY displays the voltage of channel 1 (horizontal axis) against the voltage of channel 2 (vertical axis). NOTE: Setting the display format to XY turns cursors off. Sending the CURSor:FUNCtion command when the display format is XY causes the oscilloscope to generate event 221 (Settings conflict) and leaves the display in XY format."
+      },
+      {
+        "value": "YT",
+        "description": "YT sets the display to vertical values versus time format and is the default mode."
+      }
+    ]
+  },
   "acquisition": {
     "modes": [
       {
