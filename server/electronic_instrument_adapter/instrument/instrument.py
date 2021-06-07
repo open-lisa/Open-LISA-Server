@@ -1,4 +1,5 @@
 import pyvisa
+from server.electronic_instrument_adapter.constants.instrument import INSTRUMENT_STATUS_AVAILABLE, INSTRUMENT_STATUS_UNAVAILABLE
 
 
 def InstrumentFactory(type, id):
@@ -13,7 +14,7 @@ class Instrument:
         self.brand = brand
         self.model = model
         self.device = None
-        self.status = "UNAVAILABLE"
+        self.status = INSTRUMENT_STATUS_UNAVAILABLE
 
         self.set_status()
 
@@ -22,7 +23,7 @@ class Instrument:
         resources = rm.list_resources()
         if resources.__contains__(self.id):
             self.device = rm.open_resource(self.id)
-            self.status = "AVAILABLE"
+            self.status = INSTRUMENT_STATUS_AVAILABLE
         else:
-            self.status = "UNAVAILABLE"
+            self.status = INSTRUMENT_STATUS_UNAVAILABLE
 

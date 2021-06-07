@@ -1,11 +1,11 @@
-from ..instrument import Instrument
+from server.electronic_instrument_adapter.constants.instrument import INSTRUMENT_STATUS_AVAILABLE
 
 class Oscilloscope(Instrument):
     def __init__(self, id, brand, model):
         super(Oscilloscope, self).__init__(id, brand, model)
         self.type = "oscilloscope"
         self.configuration = OscilloscopeConfiguration()
-        if self.status == "AVAILABLE":
+        if self.status == INSTRUMENT_STATUS_AVAILABLE:
             self.set_initial_configuration()
 
     def __str__(self):
