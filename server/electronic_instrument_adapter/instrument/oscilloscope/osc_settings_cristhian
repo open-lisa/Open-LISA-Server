@@ -40,8 +40,8 @@ os_settings.trig.source = 'EXT'; % Also the waveform source --> set_trigger_edge
 
 os_settings.trig.level = 0.0; --> set_trigger_level. Nota de color: el TDS1002B soporta trigger level también para el trigger type "PULse"
 
-os_settings.waveform.format = 'ASCII'; %Default Byte
-os_settings.waveform.byteOrder = 'LITTLEENDIAN';
-os_settings.waveform.source = 'CHANNEL1';
-os_settings.waveform.mode = 'RAW';
-os_settings.waveform.wPoints = 16000;
+os_settings.waveform.format = 'ASCII'; %Default Byte --> set_waveform_encoding
+os_settings.waveform.byteOrder = 'LITTLEENDIAN'; --> set_waveform_endianness
+os_settings.waveform.source = 'CHANNEL1'; --> set_waveform_source
+os_settings.waveform.mode = 'RAW'; --> set_waveform_points_format?? validar si aplica
+os_settings.waveform.wPoints = 16000; --> Quizas "DATa:STARt" + "DATa:STOp" ? Puede ir de 1 a 2500 estos valores

@@ -126,6 +126,24 @@ class Oscilloscope(Instrument):
         raise Exception("NotImplementedException")
 
 
+    # Waveform primitives
+
+    def set_waveform_encoding(self, encoding):
+        raise Exception("NotImplementedException")
+
+    def get_waveform_encoding(self):
+        raise Exception("NotImplementedException")
+
+    def set_waveform_endianness(self, endianness):
+        raise Exception("NotImplementedException")
+
+    def set_waveform_source(self, src):
+        raise Exception("NotImplementedException")
+
+    def set_waveform_points_format(self, fmt):
+        raise Exception("NotImplementedException")
+
+
 
 class OscilloscopeConfiguration:
     def __init__(self, volts_scale=5, time_scale=0.000500):

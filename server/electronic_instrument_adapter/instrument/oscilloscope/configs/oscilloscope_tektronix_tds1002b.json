@@ -145,5 +145,71 @@
         "description": "AC LINE specifies the power line signal as a trigger source."
       }
     ]
+  },
+  "waveform": {
+    "encodings": [
+      {
+        "value": "ASCIi",
+        "description": "ASCIi specifies the ASCII representation of signed integer (RIBinary) data. If this is the value at power-on, the WFMPre values for BN_Fmt, BYT_Or, and ENCdg are set as RP, MSB, and ASC respectively"
+      },
+      {
+        "value": "RIBinary",
+        "description": "RIBinary specifies signed integer data-point representation with the most significant byte transferred first. This format results in the fastest data transfer rate when DATa:WIDth is set to 2. \nThe range is –128 to 127 when DATa:WIDth is 1. Zero is center screen. The range is –32768 to 32767 when DATa:WIDth is 2. The upper limit is one division above the top of the screen and the lower limit is one division below the bottom of the screen."
+      },
+      {
+        "value": "RPBinary",
+        "description": "RPBinary specifies positive integer data-point representation with the most significant byte transferred first. \nThe range is 0 to 255 when DATa:WIDth is 1. Center screen is 127. The range is 0 to 65,535 when DATa:WIDth is 2. The upper limit is one division above the top of the screen and the lower limit is one division below the bottom of the screen."
+      },
+      {
+        "value": "SRIbinary",
+        "description": "SRIbinary is the same as RIBinary except that the byte order is swapped, meaning that the least significant byte is transferred first. This format is useful when transferring data to IBM compatible PCs."
+      },
+      {
+        "value": "SRPbinary",
+        "description": "SRPbinary is the same as RPBinary except that the byte order is swapped, meaning that the least significant byte is transferred first. This format is useful when transferring data to IBM compatible PCs."
+      }
+    ],
+    "endianness": [
+      {
+        "value": "LITTLEENDIAN",
+        "description": "Switches the current binary encoding to little endian (LSB)"
+      },
+      {
+        "value": "BIGENDIAN",
+        "description": "Switches the current binary encoding to big endian (MSB)"
+      }
+    ],
+    "sources": [
+      {
+        "value": "CH1",
+        "description": "Sets Channel 1 to be the waveform source data"
+      },
+      {
+        "value": "CH2",
+        "description": "Sets Channel 2 to be the waveform source data"
+      },
+      {
+        "value": "MATH",
+        "description": "Sets MATH to be the waveform source data"
+      },
+      {
+        "value": "REFA",
+        "description": "Sets REF B to be the waveform source data"
+      },
+      {
+        "value": "REFB",
+        "description": "Sets REF A to be the waveform source data"
+      }
+    ],
+    "points_formats": [
+      {
+        "value": "ENV",
+        "description": "ENV specifies that the oscilloscope transmit the waveform as minimum and maximum point pairs. Peak detect waveforms use ENV format. Peak Detect mode specifies a maximum of 1250 (minimum, maximum) pairs, with the time between pairs being 2*XINcr.\nThe magnitudes and times of ENV format waveform points can be calculated using the same formulas used for Y format, as long as you recognize that the points consist of (minimum, maximum) pairs, where each pair was collected over a time period of 2*XINcr.\nThus, the samples for n=0 (a minimum) and n=1 (a maximum), the first (minimum, maximum) pair, were collected over a time interval of width 2*XINcr, that began at the time found by setting n to zero in the formula. The next pair were collected over the interval that began at the time found by setting n to 2 in the formula, and so on."
+      },
+      {
+        "value": "Y",
+        "description": "Y specifies a normal waveform where one ASCII or binary data point is transmitted for each point in the waveform record. \nFor Y format, the time (absolute coordinate) of a point, relative to the trigger, can be calculated using the following formula. N ranges from 0 to 2499. \nXn = XZEro + XINcr (n - PT_OFf) \nFor Y format, the magnitude (usually voltage, relative to ground) (absolute coordinate) of a point can be calculated: \nYn = YZEro + YMUIty (yn - YOFf)"
+      }
+    ]
   }
 }

@@ -16,6 +16,10 @@ class Tektronix_TDS1002B(Oscilloscope):
             self._available_trigger_types = [type["value"] for type in cfg["trigger"]["types"]]
             self._available_trigger_edge_types = [type["value"] for type in cfg["trigger"]["edge_types"]]
             self._available_trigger_edge_sources = [source["value"] for source in cfg["trigger"]["edge_sources"]]
+            self._available_waveform_encodings = [encoding["value"] for encoding in cfg["waveform"]["encodings"]]
+            self._available_waveform_endianness = [endian["value"] for endian in cfg["waveform"]["endianness"]]
+            self._available_waveform_sources = [src["value"] for src in cfg["waveform"]["sources"]]
+            self._available_waveform_points_formats = [fmt["value"] for fmt in cfg["waveform"]["points_formats"]]
 
         super().__init__(id, "Tektronix", "TDS1002B")
 
@@ -307,6 +311,98 @@ class Tektronix_TDS1002B(Oscilloscope):
         self.device.write(command)
     """
         END TRIGGER PRIMITIVES
+    """
+
+
+
+    """
+        BEGIN WAVEFORM PRIMITIVES
+    """
+    def set_waveform_encoding(self, encoding):
+        """
+            Sets the format of the waveform data. This command is equivalent to
+            setting WFMPre:ENCdg, WFMPre:BN_Fmt, and WFMPre:BYT_Or as shown in Table 2-29 on page 2-88.
+            Setting the DATa:ENCdg value causes the corresponding WFMPre values to update.
+            Setting the WFMPre value causes the corresponding DATa:ENCdg values to update.
+        """
+        encoding = str(encoding)
+        if encoding in self._available_waveform_encodings:
+            command = str("DATa:ENCdg {}".format(encoding))
+            self.device.write(command)
+        else:
+            logging.warning("Waveform encoding '{}' is not supported, supported are {}".format(encoding, self._available_waveform_encodings))
+
+    def get_waveform_encoding(self):
+        """
+            Queries the format of the waveform data.
+        """
+        return self.device.query("DATa:ENCdg?")
+
+    def set_waveform_endianness(self, endianness):
+        """
+            Sets the waveform endianness to the specified
+        """
+        endianness = str(endianness)
+        if endianness not in self._available_waveform_endianness:
+            logging.warning("Waveform endianness '{}' is not supported, supported are {}".format(endianness, self._available_waveform_endianness))
+            return
+
+        encoding = self.get_waveform_encoding()
+        if encoding not in ["RIBinary", "RPBinary", "SRIbinary", "SRPbinary"]:
+            logging.warning("Waveform endianness does not apply for ASCII encoding")
+            return
+
+        if endianness == "LITTLEENDIAN":
+            if encoding == "RIBinary":
+                command = str("DATa:ENCdg SRIbinary")
+            elif encoding == "RPBinary":
+                command = str("DATa:ENCdg SRPbinary")
+            else:
+                logging.info("Waveform endianness is already LITTLEENDIAN")
+                return
+        elif endianness == "BIGENDIAN":
+            if encoding == "SRIbinary":
+                command = str("DATa:ENCdg RIBinary")
+            elif encoding == "SRPbinary":
+                command = str("DATa:ENCdg RPBinary")
+            else:
+                logging.info("Waveform endianness is already BIGENDIAN")
+                return
+
+        self.device.write(command)
+
+    def set_waveform_source(self, src):
+        """
+            Sets or queries which waveform will be transferred from the oscilloscope
+            by the CURVe?, WFMPre?, or WAVFrm? queries. You can transfer only one waveform at a time.
+        """
+        src = str(src)
+        if src not in self._available_waveform_sources: # TODO: Check if supports more than REFA and REFB memory storage locations
+            logging.warning("Waveform source '{}' is not supported, supported are {}".format(src, self._available_waveform_sources))
+            return
+
+        command = str("DATa:SOUrce {}".format(src))
+        self.device.write(command)
+
+    def set_waveform_points_format(self, fmt):
+        """
+            The set form of this command sets the format (Y or ENV) of the reference
+            waveform specified by the DATa:DESTination command.
+
+            The query form returns the format of the waveform specified by the
+            DATa:SOUrce command, if that waveform is on or displayed.
+            If the waveform is not displayed, the query form of this command
+            generates an error and returns event code 2244.
+        """
+        fmt = str(fmt)
+        if fmt not in self._available_waveform_sources: # TODO: Validar con Cristhian si equivale a mode = RAW
+            logging.warning("Waveform point format '{}' is not supported, supported are {}".format(fmt, self._available_waveform_points_formats))
+            return
+
+        command = str("WFMPre:PT_Fmt {}".format(fmt))
+        self.device.write(command)
+    """
+        END WAVEFORM PRIMITIVES
     """
 
 
