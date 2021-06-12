@@ -8,9 +8,9 @@ class Tektronix_TDS1002B(Oscilloscope):
         super().__init__(id, "Tektronix", "TDS1002B")
         with open('electronic_instrument_adapter/instrument/oscilloscope/configs/oscilloscope_tektronix_tds1002b.json') as file:
             cfg = json.load(file)
-            self._available_acquisition_modes = [mode["value"] for mode in cfg["acquisition"]["mode"]]
+            self._available_acquisition_modes = [mode["value"] for mode in cfg["acquisition"]["modes"]]
             self._available_average_acquisition_mode_samples_amount =[amount["value"] for amount in cfg["acquisition"]["average_mode_samples_amount"]]
-            self._available_timebase_modes = [mode["value"] for mode in cfg["timebase"]["mode"]]
+            self._available_timebase_modes = [mode["value"] for mode in cfg["timebase"]["modes"]]
             self._available_channels = [channel["value"] for channel in cfg["channels"]["amount"]]
             self._available_channel_attenuations_factors = [attenuation["value"] for attenuation in cfg["channels"]["attenuation_factors"]]
 
@@ -99,7 +99,7 @@ class Tektronix_TDS1002B(Oscilloscope):
             in a 1–2.5–5 sequence. Other values are forced to the closest acceptable value.
         """
         seconds = str(seconds)
-        self.device.write('HORizontal:MAIn:SCAle {}'.format(seconds)))
+        self.device.write('HORizontal:MAIn:SCAle {}'.format(seconds))
 
     def set_timebase_mode(self, mode):
         """

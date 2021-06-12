@@ -1,5 +1,5 @@
 import pyvisa
-from server.electronic_instrument_adapter.constants.instrument import INSTRUMENT_STATUS_AVAILABLE, INSTRUMENT_STATUS_UNAVAILABLE
+from .constants import INSTRUMENT_STATUS_AVAILABLE, INSTRUMENT_STATUS_UNAVAILABLE
 
 
 def InstrumentFactory(type, id):

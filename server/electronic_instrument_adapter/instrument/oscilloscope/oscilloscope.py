@@ -1,4 +1,6 @@
-from server.electronic_instrument_adapter.constants.instrument import INSTRUMENT_STATUS_AVAILABLE
+from ..constants import INSTRUMENT_STATUS_AVAILABLE
+from ..instrument import Instrument
+
 
 class Oscilloscope(Instrument):
     def __init__(self, id, brand, model):
