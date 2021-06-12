@@ -87,5 +87,63 @@
         "description": "Sets the number of oscilloscope waveform acquisitions that make up an averaged waveform to 128"
       }
     ]
+  },
+  "trigger": {
+    "modes": [
+      {
+        "value": "AUTO",
+        "description": "AUTO generates a trigger if a trigger is not detected within a specific time period. AUTO also enables scan mode for sweep speeds of 100 ms/div and slower."
+      },
+      {
+        "value": "NORMal",
+        "description": "NORMal waits for a valid trigger event."
+      }
+    ],
+    "types": [
+      {
+        "value": "EDGE",
+        "description": "EDGE is a normal trigger. A trigger event occurs when a signal passes through a specified voltage level in the specified direction and is controlled by the TRIGger:MAIn:EDGE commands."
+      },
+      {
+        "value": "VIDeo",
+        "description": "VIDeo specifies that a trigger occurs when a specified signal is found and is controlled by the TRIGger:MAIn:VIDeo commands."
+      },
+      {
+        "value": "PULse",
+        "description": "PULse specifies that a trigger occurs when the specified signal meets the pulse width criteria that is controlled by the TRIGger: MAIn:PULse commands."
+      }
+    ],
+    "edge_types": [
+      {
+        "value": "FALL",
+        "description": "FALL specifies to trigger on the falling or negative edge of a signal."
+      },
+      {
+        "value": "RISe",
+        "description": "RISe specifies to trigger on the rising or positive edge of a signal."
+      }
+    ],
+    "edge_sources": [
+      {
+        "value": "CH1",
+        "description": "CH1 specifies channel 1 as source."
+      },
+      {
+        "value": "CH2",
+        "description": "CH2 specifies channel 2 as source."
+      },
+      {
+        "value": "EXT",
+        "description": "EXT specifies the external input."
+      },
+      {
+        "value": "EXT5",
+        "description": "EXT5 specifies that the external input is attenuated by a factor of 5."
+      },
+      {
+        "value": "AC LINE",
+        "description": "AC LINE specifies the power line signal as a trigger source."
+      }
+    ]
   }
 }

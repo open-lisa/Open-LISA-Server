@@ -8,11 +8,15 @@ class Tektronix_TDS1002B(Oscilloscope):
         super().__init__(id, "Tektronix", "TDS1002B")
         with open('electronic_instrument_adapter/instrument/oscilloscope/configs/oscilloscope_tektronix_tds1002b.json') as file:
             cfg = json.load(file)
-            self._available_acquisition_modes = [mode["value"] for mode in cfg["acquisition"]["modes"]]
-            self._available_average_acquisition_mode_samples_amount =[amount["value"] for amount in cfg["acquisition"]["average_mode_samples_amount"]]
-            self._available_timebase_modes = [mode["value"] for mode in cfg["timebase"]["modes"]]
             self._available_channels = [channel["value"] for channel in cfg["channels"]["amount"]]
             self._available_channel_attenuations_factors = [attenuation["value"] for attenuation in cfg["channels"]["attenuation_factors"]]
+            self._available_timebase_modes = [mode["value"] for mode in cfg["timebase"]["modes"]]
+            self._available_acquisition_modes = [mode["value"] for mode in cfg["acquisition"]["modes"]]
+            self._available_average_acquisition_mode_samples_amount =[amount["value"] for amount in cfg["acquisition"]["average_mode_samples_amount"]]
+            self._available_trigger_modes = [mode["value"] for mode in cfg["trigger"]["modes"]]
+            self._available_trigger_types = [type["value"] for type in cfg["trigger"]["types"]]
+            self._available_trigger_edge_types = [type["value"] for type in cfg["trigger"]["edge_types"]]
+            self._available_trigger_edge_sources = [source["value"] for source in cfg["trigger"]["edge_sources"]]
 
     def set_initial_configuration(self):
         self.configuration.volts_scale = 0.5
@@ -187,4 +191,108 @@ class Tektronix_TDS1002B(Oscilloscope):
     """
         END ACQUISITION PRIMITIVES
     """
+
+
+
+    """
+        BEGIN TRIGGER PRIMITIVES
+        Trigger commands control all aspects of oscilloscope triggering.
+
+        The three types of triggers are edge, pulse width, and video.
+        Edge triggering is the default type. Edge triggering lets you acquire a waveform
+        when the signal passes through a voltage level of your choosing.
+        Pulse width triggering lets you trigger on normal or aberrant pulses.
+        Video triggering adds the capability of triggering on video fields and lines.
+    """
+    def force_trigger(self):
+        """
+            FORCe creates a trigger event. If TRIGger:STATE is REAdy,
+            the acquisition will complete; otherwise this command will be ignored.
+            This is equivalent to selecting FORCE TRIG on the front panel.
+        """
+        self.device.write("TRIGger FORCe")
+
+    def set_trigger_mode(self, mode):
+        """
+            Sets the trigger mode for the Edge and Pulse widths trigger types.
+        """
+        mode = str(mode)
+        if mode in self._available_trigger_modes:
+            self.device.write("TRIGger:MAIn:MODe {}".format(mode))
+        else:
+            logging.warning("Trigger mode {} is not supported, supported are {}".format(mode, self._available_trigger_modes))
+
+    def set_trigger_type(self, type):
+        """
+            Sets the type of oscilloscope trigger. This is equivalent to setting the Type option in the Trigger menu.
+        """
+        type = str(type)
+        if type in self._available_trigger_types:
+            self.device.write("TRIGger:MAIn:TYPe {}".format(type))
+        else:
+            logging.warning("Trigger type {} is not supported, supported are {}".format(type, self._available_trigger_types))
+
+    def get_trigger_type(self):
+        """
+            Queries and returns the type of oscilloscope trigger.
+        """
+        return self.device.write("TRIGger:MAIn:TYPe?")
+
+    def set_trigger_edge_type(self, type):
+        """
+            Selects a rising or falling slope for the edge trigger. This is equivalent to setting the Slope option in the Trigger menu.
+        """
+        type = str(type)
+        trigger_type = self.get_trigger_type()
+        if trigger_type != "EDGE":
+            logging.warning("Trigger type must be EDGE to set the edge type, current trigger type is {}".format(trigger_type))
+            return
+
+        if type in self._available_trigger_edge_types:
+            self.device.write("TRIGger:MAIn:EDGE:SLOpe {}".format(type))
+        else:
+            logging.warning("Trigger edge type {} is not supported, supported are {}".format(type, self._available_trigger_edge_types))
+
+    def set_trigger_edge_source(self, src):
+        """
+            Selects a rising or falling slope for the edge trigger.
+            This is equivalent to setting the Slope option in the Trigger menu.
+        """
+        src = str(src)
+        trigger_type = self.get_trigger_type()
+        if trigger_type != "EDGE":
+            logging.warning("Trigger type must be EDGE to set the edge source, current trigger type is {}".format(trigger_type))
+            return
+
+        if src in self._available_trigger_edge_sources:
+            self.device.write("TRIGger:MAIn:EDGE:SOUrce {}".format(src))
+        else:
+            logging.warning("Trigger edge source {} is not supported, supported are {}".format(src, self._available_trigger_edge_sources))
+
+    def set_trigger_level(self, level):
+        """
+            Sets the oscilloscope edge and pulse width trigger level in volts.
+            This command is equivalent to adjusting the front-panel TRIGGER LEVEL knob.
+
+            NOTE. When the edge trigger source is set to AC LINE,
+            the oscilloscope ignores the set form of the command and generates event 221 (Settings conflict).
+            When the edge trigger source is set to AC LINE, the query form of the command returns zero.
+        """
+        try:
+            float(level)
+        except ValueError:
+            logging.error("Trigger level '{}' could not be parsed as float number".format(level))
+            return
+
+        level = str(level)
+        trigger_type = self.get_trigger_type()
+        if trigger_type != "EDGE" and trigger_type != "PULse":
+            logging.warning("Trigger type must be EDGE or PULse to set trigger level, current trigger type is {}".format(trigger_type))
+            return
+
+        self.device.write("TRIGger:MAIn:LEVel {}".format(level))
+    """
+        END TRIGGER PRIMITIVES
+    """
+
 

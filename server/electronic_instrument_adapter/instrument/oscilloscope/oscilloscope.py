@@ -102,6 +102,31 @@ class Oscilloscope(Instrument):
         raise Exception("NotImplementedException")
 
 
+    # Trigger primitives
+
+    def force_trigger(self):
+        raise Exception("NotImplementedException")
+
+    def set_trigger_mode(self, mode):
+        raise Exception("NotImplementedException")
+
+    def set_trigger_type(self, type):
+        raise Exception("NotImplementedException")
+
+    def get_trigger_type(self):
+        raise Exception("NotImplementedException")
+
+    def set_trigger_edge_type(self, type):
+        raise Exception("NotImplementedException")
+
+    def set_trigger_edge_source(self, src):
+        raise Exception("NotImplementedException")
+
+    def set_trigger_level(self, level):
+        raise Exception("NotImplementedException")
+
+
+
 class OscilloscopeConfiguration:
     def __init__(self, volts_scale=5, time_scale=0.000500):
         self.volts_scale = volts_scale  # in volts

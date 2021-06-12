@@ -26,12 +26,20 @@ os_settings.acq.points = 64000; --> El TDS1002B no parece soportar esta configur
 
 os_settings.acq.sRate = str2double(query(os, 'ACQUIRE:SRATE?')); --> Es una query y tiene el valor de la frecuencia del osciloscopio, no se utiliza en la config
 
-os_settings.trig.force_flag = 0;
-os_settings.trig.sweep = 'NORMAL';
-os_settings.trig.mode = 'EDGE';
-os_settings.trig.slope = 'RISING';
-os_settings.trig.source = 'EXT'; % Also the waveform source
-os_settings.trig.level = 0.0;
+os_settings.trig.force_flag = 0; --> Termina llamando a TRIGGER:FORCE <ON/OFF> pero el manual no especifica ON u OFF. Lo mismo con el Tektronix ¿Estará mal utilizado?
+                                 --> force_trigger()
+
+os_settings.trig.sweep = 'NORMAL'; --> set_trigger_mode. El Hantek también soporta modo "SINGLE" que entiendo que se usa en el codigo de Cris en algunas partes
+
+os_settings.trig.mode = 'EDGE'; --> set_trigger_type. El Hantek tiene varios types, pero no tiene "VIDEO" (al menos con la misma palabra) que si tiene el TDS1002B.
+                                    Se puede investigar que hace cada uno de los tipos del Hantek: validar que EDGE y PULse hagan lo mismo y ver si VIDEO del TDS1002B corresponde a uno del Hantek.
+
+os_settings.trig.slope = 'RISING'; --> set_trigger_edge_type. El Hantek soporta "EITHER" también pero no parece ser utilizado por Cris.
+
+os_settings.trig.source = 'EXT'; % Also the waveform source --> set_trigger_edge_source. El TDS1002B soporta algunos sources mas, de todos modos se usa EXT que ambos soportan.
+
+os_settings.trig.level = 0.0; --> set_trigger_level. Nota de color: el TDS1002B soporta trigger level también para el trigger type "PULse"
+
 os_settings.waveform.format = 'ASCII'; %Default Byte
 os_settings.waveform.byteOrder = 'LITTLEENDIAN';
 os_settings.waveform.source = 'CHANNEL1';
