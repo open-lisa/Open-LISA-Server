@@ -5,7 +5,6 @@ from .oscilloscope import Oscilloscope
 
 class Tektronix_TDS1002B(Oscilloscope):
     def __init__(self, id):
-        super().__init__(id, "Tektronix", "TDS1002B")
         with open('electronic_instrument_adapter/instrument/oscilloscope/configs/oscilloscope_tektronix_tds1002b.json') as file:
             cfg = json.load(file)
             self._available_channels = [channel["value"] for channel in cfg["channels"]["amount"]]
@@ -18,9 +17,11 @@ class Tektronix_TDS1002B(Oscilloscope):
             self._available_trigger_edge_types = [type["value"] for type in cfg["trigger"]["edge_types"]]
             self._available_trigger_edge_sources = [source["value"] for source in cfg["trigger"]["edge_sources"]]
 
+        super().__init__(id, "Tektronix", "TDS1002B")
+
     def set_initial_configuration(self):
-        self.configuration.volts_scale = 0.5
-        self.configuration.time_scale = 0.000200
+        self.configuration.volts_scale = 5.0
+        self.configuration.time_scale = 0.000500
 
         self.stop_acquisitions()
         self.clear_status()
@@ -71,7 +72,8 @@ class Tektronix_TDS1002B(Oscilloscope):
             logging.warning("Not supported channel {}, supported are {}".format(channel, self._available_channels))
             return
 
-        self.device.write('CH{}:VOLts {}'.format(channel, volts_scale))
+        command = str("{}:VOLts {}".format(channel, volts_scale))
+        self.device.write(command)
 
     def set_channel_probe(self, channel, probe):
         """
@@ -87,7 +89,8 @@ class Tektronix_TDS1002B(Oscilloscope):
             logging.warning("Not supported attenuation factor {}, supported are".format(probe, self._available_channel_attenuations_factors))
             return
 
-        self.device.write("{}:PRObe {}".format(channel, probe))
+        command = str("{}:PRObe {}".format(channel, probe))
+        self.device.write(command)
     """
         END CHANNEL PRIMITIVES
     """
@@ -103,7 +106,8 @@ class Tektronix_TDS1002B(Oscilloscope):
             in a 1–2.5–5 sequence. Other values are forced to the closest acceptable value.
         """
         seconds = str(seconds)
-        self.device.write('HORizontal:MAIn:SCAle {}'.format(seconds))
+        command = str("HORizontal:MAIn:SCAle {}".format(seconds))
+        self.device.write(command)
 
     def set_timebase_mode(self, mode):
         """
@@ -111,7 +115,8 @@ class Tektronix_TDS1002B(Oscilloscope):
         """
         mode = str(mode)
         if mode in self._available_timebase_modes:
-            self.device.write('DISplay:FORMat {}'.format(mode))
+            command = str("DISplay:FORMat {}".format(mode))
+            self.device.write(command)
 
     def set_timebase_x_channel(self, channel):
         """
@@ -119,7 +124,8 @@ class Tektronix_TDS1002B(Oscilloscope):
         """
         channel = str(channel)
         if channel in self._available_channels:
-            self.device.write("MEASUrement:IMMed:SOUrce1 {}".format(channel))
+            command = str("MEASUrement:IMMed:SOUrce1 {}".format(channel))
+            self.device.write(command)
         else:
             logging.warning("Not supported channel {}, supported are {}".format(channel, self._available_channels))
 
@@ -130,7 +136,8 @@ class Tektronix_TDS1002B(Oscilloscope):
         """
         channel = str(channel)
         if channel in self._available_channels:
-            self.device.write("MEASUrement:IMMed:SOUrce2 {}".format(channel))
+            command = str("MEASUrement:IMMed:SOUrce2 {}".format(channel))
+            self.device.write(command)
         else:
             logging.warning("Not supported channel {}, supported are {}".format(channel, self._available_channels))
     """
@@ -159,7 +166,8 @@ class Tektronix_TDS1002B(Oscilloscope):
         """
         mode = str(mode)
         if mode in self._available_acquisition_modes:
-            self.device.write("ACQuire:MODe {}".format(mode))
+            command = str("ACQuire:MODe {}".format(mode))
+            self.device.write(command)
         else:
             logging.warning("Acquisition mode {} is not supported, supported are {}".format(mode, self._available_acquisition_modes))
 
@@ -167,7 +175,7 @@ class Tektronix_TDS1002B(Oscilloscope):
         """
             Queries and returns the oscilloscope acquisition mode
         """
-        return self.device.write("ACQuire:MODe?")
+        return self.device.query("ACQuire:MODe?")
 
     def set_average_acquisition_mode_samples_amount(self, amount):
         """
@@ -178,11 +186,12 @@ class Tektronix_TDS1002B(Oscilloscope):
         # Check is in 'AVErage' mode
         mode = self.get_acquisition_mode()
         if mode.lower() != "AVErage".lower():
-            logging.warning("set_average_acquisition_mode_samples_amount should be called on 'average' acquisition mode but current is '{}'".format(mode))
+            logging.warning("set_average_acquisition_mode_samples_amount should be called on 'average' acquisition mode but current is '{}'".format(mode))
             return
 
         if amount in self._available_average_acquisition_mode_samples_amount:
-            self.device.write("ACQuire:NUMAVg {}".format(amount))
+            command = str("ACQuire:NUMAVg {}".format(amount))
+            self.device.write(command)
         else:
             logging.warning("Samples amount {} is not supported, supported are {}".format(amount, self._available_average_acquisition_mode_samples_amount))
 
@@ -218,9 +227,10 @@ class Tektronix_TDS1002B(Oscilloscope):
         """
         mode = str(mode)
         if mode in self._available_trigger_modes:
-            self.device.write("TRIGger:MAIn:MODe {}".format(mode))
+            command = str("TRIGger:MAIn:MODe {}".format(mode))
+            self.device.write(command)
         else:
-            logging.warning("Trigger mode {} is not supported, supported are {}".format(mode, self._available_trigger_modes))
+            logging.warning("Trigger mode {} is not supported, supported are {}".format(mode, self._available_trigger_modes))
 
     def set_trigger_type(self, type):
         """
@@ -228,7 +238,8 @@ class Tektronix_TDS1002B(Oscilloscope):
         """
         type = str(type)
         if type in self._available_trigger_types:
-            self.device.write("TRIGger:MAIn:TYPe {}".format(type))
+            command = str("TRIGger:MAIn:TYPe {}".format(type))
+            self.device.write(command)
         else:
             logging.warning("Trigger type {} is not supported, supported are {}".format(type, self._available_trigger_types))
 
@@ -236,7 +247,7 @@ class Tektronix_TDS1002B(Oscilloscope):
         """
             Queries and returns the type of oscilloscope trigger.
         """
-        return self.device.write("TRIGger:MAIn:TYPe?")
+        return self.device.query("TRIGger:MAIn:TYPe?")
 
     def set_trigger_edge_type(self, type):
         """
@@ -249,7 +260,8 @@ class Tektronix_TDS1002B(Oscilloscope):
             return
 
         if type in self._available_trigger_edge_types:
-            self.device.write("TRIGger:MAIn:EDGE:SLOpe {}".format(type))
+            command = str("TRIGger:MAIn:EDGE:SLOpe {}".format(type))
+            self.device.write(command)
         else:
             logging.warning("Trigger edge type {} is not supported, supported are {}".format(type, self._available_trigger_edge_types))
 
@@ -265,7 +277,8 @@ class Tektronix_TDS1002B(Oscilloscope):
             return
 
         if src in self._available_trigger_edge_sources:
-            self.device.write("TRIGger:MAIn:EDGE:SOUrce {}".format(src))
+            command = str("TRIGger:MAIn:EDGE:SOUrce {}".format(src))
+            self.device.write(command)
         else:
             logging.warning("Trigger edge source {} is not supported, supported are {}".format(src, self._available_trigger_edge_sources))
 
@@ -290,7 +303,8 @@ class Tektronix_TDS1002B(Oscilloscope):
             logging.warning("Trigger type must be EDGE or PULse to set trigger level, current trigger type is {}".format(trigger_type))
             return
 
-        self.device.write("TRIGger:MAIn:LEVel {}".format(level))
+        command = str("TRIGger:MAIn:LEVel {}".format(level))
+        self.device.write(command)
     """
         END TRIGGER PRIMITIVES
     """
