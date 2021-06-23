@@ -2,17 +2,12 @@ import pyvisa
 from .constants import INSTRUMENT_STATUS_AVAILABLE, INSTRUMENT_STATUS_UNAVAILABLE
 
 
-def InstrumentFactory(type, id):
-    if type == "oscilloscope":
-        from .oscilloscope.factory import OscilloscopeFactory
-        return OscilloscopeFactory(id)
-
-
 class Instrument:
-    def __init__(self, id, brand, model):
+    def __init__(self, id, brand, model, description):
         self.id = id
         self.brand = brand
         self.model = model
+        self.description = description
         self.device = None
         self.status = INSTRUMENT_STATUS_UNAVAILABLE
 
@@ -25,5 +20,17 @@ class Instrument:
             self.device = rm.open_resource(self.id)
             self.status = INSTRUMENT_STATUS_AVAILABLE
         else:
+            self.device = None
             self.status = INSTRUMENT_STATUS_UNAVAILABLE
 
+    def __str__(self):
+        return "{}\n\t" \
+               "Brand  : {}\n\t" \
+               "Model  : {}\n\t" \
+               "ID     : {}\n\t" \
+               "Status : {}".format(
+                self.description,
+                self.brand,
+                self.model,
+                self.id,
+                self.status)
