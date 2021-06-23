@@ -1,6 +1,8 @@
 [
   {
-    "type": "oscilloscope",
+    "brand": "tektronix",
+    "model": "tsd1002b",
+    "description": "Osciloscopio principal",
     "id": "USB0::0x0699::0x0363::C107676::INSTR"
   }
 ]
