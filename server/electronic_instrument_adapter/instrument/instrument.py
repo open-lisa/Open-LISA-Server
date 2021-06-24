@@ -76,7 +76,7 @@ class Instrument:
                                                 required_param_info['example'])
 
         # todo: enviar comando al dispositivo
-        # todo: agregar en el _cmd.json si el comando es de tipo set o tipo query
+        # todo: saber q metodo de pyvisa invocar segun set or query
 
         return "OK"
 
