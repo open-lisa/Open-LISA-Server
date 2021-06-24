@@ -32,6 +32,22 @@ class ElectronicInstrumentAdapter:
                 )
                 self._instruments.append(instrument)
 
+    def get_instruments(self):
+        # todo: completar
+        pass
+
+    def get_instrument(self, instrument_id):
+        # todo: completar
+        pass
+
+    def get_instrument_commands(self, instrument_id):
+        # todo: completar
+        pass
+
+    def send_command(self, command):
+        # todo: completar
+        pass
+
     def start(self):
         while True:
             print("Waiting commands ...")
