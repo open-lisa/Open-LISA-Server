@@ -34,3 +34,12 @@ class Instrument:
                 self.model,
                 self.id,
                 self.status)
+
+    def as_dict(self):
+        return {
+            "id": self.id,
+            "brand": self.brand,
+            "model": self.model,
+            "status": self.status,
+            "description": self.description
+        }

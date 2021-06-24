@@ -33,8 +33,12 @@ class ElectronicInstrumentAdapter:
                 self._instruments.append(instrument)
 
     def get_instruments(self):
-        # todo: completar
-        pass
+        formatted_instruments = []
+
+        for instrument in self._instruments:
+            formatted_instruments.append(instrument.as_dict())
+
+        return json.dumps(formatted_instruments)
 
     def get_instrument(self, instrument_id):
         # todo: completar
@@ -51,4 +55,6 @@ class ElectronicInstrumentAdapter:
     def start(self):
         while True:
             print("Waiting commands ...")
+            print("Instruments:")
+            print(self.get_instruments())
             time.sleep(10)
