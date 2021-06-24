@@ -2,6 +2,9 @@ import json
 
 import pyvisa
 from .constants import INSTRUMENT_STATUS_AVAILABLE, INSTRUMENT_STATUS_UNAVAILABLE
+from .errors.command_not_found_error import CommandNotFoundError
+from .errors.invalid_amount_parameters_error import InvalidAmountParametersError
+from .errors.invalid_parameter_error import InvalidParameterError
 
 
 class Instrument:
@@ -52,3 +55,39 @@ class Instrument:
             "status": self.status,
             "description": self.description
         }
+
+    def send_command(self, command):
+        commands_parts = command.split(' ')
+        command_base = commands_parts[0]
+        if command_base not in self.commands_map:
+            raise CommandNotFoundError
+
+        number_of_parameters_sent = len(commands_parts) - 1
+        if 'params' in self.commands_map[command_base]:
+            number_of_parameters_required = len(self.commands_map[command_base]['params'])
+            if number_of_parameters_required != number_of_parameters_sent:
+                raise InvalidAmountParametersError(number_of_parameters_sent, number_of_parameters_required)
+
+            for required_param_info in self.commands_map[command_base]['params']:
+                sent_param = commands_parts[required_param_info['position']]
+                if not self.valid_format(sent_param, required_param_info):
+                    raise InvalidParameterError(required_param_info['position'],
+                                                required_param_info['type'],
+                                                required_param_info['example'])
+
+        # todo: enviar comando al dispositivo
+        # todo: agregar en el _cmd.json si el comando es de tipo set o tipo query
+
+        return "OK"
+
+    def valid_format(self, sent_param, required_param_info):
+        if required_param_info['type'] == "float":
+            try:
+                float(sent_param)
+            except ValueError:
+                return False
+
+            return True
+
+        else:
+            return False

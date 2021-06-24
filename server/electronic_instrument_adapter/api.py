@@ -1,6 +1,9 @@
 import json
 import time
 
+from .instrument.errors.command_not_found_error import CommandNotFoundError
+from .instrument.errors.invalid_amount_parameters_error import InvalidAmountParametersError
+from .instrument.errors.invalid_parameter_error import InvalidParameterError
 from .instrument.instrument import Instrument
 
 
@@ -54,9 +57,27 @@ class ElectronicInstrumentAdapter:
 
         return None
 
-    def send_command(self, command):
-        # todo: completar
-        pass
+    def send_command(self, instrument_id, command):
+        for instrument in self._instruments:
+            if instrument.id == instrument_id:
+                try:
+                    response = instrument.send_command(command)
+                    return response
+                except CommandNotFoundError:
+                    return "Command not found"
+                except InvalidAmountParametersError as e:
+                    return "{} Parameters has sent, but {} are required.".format(
+                        e.parameters_amount_sent,
+                        e.parameters_amount_required
+                    )
+                except InvalidParameterError as e:
+                    return "Parameter in position {} has an invalid format. Correct format is {}, ie: {}.".format(
+                        e.position,
+                        e.correct_format,
+                        e.example
+                    )
+
+        return None
 
     def start(self):
         while True:
@@ -67,4 +88,14 @@ class ElectronicInstrumentAdapter:
             print(self.get_instrument("USB0::0x0699::0x0363::C107676::INSTR"))
             print("Instrument commands example:")
             print(self.get_instrument_commands("USB0::0x0699::0x0363::C107676::INSTR"))
+            print("Instrument send non-existent command example:")
+            print(self.send_command("USB0::0x0699::0x0363::C107676::INSTR", "pepinardovich"))
+            print("Instrument send existent command example:")
+            print(self.send_command("USB0::0x0699::0x0363::C107676::INSTR", "set_waveform_encoding_ascii"))
+            print("Instrument send existent command with invalid parameters amount example:")
+            print(self.send_command("USB0::0x0699::0x0363::C107676::INSTR", "set_trigger_level 10 20"))
+            print("Instrument send existent command with invalid parameters format example:")
+            print(self.send_command("USB0::0x0699::0x0363::C107676::INSTR", "set_trigger_level ASCII"))
+            print("Instrument send existent command with valid parameter example:")
+            print(self.send_command("USB0::0x0699::0x0363::C107676::INSTR", "set_trigger_level 3.4"))
             time.sleep(10)
