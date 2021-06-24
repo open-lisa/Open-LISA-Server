@@ -1,3 +1,5 @@
+import json
+
 import pyvisa
 from .constants import INSTRUMENT_STATUS_AVAILABLE, INSTRUMENT_STATUS_UNAVAILABLE
 
@@ -10,8 +12,15 @@ class Instrument:
         self.description = description
         self.device = None
         self.status = INSTRUMENT_STATUS_UNAVAILABLE
+        self.commands_map = None
+        self.load_commands()
 
         self.set_status()
+
+    def load_commands(self):
+        with open('electronic_instrument_adapter/instrument/specs/{}_{}_cmd.json'.format(
+                self.brand, self.model)) as file:
+            self.commands_map = json.load(file)
 
     def set_status(self):
         rm = pyvisa.ResourceManager()
@@ -29,11 +38,11 @@ class Instrument:
                "Model  : {}\n\t" \
                "ID     : {}\n\t" \
                "Status : {}".format(
-                self.description,
-                self.brand,
-                self.model,
-                self.id,
-                self.status)
+            self.description,
+            self.brand,
+            self.model,
+            self.id,
+            self.status)
 
     def as_dict(self):
         return {

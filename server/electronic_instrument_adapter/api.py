@@ -48,8 +48,11 @@ class ElectronicInstrumentAdapter:
         return None
 
     def get_instrument_commands(self, instrument_id):
-        # todo: completar
-        pass
+        for instrument in self._instruments:
+            if instrument.id == instrument_id:
+                return json.dumps(instrument.commands_map)
+
+        return None
 
     def send_command(self, command):
         # todo: completar
@@ -62,4 +65,6 @@ class ElectronicInstrumentAdapter:
             print(self.get_instruments())
             print("Instrument example:")
             print(self.get_instrument("USB0::0x0699::0x0363::C107676::INSTR"))
+            print("Instrument commands example:")
+            print(self.get_instrument_commands("USB0::0x0699::0x0363::C107676::INSTR"))
             time.sleep(10)
