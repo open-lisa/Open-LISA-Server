@@ -41,8 +41,11 @@ class ElectronicInstrumentAdapter:
         return json.dumps(formatted_instruments)
 
     def get_instrument(self, instrument_id):
-        # todo: completar
-        pass
+        for instrument in self._instruments:
+            if instrument.id == instrument_id:
+                return instrument.as_dict()
+
+        return None
 
     def get_instrument_commands(self, instrument_id):
         # todo: completar
@@ -57,4 +60,6 @@ class ElectronicInstrumentAdapter:
             print("Waiting commands ...")
             print("Instruments:")
             print(self.get_instruments())
+            print("Instrument example:")
+            print(self.get_instrument("USB0::0x0699::0x0363::C107676::INSTR"))
             time.sleep(10)
