@@ -59,6 +59,25 @@ class Instrument:
     def send_command(self, command):
         commands_parts = command.split(' ')
         command_base = commands_parts[0]
+
+        self.validate_command(command)
+
+        command_type = self.commands_map[command_base]['type']
+        if command_type == "set":
+            written_bytes = self.device.write(self.commands_map[command_base]['command'])
+            # todo: handlear el caso en que written_bytes = 0 por posible error en conexión
+        elif command_type == "query":
+            response = self.device.query(self.commands_map[command_base]['command'])
+            return str(response)
+        else:
+            # todo: handlear este caso en un validador de formato general para el _cmd.json
+            pass
+
+        return "OK"
+
+    def validate_command(self, command):
+        commands_parts = command.split(' ')
+        command_base = commands_parts[0]
         if command_base not in self.commands_map:
             raise CommandNotFoundError
 
@@ -70,17 +89,12 @@ class Instrument:
 
             for required_param_info in self.commands_map[command_base]['params']:
                 sent_param = commands_parts[required_param_info['position']]
-                if not self.valid_format(sent_param, required_param_info):
+                if not self._valid_format(sent_param, required_param_info):
                     raise InvalidParameterError(required_param_info['position'],
                                                 required_param_info['type'],
                                                 required_param_info['example'])
 
-        # todo: enviar comando al dispositivo
-        # todo: saber q metodo de pyvisa invocar segun set or query
-
-        return "OK"
-
-    def valid_format(self, sent_param, required_param_info):
+    def _valid_format(self, sent_param, required_param_info):
         if required_param_info['type'] == "float":
             try:
                 float(sent_param)

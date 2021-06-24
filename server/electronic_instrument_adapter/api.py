@@ -1,6 +1,7 @@
 import json
 import time
 
+from .instrument.constants import INSTRUMENT_STATUS_UNAVAILABLE
 from .instrument.errors.command_not_found_error import CommandNotFoundError
 from .instrument.errors.invalid_amount_parameters_error import InvalidAmountParametersError
 from .instrument.errors.invalid_parameter_error import InvalidParameterError
@@ -20,6 +21,8 @@ class ElectronicInstrumentAdapter:
         print("***************** ******************************")
 
         # todo: definir nuevo protocolo con socket o USB, no more Flask
+        # todo: considerar podder utilizar tanto USB como socket por red LAN, que sea configurable
+        # todo: armar un handler de comandos que llame a las funciones de esta api
 
     def load_instruments(self):
         self._instruments = []
@@ -57,10 +60,34 @@ class ElectronicInstrumentAdapter:
 
         return None
 
+    # Todo decirle a Ariel que considere este comando para probar validez de comando sin disponibilidad del instrumento
+    def validate_command(self, instrument_id, command):
+        for instrument in self._instruments:
+            if instrument.id == instrument_id:
+                try:
+                    instrument.validate_command(command)
+                except CommandNotFoundError:
+                    return "Command not found"
+                except InvalidAmountParametersError as e:
+                    return "{} Parameters has sent, but {} are required.".format(
+                        e.parameters_amount_sent,
+                        e.parameters_amount_required
+                    )
+                except InvalidParameterError as e:
+                    return "Parameter in position {} has an invalid format. Correct format is {}, ie: {}.".format(
+                        e.position,
+                        e.correct_format,
+                        e.example
+                    )
+
+        return "The command is valid"
+
     def send_command(self, instrument_id, command):
         for instrument in self._instruments:
             if instrument.id == instrument_id:
                 try:
+                    if instrument.status == INSTRUMENT_STATUS_UNAVAILABLE:
+                        return "Instrument not available."
                     response = instrument.send_command(command)
                     return response
                 except CommandNotFoundError:
@@ -81,6 +108,7 @@ class ElectronicInstrumentAdapter:
 
     def start(self):
         while True:
+            # todo: Considerar armar tests para probar estos casos...
             print("Waiting commands ...")
             print("Instruments:")
             print(self.get_instruments())
@@ -88,14 +116,14 @@ class ElectronicInstrumentAdapter:
             print(self.get_instrument("USB0::0x0699::0x0363::C107676::INSTR"))
             print("Instrument commands example:")
             print(self.get_instrument_commands("USB0::0x0699::0x0363::C107676::INSTR"))
-            print("Instrument send non-existent command example:")
-            print(self.send_command("USB0::0x0699::0x0363::C107676::INSTR", "pepinardovich"))
-            print("Instrument send existent command example:")
-            print(self.send_command("USB0::0x0699::0x0363::C107676::INSTR", "set_waveform_encoding_ascii"))
-            print("Instrument send existent command with invalid parameters amount example:")
-            print(self.send_command("USB0::0x0699::0x0363::C107676::INSTR", "set_trigger_level 10 20"))
-            print("Instrument send existent command with invalid parameters format example:")
-            print(self.send_command("USB0::0x0699::0x0363::C107676::INSTR", "set_trigger_level ASCII"))
-            print("Instrument send existent command with valid parameter example:")
-            print(self.send_command("USB0::0x0699::0x0363::C107676::INSTR", "set_trigger_level 3.4"))
+            print("Instrument validate non-existent command example:")
+            print(self.validate_command("USB0::0x0699::0x0363::C107676::INSTR", "pepinardovich"))
+            print("Instrument validate existent command example:")
+            print(self.validate_command("USB0::0x0699::0x0363::C107676::INSTR", "set_waveform_encoding_ascii"))
+            print("Instrument validate existent command with invalid parameters amount example:")
+            print(self.validate_command("USB0::0x0699::0x0363::C107676::INSTR", "set_trigger_level 10 20"))
+            print("Instrument validate existent command with invalid parameters format example:")
+            print(self.validate_command("USB0::0x0699::0x0363::C107676::INSTR", "set_trigger_level ASCII"))
+            print("Instrument validate existent command with valid parameter example:")
+            print(self.validate_command("USB0::0x0699::0x0363::C107676::INSTR", "set_trigger_level 3.4"))
             time.sleep(10)
