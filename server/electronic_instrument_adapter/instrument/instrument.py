@@ -79,7 +79,7 @@ class Instrument:
             # todo: handlear este caso en un validador de formato general para el _cmd.json
             pass
 
-        return ""
+        return "OK".encode()
 
     def validate_command(self, command):
         commands_parts = command.split(' ')
