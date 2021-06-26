@@ -70,11 +70,11 @@ class Instrument:
             # todo: handlear el caso en que written_bytes = 0 por posible error en conexión
         elif command_type == "query":
             response = self.device.query(self.commands_map[command_base]['command'])
-            return str(response)
+            return response.encode()
         elif command_type == "query_buffer":
             self.device.query(self.commands_map[command_base]['command'])
             response = self.device.read_raw()
-            return str(response)
+            return response
         else:
             # todo: handlear este caso en un validador de formato general para el _cmd.json
             pass
