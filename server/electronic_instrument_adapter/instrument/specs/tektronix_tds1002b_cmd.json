@@ -291,6 +291,21 @@
     ]
   },
 
+  "get_waveform_data" : {
+    "command": "CURVE?",
+    "type": "query",
+    "description": "Transfers oscilloscope waveform data to and from the oscilloscope in binary or ASCII format. Each waveform that is transferred has an associated waveform preamble that contains information such as data format and scale."
+  },
+  "set_waveform_bytes_width_1": {
+    "command": "DATa:WIDth 1",
+    "type": "set",
+    "description": "Sets 1 byte per waveform data point to be transferred when executing the CURVe command."
+  },
+  "set_waveform_bytes_width_2": {
+    "command": "DATa:WIDth 2",
+    "type": "set",
+    "description": "Sets 2 bytes per waveform data point to be transferred when executing the CURVe command."
+  },
   "set_waveform_encoding_ascii": {
     "command": "DATa:ENCdg ASCIi",
     "type": "set",
@@ -355,5 +370,25 @@
     "command": "WFMPre:PT_Fmt Y",
     "type": "set",
     "description": "Y specifies a normal waveform where one ASCII or binary data point is transmitted for each point in the waveform record. \nFor Y format, the time (absolute coordinate) of a point, relative to the trigger, can be calculated using the following formula. N ranges from 0 to 2499. \nXn = XZEro + XINcr (n - PT_OFf) \nFor Y format, the magnitude (usually voltage, relative to ground) (absolute coordinate) of a point can be calculated: \nYn = YZEro + YMUIty (yn - YOFf)"
+  },
+  "get_waveform_vertical_scale_factor": {
+    "command": "WFMPre:YMUlt?",
+    "type": "query",
+    "description": "Query the vertical scale factor"
+  },
+  "get_waveform_conversion_factor": {
+    "command": "WFMPre:YZEro?",
+    "type": "query",
+    "description": "Query the waveform conversion factor"
+  },
+  "get_waveform_vertical_offset": {
+    "command": "WFMPre:YOFf?",
+    "type": "query",
+    "description": "Query the vertical offset"
+  },
+  "get_waveform_horizontal_sampling_interval": {
+    "command": "WFMPre:XINcr?",
+    "type": "query",
+    "description": "Query the horizontal sampling interval"
   }
 }

@@ -21,7 +21,7 @@ for i in range(5):
     ymult = float(device.query('WFMPre:YMUlt?'))
     # Query the waveform conversion factor
     yzero = float(device.query('WFMPre:YZEro?'))
-    # Query the vertical offseT
+    # Query the vertical offset
     yoff = float(device.query('WFMPre:YOFf?'))
     # Set or query the horizontal sampling interval
     xincr = float(device.query('WFMPre:XINcr?'))
