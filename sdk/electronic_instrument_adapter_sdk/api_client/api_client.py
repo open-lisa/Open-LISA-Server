@@ -14,7 +14,7 @@ class ApiClient:
       self._client_protocol = ClientProtocol(sock)
     except Exception as e:
       log.error(e)
-      raise CouldNotConnectToServerException("could not connect with server at {}".format(self._base_url))
+      raise CouldNotConnectToServerException("could not connect with server at {}".format(server_address))
 
 
   def get_instruments(self):
