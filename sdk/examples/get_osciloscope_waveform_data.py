@@ -2,15 +2,21 @@ import electronic_instrument_adapter_sdk
 import numpy as np
 from struct import unpack
 import pylab
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--host", type=str, help="server host", default="127.0.0.1")
+parser.add_argument("--port", type=int, help="server port", default=8080)
+args = parser.parse_args()
 
 # Define server config
-sdk = electronic_instrument_adapter_sdk.EIA("127.0.0.1", 8080)
+sdk = electronic_instrument_adapter_sdk.EIA(args.host, args.port)
 
 # List instruments
 instruments = sdk.list_instruments()
 osc_tds1002b = None
 for i in instruments:
-  if i.id == "USB0::0x0699::0x0363::C107676::INSTR":
+  if i.ID == "USB0::0x0699::0x0363::C107676::INSTR":
     osc_tds1002b = i
 
 if osc_tds1002b:

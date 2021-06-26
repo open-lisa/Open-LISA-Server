@@ -61,7 +61,7 @@ class ServerProtocol:
       instrument = instruments_repository.find_one(id)
       result = instrument.send_command(command)
       self._message_protocol.send_msg(SUCCESS_RESPONSE)
-      self._message_protocol.send_msg(json.dumps(result))
+      self._message_protocol.send_msg(result, encode=False)
     except ElectronicInstrumentAdapterException as e:
       self._message_protocol.send_msg(ERROR_RESPONSE)
       self._message_protocol.send_msg(e.message)
