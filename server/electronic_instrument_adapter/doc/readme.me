@@ -6,7 +6,7 @@ Agregar una entrada en `electronic_instrument_adapter/instrument/instruments.jso
 ```json
   {
     "brand": "tektronix",
-    "model": "tsd1002b",
+    "model": "tds1002b",
     "description": "Osciloscopio principal",
     "id": "USB0::0x0699::0x0363::C107676::INSTR"
   }
@@ -23,7 +23,7 @@ donde:
 
 
 2) Agregar un archivo de mapeo de comandos de instrumento `electronic_instrument_adapter/instrument/specs`
-   con nombre `<brand>_<model>_cmd.json`, por ejemplo, `tektronix_tsd1002b_cmd.json`.
+   con nombre `<brand>_<model>_cmd.json`, por ejemplo, `tektronix_tds1002b_cmd.json`.
    El mismo servirá para convertir comandos potencialmente genéricos en comandos SCPI específicos para el
    instrumento, basandose en el manual de uso.
-   Para su ayuda, se puede basar en el instrumento de ejemplo "tektronix_tsd1002b_cmd.json".
+   Para su ayuda, se puede basar en el instrumento de ejemplo "tektronix_tds1002b_cmd.json".

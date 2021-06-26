@@ -1,8 +1,6 @@
 import json
 from .message_protocol import MessageProtocol
-from electronic_instrument_adapter.instrument.errors.command_not_found_error import CommandNotFoundError
-from electronic_instrument_adapter.instrument.errors.invalid_amount_parameters_error import InvalidAmountParametersError
-from electronic_instrument_adapter.instrument.errors.invalid_parameter_error import InvalidParameterError
+from electronic_instrument_adapter.exceptions.base_exception import ElectronicInstrumentAdapterException
 
 SUCCESS_RESPONSE = "OK"
 ERROR_RESPONSE = "ERROR"
@@ -14,8 +12,6 @@ COMMAND_GET_INSTRUMENT_COMMANDS = "GET_INSTRUMENT_COMMANDS"
 COMMAND_VALIDATE_COMMAND = "VALIDATE_COMMAND"
 COMMAND_SEND_COMMAND = "SEND_COMMAND"
 
-ERROR_INSTRUMENT_NOT_FOUND = "instrument not found"
-
 class ServerProtocol:
   def __init__(self, connection):
       self._message_protocol = MessageProtocol(connection)
@@ -23,60 +19,49 @@ class ServerProtocol:
   def get_command(self):
     return self._message_protocol.receive_msg()
 
-  def handle_get_instruments(self, instruments):
-    self._message_protocol.send_msg(instruments)
+  def handle_get_instruments(self, instruments_repository):
+    self._message_protocol.send_msg(instruments_repository.get_all_as_json())
 
-  def handle_get_instrument(self, instruments):
+  def handle_get_instrument(self, instruments_repository):
     id = self._message_protocol.receive_msg()
-    for instrument in instruments:
-      if instrument.id == id:
-        self._message_protocol.send_msg(SUCCESS_RESPONSE)
-        self._message_protocol.send_msg(instrument.as_dict())
-        return
+    try:
+      instrument = instruments_repository.find_one(id)
+      self._message_protocol.send_msg(SUCCESS_RESPONSE)
+      self._message_protocol.send_msg(instrument.as_dict())
+    except ElectronicInstrumentAdapterException as e:
+      self._message_protocol.send_msg(ERROR_RESPONSE)
+      self._message_protocol.send_msg(e.message)
 
-    self._message_protocol.send_msg(ERROR_RESPONSE)
-    self._message_protocol.send_msg(ERROR_INSTRUMENT_NOT_FOUND)
-
-  def handle_get_instrument_commands(self, instruments):
+  def handle_get_instrument_commands(self, instruments_repository):
     id = self._message_protocol.receive_msg()
-    for instrument in instruments:
-      if instrument.id == id:
-        self._message_protocol.send_msg(SUCCESS_RESPONSE)
-        self._message_protocol.send_msg(json.dumps(instrument.commands_map))
-        return
+    try:
+      instrument = instruments_repository.find_one(id)
+      self._message_protocol.send_msg(SUCCESS_RESPONSE)
+      self._message_protocol.send_msg(json.dumps(instrument.commands_map))
+    except ElectronicInstrumentAdapterException as e:
+      self._message_protocol.send_msg(ERROR_RESPONSE)
+      self._message_protocol.send_msg(e.message)
+      return
 
-    self._message_protocol.send_msg(ERROR_RESPONSE)
-    self._message_protocol.send_msg(ERROR_INSTRUMENT_NOT_FOUND)
-
-  def handle_validate_command(self, instruments):
+  def handle_validate_command(self, instruments_repository):
     id = self._message_protocol.receive_msg()
     command = self._message_protocol.receive_msg()
-    err_msg = None
-    for instrument in instruments:
-      if instrument.id == id:
-        try:
-          instrument.validate_command(command)
-        except CommandNotFoundError:
-          err_msg = "Command not found"
-        except InvalidAmountParametersError as e:
-          err_msg = "{} Parameters has sent, but {} are required.".format(
-            e.parameters_amount_sent,
-            e.parameters_amount_required
-          )
-        except InvalidParameterError as e:
-          err_msg = "Parameter in position {} has an invalid format. Correct format is {}, ie: {}.".format(
-            e.position,
-            e.correct_format,
-            e.example
-          )
-        finally:
-          if err_msg:
-            self._message_protocol.send_msg(ERROR_RESPONSE)
-            self._message_protocol.send_msg(err_msg)
-            return
+    try:
+      instrument = instruments_repository.find_one(id)
+      instrument.validate_command(command)
+      self._message_protocol.send_msg(SUCCESS_RESPONSE)
+    except ElectronicInstrumentAdapterException as e:
+      self._message_protocol.send_msg(ERROR_RESPONSE)
+      self._message_protocol.send_msg(e.message)
 
-    self._message_protocol.send_msg(SUCCESS_RESPONSE)
-
-  def handle_send_command(self, instruments):
-    # todo, abstraer instrument not found y validacion del comando
-    pass
+  def handle_send_command(self, instruments_repository):
+    id = self._message_protocol.receive_msg()
+    command = self._message_protocol.receive_msg()
+    try:
+      instrument = instruments_repository.find_one(id)
+      result = instrument.send_command(command)
+      self._message_protocol.send_msg(SUCCESS_RESPONSE)
+      self._message_protocol.send_msg(json.dumps(result))
+    except ElectronicInstrumentAdapterException as e:
+      self._message_protocol.send_msg(ERROR_RESPONSE)
+      self._message_protocol.send_msg(e.message)

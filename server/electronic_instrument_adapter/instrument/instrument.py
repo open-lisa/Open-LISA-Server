@@ -2,10 +2,10 @@ import json
 
 import pyvisa
 from .constants import INSTRUMENT_STATUS_AVAILABLE, INSTRUMENT_STATUS_UNAVAILABLE
-from .errors.command_not_found_error import CommandNotFoundError
-from .errors.invalid_amount_parameters_error import InvalidAmountParametersError
-from .errors.invalid_parameter_error import InvalidParameterError
-
+from electronic_instrument_adapter.exceptions.command_not_found_error import CommandNotFoundError
+from electronic_instrument_adapter.exceptions.invalid_parameter_error import InvalidParameterError
+from electronic_instrument_adapter.exceptions.invalid_amount_parameters_error import InvalidAmountParametersError
+from electronic_instrument_adapter.exceptions.instrument_unavailable_error import InstrumentUnavailableError
 
 class Instrument:
     def __init__(self, id, brand, model, description):
@@ -57,10 +57,12 @@ class Instrument:
         }
 
     def send_command(self, command):
-        commands_parts = command.split(' ')
-        command_base = commands_parts[0]
+        if not self.status == INSTRUMENT_STATUS_AVAILABLE:
+            raise InstrumentUnavailableError("instrument {} {} not available for sending command".format(self.brand, self.model))
 
         self.validate_command(command)
+        commands_parts = command.split(' ')
+        command_base = commands_parts[0]
 
         command_type = self.commands_map[command_base]['type']
         if command_type == "set":
@@ -73,7 +75,7 @@ class Instrument:
             # todo: handlear este caso en un validador de formato general para el _cmd.json
             pass
 
-        return "OK"
+        return ""
 
     def validate_command(self, command):
         commands_parts = command.split(' ')

@@ -1,2 +1,0 @@
-class CommandNotFoundError(Exception):
-    pass
