@@ -8,7 +8,10 @@ class MessageProtocol:
     self._socket = socket
 
   def __del__(self):
-    self._socket.shutdown(socket.SHUT_RDWR)
+    try:
+      self._socket.shutdown(socket.SHUT_RDWR)
+    except (socket.error, OSError, ValueError):
+      pass
     self._socket.close()
 
   def send_msg(self, msg):

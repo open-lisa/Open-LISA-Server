@@ -42,6 +42,9 @@ class ElectronicInstrumentAdapter:
                         pass
                     else:
                         logging.error("Unknown command '{}'".format(command))
-                except Exception as e:
-                    logging.error("Client socket error: {}".format(e))
+                except ConnectionResetError as ex:
+                    logging.info("client socket disconnect {}".format(ex))
+                    break
+                except Exception as ex:
+                    logging.error("Fatal error: {}".format(ex))
                     break
