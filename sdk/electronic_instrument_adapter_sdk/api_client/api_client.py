@@ -17,6 +17,6 @@ class ApiClient:
       raise CouldNotConnectToServerException("could not connect with server at {}".format(self._base_url))
 
 
-  def get_connected_instruments(self):
+  def get_instruments(self):
     d = self._client_protocol.get_instruments()
     return [Instrument.from_dict(i, self._client_protocol) for i in d]

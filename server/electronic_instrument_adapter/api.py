@@ -39,7 +39,7 @@ class ElectronicInstrumentAdapter:
                     elif command == COMMAND_VALIDATE_COMMAND:
                         self._server_protocol.handle_validate_command(self._instruments_repository)
                     elif command == COMMAND_SEND_COMMAND:
-                        pass
+                        self._server_protocol.handle_send_command(self._instruments_repository)
                     else:
                         logging.error("Unknown command '{}'".format(command))
                 except ConnectionResetError as ex:

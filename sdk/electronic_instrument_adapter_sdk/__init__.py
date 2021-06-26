@@ -10,6 +10,6 @@ class EIA:
     """
     Returns the list of Instrument objects that are connected and identified by the server
     """
-    return self._client.get_connected_instruments()
+    return self._client.get_instruments()
 
 

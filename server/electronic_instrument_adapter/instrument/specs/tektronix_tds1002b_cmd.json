@@ -293,7 +293,7 @@
 
   "get_waveform_data" : {
     "command": "CURVE?",
-    "type": "query",
+    "type": "query_buffer",
     "description": "Transfers oscilloscope waveform data to and from the oscilloscope in binary or ASCII format. Each waveform that is transferred has an associated waveform preamble that contains information such as data format and scale."
   },
   "set_waveform_bytes_width_1": {
