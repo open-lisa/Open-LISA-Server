@@ -72,7 +72,7 @@ class Instrument:
             response = self.device.query(self.commands_map[command_base]['command'])
             return response.encode()
         elif command_type == "query_buffer":
-            self.device.query(self.commands_map[command_base]['command'])
+            self.device.write(self.commands_map[command_base]['command'])
             response = self.device.read_raw()
             return response
         else:

@@ -1,7 +1,6 @@
 import socket
 import logging
 
-from .instrument.instrument import Instrument
 from .repositories.instruments_repository import InstrumentsRepository
 from .protocol.server_protocol import COMMAND_GET_INSTRUMENT, COMMAND_GET_INSTRUMENTS, COMMAND_GET_INSTRUMENT_COMMANDS, COMMAND_SEND_COMMAND, COMMAND_VALIDATE_COMMAND, ServerProtocol
 
@@ -30,6 +29,8 @@ class ElectronicInstrumentAdapter:
             while True:
                 try:
                     command = self._server_protocol.get_command()
+                    print("Command received: " + command)
+                    self._set_instruments_status()
                     if command == COMMAND_GET_INSTRUMENTS:
                         self._server_protocol.handle_get_instruments(self._instruments_repository)
                     elif command == COMMAND_GET_INSTRUMENT:
@@ -48,3 +49,7 @@ class ElectronicInstrumentAdapter:
                 except Exception as ex:
                     logging.error("Fatal error: {}".format(ex))
                     break
+
+    def _set_instruments_status(self):
+        for instrument in self._instruments_repository.get_all():
+            instrument.set_status()
