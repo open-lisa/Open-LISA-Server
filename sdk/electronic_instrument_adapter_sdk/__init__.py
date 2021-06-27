@@ -6,6 +6,9 @@ class EIA:
     log.info("Initializating SDK")
     self._client = ApiClient(host, port)
 
+  def disconnect(self):
+    self._client.disconnect()
+
   def list_instruments(self):
     """
     Returns the list of Instrument objects that are connected and identified by the server
