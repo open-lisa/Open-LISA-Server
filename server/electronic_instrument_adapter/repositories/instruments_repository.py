@@ -13,7 +13,8 @@ class InstrumentsRepository:
           raw_instrument["id"],
           raw_instrument["brand"],
           raw_instrument["model"],
-          raw_instrument["description"]
+          raw_instrument["description"],
+          raw_instrument["command_file"]
         )
         self._instruments.append(instrument)
 

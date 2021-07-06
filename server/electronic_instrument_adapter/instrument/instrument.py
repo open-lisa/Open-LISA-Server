@@ -8,11 +8,12 @@ from electronic_instrument_adapter.exceptions.invalid_amount_parameters_error im
 from electronic_instrument_adapter.exceptions.instrument_unavailable_error import InstrumentUnavailableError
 
 class Instrument:
-    def __init__(self, id, brand, model, description):
+    def __init__(self, id, brand, model, description, command_file):
         self.id = id
         self.brand = brand
         self.model = model
         self.description = description
+        self.command_file = command_file
         self.device = None
         self.status = INSTRUMENT_STATUS_UNAVAILABLE
         self.commands_map = None
@@ -21,8 +22,7 @@ class Instrument:
         self.set_status()
 
     def load_commands(self):
-        with open('electronic_instrument_adapter/instrument/specs/{}_{}_cmd.json'.format(
-                self.brand, self.model)) as file:
+        with open('electronic_instrument_adapter/instrument/specs/{}'.format(self.command_file)) as file:
             self.commands_map = json.load(file)
 
     def set_status(self):
@@ -37,14 +37,16 @@ class Instrument:
 
     def __str__(self):
         return "{}\n\t" \
-               "Brand  : {}\n\t" \
-               "Model  : {}\n\t" \
-               "ID     : {}\n\t" \
-               "Status : {}".format(
+               "Brand    : {}\n\t" \
+               "Model    : {}\n\t" \
+               "ID       : {}\n\t" \
+               "Cmd File : {}\n\t" \
+               "Status   : {}".format(
             self.description,
             self.brand,
             self.model,
             self.id,
+            self.command_file,
             self.status)
 
     def as_dict(self):
