@@ -4,7 +4,7 @@ pcPythonExe = 'C:\Users\gabro\AppData\Local\Programs\Python\Python39\python.exe'
 pyversion
 
 py.print("Conexión con el servidor")
-eia_sdk = py.instruments.connect("127.0.0.1", 8080)
+eia_sdk = py.electronic_instrument_adapter_sdk.EIA("127.0.0.1", int32(8080))
 
 try
     py.print("************ Lista de Instrumentos: ************ ")
@@ -46,9 +46,9 @@ try
     time = py.numpy.arange(0, xincr * py.len(volts), xincr)
 
     % Es necesario hacer la siguiente conversión numpy.array --> python native list --> cell matlab --> y convertir los datos a double de la cell
-    volts_cell = cell(py.list(volts))
-    volts_array = cellfun(@double, volts_cell)
-    time_cell = cell(py.list(time))
+    volts_cell = cell(py.list(volts));
+    volts_array = cellfun(@double, volts_cell);
+    time_cell = cell(py.list(time));
     time_array = cellfun(@double, time_cell)
 
     plot(time_array, volts_array)

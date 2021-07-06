@@ -3,7 +3,7 @@ pcPythonExe = 'C:\Users\gabro\AppData\Local\Programs\Python\Python39\python.exe'
 pyversion
 
 py.print("Conexión con el servidor")
-eia_sdk = py.instruments.connect("127.0.0.1", 8080)
+eia_sdk = py.electronic_instrument_adapter_sdk.EIA("127.0.0.1", int32(8080))
 
 try
     py.print("************ Lista de Instrumentos: ************ ")
@@ -18,7 +18,7 @@ try
     osciliscopio.available_commands()
     
     py.print("*********** Check invalid command to instrument ************");
-    osciliscopio.validate_command("pepinardovich")
+    osciliscopio.validate_command("comando_inexistente")
     
     py.print("*********** Check valid command configuration to instrument ************");
     osciliscopio.validate_command("set_waveform_encoding_ascii")
