@@ -1,7 +1,8 @@
 import json
+import logging
 
 import pyvisa
-from .constants import INSTRUMENT_STATUS_AVAILABLE, INSTRUMENT_STATUS_UNAVAILABLE
+from .constants import INSTRUMENT_STATUS_AVAILABLE, INSTRUMENT_STATUS_UNAVAILABLE, INSTRUMENT_STATUS_NOT_REGISTERED
 from electronic_instrument_adapter.exceptions.command_not_found_error import CommandNotFoundError
 from electronic_instrument_adapter.exceptions.invalid_parameter_error import InvalidParameterError
 from electronic_instrument_adapter.exceptions.invalid_amount_parameters_error import InvalidAmountParametersError
@@ -13,27 +14,34 @@ class Instrument:
         self.brand = brand
         self.model = model
         self.description = description
-        self.command_file = command_file
+        self.command_file = None
         self.device = None
-        self.status = INSTRUMENT_STATUS_UNAVAILABLE
         self.commands_map = None
-        self.load_commands()
 
-        self.set_status()
+        if command_file:
+            self.command_file = command_file
+            self.load_commands()
+
+        self.update_status()
 
     def load_commands(self):
-        with open('electronic_instrument_adapter/instrument/specs/{}'.format(self.command_file)) as file:
-            self.commands_map = json.load(file)
+        try:
+            with open('electronic_instrument_adapter/instrument/specs/{}'.format(self.command_file)) as file:
+                self.commands_map = json.load(file)
+        except OSError as e:
+            logging.error("[Instrument][load_commands][OPEN_FILE_FAIL] - {}".format(e))
 
-    def set_status(self):
+    def update_status(self):
         rm = pyvisa.ResourceManager()
         resources = rm.list_resources()
+        self.device = None
         if resources.__contains__(self.id):
             self.device = rm.open_resource(self.id)
             self.status = INSTRUMENT_STATUS_AVAILABLE
-        else:
-            self.device = None
+        elif self.commands_map:
             self.status = INSTRUMENT_STATUS_UNAVAILABLE
+        else:
+            self.status = INSTRUMENT_STATUS_NOT_REGISTERED
 
     def __str__(self):
         return "{}\n\t" \
