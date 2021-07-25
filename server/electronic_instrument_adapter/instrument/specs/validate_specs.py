@@ -10,6 +10,7 @@ SUCCESSFUL_CODE = 0
 
 errors = []
 
+
 def initialize_log():
     """
     Python custom logging initialization
@@ -22,6 +23,7 @@ def initialize_log():
         level=logging.DEBUG,
         datefmt='%Y-%m-%d %H:%M:%S'
     )
+
 
 def main():
     initialize_log()
@@ -85,7 +87,12 @@ def main():
                 if not isinstance(specs["description"], str) or len(specs["description"]) <= 0:
                     handle_error_invalid_format(command, "description", "string")
 
-    logging.info("Errors: {}".format(errors))
+    if len(errors) > 0:
+        logging.error('\n'.join(map(str, errors)))
+        exit(ERROR_CODE)
+
+    logging.info("The specs json file {} is valid.".format(sys.argv[SPECS_FILE_ARG_POSITION]))
+    exit(SUCCESSFUL_CODE)
 
 
 def handle_error_mandatory_key_not_found(command, key):
@@ -93,15 +100,18 @@ def handle_error_mandatory_key_not_found(command, key):
     logging.debug(error_message)
     errors.append(error_message)
 
+
 def handle_error_conditional_key_not_found(command, key):
     error_message = "[COMMAND: {}] Conditional key '{}' not found".format(command, key)
     logging.debug(error_message)
     errors.append(error_message)
 
+
 def handle_error_invalid_format(command, key, correct_format):
     error_message = "[COMMAND: {}] [KEY: {}] Key has an invalid format. It must be {}".format(command, key, correct_format)
     logging.debug(error_message)
     errors.append(error_message)
+
 
 def handle_error_invalid_value(command, key, valid_values):
     error_message = "[COMMAND: {}] [KEY: {}] Key has an invalid value. Valid values are {}".format(command, key, valid_values)
