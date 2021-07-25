@@ -1,10 +1,13 @@
 import json
+import pyvisa
 from electronic_instrument_adapter.instrument.instrument import Instrument
 from electronic_instrument_adapter.exceptions.instrument_not_found import InstrumentNotFoundError
 
 class InstrumentsRepository:
   def __init__(self, path) -> None:
     self._instruments = []
+
+    # Registered instruments
     with open(path) as file:
       data = json.load(file)
 
@@ -17,6 +20,19 @@ class InstrumentsRepository:
           raw_instrument["command_file"]
         )
         self._instruments.append(instrument)
+
+    # Not registered instruments
+    rm = pyvisa.ResourceManager()
+    resources = rm.list_resources()
+    for resource_id in resources:
+      instrument = Instrument(
+        id=resource_id,
+        brand="UNKNOWN",
+        model="UNKNOWN",
+        description="Not registered instrument",
+        command_file=None
+      )
+      self._instruments.append(instrument)
 
   def get_all(self):
     return self._instruments

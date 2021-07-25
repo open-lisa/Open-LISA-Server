@@ -34,8 +34,8 @@ def initialize_log():
     """
 
     logging.basicConfig(
-        format='%(asctime)s [reviews_diffuser] %(levelname)-8s %(message)s',
-        level=logging.INFO,
+        format='%(asctime)s [EIA_SERVER] %(levelname)-8s %(message)s',
+        level=logging.DEBUG,
         datefmt='%Y-%m-%d %H:%M:%S'
     )
 
@@ -48,7 +48,7 @@ def main():
 
     eia_server = ElectronicInstrumentAdapter(
         #params["listening_port"]
-        8080
+        listening_port=8080
     )
     eia_server.start()
 
