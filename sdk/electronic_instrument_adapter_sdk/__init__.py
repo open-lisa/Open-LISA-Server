@@ -6,7 +6,7 @@ from .api_client.api_client import ApiClient
 class EIA:
     def __init__(self, host, port):
         log.info("Initializating SDK")
-        self._client = ApiClient(host, port)
+        self._client = ApiClient(host, int(port))
 
     def disconnect(self):
         self._client.disconnect()

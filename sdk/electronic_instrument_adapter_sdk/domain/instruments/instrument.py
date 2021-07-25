@@ -1,6 +1,13 @@
 from electronic_instrument_adapter_sdk.logging import log
 from ..exceptions.sdk_exception import ElectronicInstrumentAdapterException
 from ..exceptions.invalid_command import InvalidCommandException
+
+FORMAT_STRING = "string"
+FORMAT_FLOAT = "float"
+FORMAT_BYTEARRAY = "bytearray"
+FORMAT_INT = "int"
+AVAILABLE_RESPONSE_FORMATS = [FORMAT_STRING, FORMAT_FLOAT, FORMAT_BYTEARRAY, FORMAT_INT]
+
 class Instrument:
   def __init__(self, id, description, brand, model, status, client_protocol) -> None:
       self.ID = id
@@ -33,5 +40,21 @@ class Instrument:
     except InvalidCommandException as e:
       print(e)
 
-  def send(self, command):
-    return self._client_protocol.send_command(self.ID, command)
+  def format_response(self, response, format):
+      if format == FORMAT_STRING:
+        return str(response, 'UTF-8')
+      if format == FORMAT_INT:
+        return int(response)
+      if format == FORMAT_FLOAT:
+        return float(response)
+      if format == FORMAT_BYTEARRAY:
+        return response
+
+  def send(self, command, format):
+    if format not in AVAILABLE_RESPONSE_FORMATS:
+        raise InvalidCommandException("command '{}' ask for invalid response format type '{}'. Available formats are {}"
+                                      .format(command, format, AVAILABLE_RESPONSE_FORMATS))
+
+    response = self._client_protocol.send_command(self.ID, command)
+
+    return self.format_response(response, format)
