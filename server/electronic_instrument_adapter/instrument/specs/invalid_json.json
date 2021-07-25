@@ -1,0 +1,32 @@
+{
+  "clear_status": {
+    "type": "set",
+    "description": ""
+  },
+  "reset_settings": {
+    "command": "*RST",
+    "description": ""
+  },
+  "set_channel_probe_ch1_20x": {
+    "command": "*RST",
+    "type": "set"
+  },
+  "get_identification": {
+    "command": "asd",
+    "type": "xDD",
+    "description": "DALE"
+  },
+    "tengo_parametros": {
+    "command": "asd {}",
+    "type": "xDD",
+    "description": "DALE",
+    "params": [
+      {
+        "position": 1,
+        "type": "float",
+        "example": "1.4",
+        "description": "Main trigger level, in volts."
+      }
+    ]
+  }
+}

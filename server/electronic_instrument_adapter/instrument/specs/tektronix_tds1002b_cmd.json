@@ -2,17 +2,17 @@
   "clear_status": {
     "command": "*CLS",
     "type": "set",
-    "description": ""
+    "description": "Clear all buffers"
   },
   "reset_settings": {
     "command": "*RST",
     "type": "set",
-    "description": ""
+    "description": "Reset settings"
   },
   "get_identification": {
     "command": "*IDN?",
     "type": "query",
-    "description": ""
+    "description": "Get Instrument identification"
   },
 
   "set_channel_volts_scale_ch1": {
@@ -138,33 +138,33 @@
   "set_timebase_x_channel_ch1": {
     "command": "MEASUrement:IMMed:SOUrce1 CH1",
     "type": "set",
-    "description": ""
+    "description": "Timebase x on channel 1"
   },
   "set_timebase_x_channel_ch2": {
     "command": "MEASUrement:IMMed:SOUrce1 CH2",
     "type": "set",
-    "description": ""
+    "description": "Timebase x on channel 2"
   },
   "set_timebase_y_channel_ch1": {
     "command": "MEASUrement:IMMed:SOUrce2 CH1",
     "type": "set",
-    "description": ""
+    "description": "Timebase y on channel 1"
   },
   "set_timebase_y_channel_ch2": {
     "command": "MEASUrement:IMMed:SOUrce2 CH2",
     "type": "set",
-    "description": ""
+    "description": "Timebase y on channel 2"
   },
 
   "get_is_in_acquisitions_state": {
     "command": "*OPC?",
     "type": "query",
-    "description": ""
+    "description": "Ask if it's in acquisitions state"
   },
   "stop_acquisitions": {
     "command": "ACQuire:STATE STOP",
     "type": "set",
-    "description": ""
+    "description": "Stop all acquisitions"
   },
   "set_acquisition_mode_sample": {
     "command": "ACQuire:MODe SAMple",
@@ -184,7 +184,7 @@
   "get_acquisition_mode": {
     "command": "ACQuire:MODe?",
     "type": "query",
-    "description": ""
+    "description": "Ask for acquisition mode"
   },
   "set_average_acquisition_mode_samples_amount_4": {
     "command": "ACQuire:NUMAVg 4",
@@ -210,7 +210,7 @@
   "force_trigger": {
     "command": "TRIGger FORCe",
     "type": "set",
-    "description": ""
+    "description": "Force trigger"
   },
   "set_trigger_mode_auto": {
     "command": "TRIGger:MAIn:MODe AUTO",
@@ -240,7 +240,7 @@
   "get_trigger_type": {
     "command": "TRIGger:MAIn:TYPe?",
     "type": "query",
-    "description": ""
+    "description": "Get trigger type"
   },
   "set_trigger_edge_type_fall": {
     "command": "TRIGger:MAIn:EDGE:SLOpe FALL",
@@ -334,7 +334,7 @@
   "get_waveform_encoding": {
     "command": "DATa:ENCdg?",
     "type": "query",
-    "description": ""
+    "description": "Get waveform encoding"
   },
   "set_waveform_source_ch1": {
     "command": "DATa:SOUrce CH1",
