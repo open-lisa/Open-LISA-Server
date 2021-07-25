@@ -1,12 +1,14 @@
+import struct
+
 from electronic_instrument_adapter_sdk.logging import log
 from ..exceptions.sdk_exception import ElectronicInstrumentAdapterException
 from ..exceptions.invalid_command import InvalidCommandException
 
 FORMAT_STRING = "string"
-FORMAT_FLOAT = "float"
+FORMAT_DOUBLE = "double"
 FORMAT_BYTEARRAY = "bytearray"
 FORMAT_INT = "int"
-AVAILABLE_RESPONSE_FORMATS = [FORMAT_STRING, FORMAT_FLOAT, FORMAT_BYTEARRAY, FORMAT_INT]
+AVAILABLE_RESPONSE_FORMATS = [FORMAT_STRING, FORMAT_DOUBLE, FORMAT_BYTEARRAY, FORMAT_INT]
 
 class Instrument:
   def __init__(self, id, description, brand, model, status, client_protocol) -> None:
@@ -42,11 +44,11 @@ class Instrument:
 
   def format_response(self, response, format):
       if format == FORMAT_STRING:
-        return str(response, 'UTF-8')
+        return "{}".format(response)
       if format == FORMAT_INT:
-        return int(response)
-      if format == FORMAT_FLOAT:
-        return float(response)
+        return int.from_bytes(response, byteorder='big', signed=False)
+      if format == FORMAT_DOUBLE:
+        return struct.unpack('d', response)[0]
       if format == FORMAT_BYTEARRAY:
         return response
 
