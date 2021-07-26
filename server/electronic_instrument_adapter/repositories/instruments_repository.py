@@ -25,14 +25,15 @@ class InstrumentsRepository:
     rm = pyvisa.ResourceManager()
     resources = rm.list_resources()
     for resource_id in resources:
-      instrument = Instrument(
-        id=resource_id,
-        brand="UNKNOWN",
-        model="UNKNOWN",
-        description="Not registered instrument",
-        command_file=None
-      )
-      self._instruments.append(instrument)
+      if not self.find_one(resource_id): # Check if it is not already registered
+        instrument = Instrument(
+          id=resource_id,
+          brand="UNKNOWN",
+          model="UNKNOWN",
+          description="Not registered instrument",
+          command_file=None
+        )
+        self._instruments.append(instrument)
 
   def get_all(self):
     return self._instruments
