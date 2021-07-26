@@ -44,15 +44,15 @@ class Instrument:
 
   def format_response(self, response, format):
       if format == FORMAT_STRING:
-        return "{}".format(response)
+        return response.decode()
       if format == FORMAT_INT:
         return int.from_bytes(response, byteorder='big', signed=False)
       if format == FORMAT_DOUBLE:
-        return struct.unpack('d', response)[0]
+        return float(response.decode())
       if format == FORMAT_BYTEARRAY:
         return response
 
-  def send(self, command, format):
+  def send(self, command, format = "string"):
     if format not in AVAILABLE_RESPONSE_FORMATS:
         raise InvalidCommandException("command '{}' ask for invalid response format type '{}'. Available formats are {}"
                                       .format(command, format, AVAILABLE_RESPONSE_FORMATS))
