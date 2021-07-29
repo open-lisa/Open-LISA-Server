@@ -2,7 +2,7 @@ import json
 import logging
 
 import pyvisa
-from .constants import INSTRUMENT_STATUS_AVAILABLE, INSTRUMENT_STATUS_UNAVAILABLE, INSTRUMENT_STATUS_NOT_REGISTERED
+from .constants import INSTRUMENT_STATUS_AVAILABLE, INSTRUMENT_STATUS_UNAVAILABLE, INSTRUMENT_STATUS_NOT_REGISTERED, COMMAND_TYPE_SET, COMMAND_TYPE_QUERY, COMMAND_TYPE_QUERY_BUFFER, COMMAND_TYPE_C_LIB
 from electronic_instrument_adapter.exceptions.command_not_found_error import CommandNotFoundError
 from electronic_instrument_adapter.exceptions.invalid_parameter_error import InvalidParameterError
 from electronic_instrument_adapter.exceptions.invalid_amount_parameters_error import InvalidAmountParametersError
@@ -75,16 +75,22 @@ class Instrument:
         command_base = commands_parts[0]
 
         command_type = self.commands_map[command_base]['type']
-        if command_type == "set":
+
+        # Inject command parameters
+        self.__generate_command_with_injected_params(command)
+
+        if command_type == COMMAND_TYPE_SET:
             written_bytes = self.device.write(self.commands_map[command_base]['command'])
             # todo: handlear el caso en que written_bytes = 0 por posible error en conexión
-        elif command_type == "query":
+        elif command_type == COMMAND_TYPE_QUERY:
             response = self.device.query(self.commands_map[command_base]['command'])
             return response.encode()
-        elif command_type == "query_buffer":
+        elif command_type == COMMAND_TYPE_QUERY_BUFFER:
             self.device.write(self.commands_map[command_base]['command'])
             response = self.device.read_raw()
             return response
+        elif command_type == COMMAND_TYPE_C_LIB:
+            return self.__process_c_lib_call()
         else:
             # todo: handlear este caso en un validador de formato general para el _cmd.json
             pass
@@ -121,3 +127,12 @@ class Instrument:
 
         else:
             return False
+
+    def __generate_command_with_injected_params(self, command):
+        commands_parts = command.split(' ')
+        command_name = commands_parts[0]
+        if 'params' in self.commands_map[command_name]:
+            return self.commands_map[command_name]['command'].format(*commands_parts[1:])
+
+    def __process_c_lib_call(self):
+        pass
