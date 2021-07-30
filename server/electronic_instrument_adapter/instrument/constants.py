@@ -6,3 +6,6 @@ COMMAND_TYPE_SET = "set"
 COMMAND_TYPE_QUERY = "query"
 COMMAND_TYPE_QUERY_BUFFER = "query_buffer"
 COMMAND_TYPE_C_LIB = "clib"
+
+TYPE_INT = "int"
+TYPE_FLOAT = "float"

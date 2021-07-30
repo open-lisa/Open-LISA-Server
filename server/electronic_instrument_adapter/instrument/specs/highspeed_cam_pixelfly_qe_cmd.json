@@ -1,0 +1,26 @@
+{
+  "init_cammera": {
+    "command": "init",
+    "type": "clib",
+    "lib_path": "/Users/ariel.alvarez/Repositories/fiuba/taller-iii/electronic-instrument-adapter/server/c/osx/pixelflyqe/libpixelflyqe.so",
+    "description": "Provide a full description of what this command intends to do",
+    "params": [
+      {
+        "position": 1,
+        "type": "int",
+        "example": "5",
+        "description": "Documentation for param"
+      },
+      {
+        "position": 2,
+        "type": "float",
+        "example": "5.0",
+        "description": "Documentation for param"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "description": "Provide an explanation of return values for documentation purposes"
+    }
+  }
+}

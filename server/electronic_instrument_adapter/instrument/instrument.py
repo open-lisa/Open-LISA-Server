@@ -1,8 +1,10 @@
 import json
 import logging
+import sys
+import ctypes
 
 import pyvisa
-from .constants import INSTRUMENT_STATUS_AVAILABLE, INSTRUMENT_STATUS_UNAVAILABLE, INSTRUMENT_STATUS_NOT_REGISTERED, COMMAND_TYPE_SET, COMMAND_TYPE_QUERY, COMMAND_TYPE_QUERY_BUFFER, COMMAND_TYPE_C_LIB
+from .constants import INSTRUMENT_STATUS_AVAILABLE, INSTRUMENT_STATUS_UNAVAILABLE, INSTRUMENT_STATUS_NOT_REGISTERED, COMMAND_TYPE_SET, COMMAND_TYPE_QUERY, COMMAND_TYPE_QUERY_BUFFER, COMMAND_TYPE_C_LIB, TYPE_FLOAT, TYPE_INT
 from electronic_instrument_adapter.exceptions.command_not_found_error import CommandNotFoundError
 from electronic_instrument_adapter.exceptions.invalid_parameter_error import InvalidParameterError
 from electronic_instrument_adapter.exceptions.invalid_amount_parameters_error import InvalidAmountParametersError
@@ -35,6 +37,12 @@ class Instrument:
         rm = pyvisa.ResourceManager()
         resources = rm.list_resources()
         self.device = None
+
+        # Debugging purposes
+        if "MOCK_INSTRUMENT" in self.brand:
+            self.status = INSTRUMENT_STATUS_AVAILABLE
+            return
+
         if resources.__contains__(self.id):
             self.device = rm.open_resource(self.id)
             self.status = INSTRUMENT_STATUS_AVAILABLE
@@ -84,18 +92,19 @@ class Instrument:
             # todo: handlear el caso en que written_bytes = 0 por posible error en conexión
         elif command_type == COMMAND_TYPE_QUERY:
             response = self.device.query(self.commands_map[command_base]['command'])
-            return response.encode()
+            return response
         elif command_type == COMMAND_TYPE_QUERY_BUFFER:
             self.device.write(self.commands_map[command_base]['command'])
             response = self.device.read_raw()
             return response
         elif command_type == COMMAND_TYPE_C_LIB:
-            return self.__process_c_lib_call()
+            # For now, only return strings
+            return str(self.__process_c_lib_call(command))
         else:
             # todo: handlear este caso en un validador de formato general para el _cmd.json
             pass
 
-        return "OK".encode()
+        return "OK"
 
     def validate_command(self, command):
         commands_parts = command.split(' ')
@@ -125,6 +134,14 @@ class Instrument:
 
             return True
 
+        if required_param_info['type'] == "int":
+            try:
+                int(sent_param)
+            except ValueError:
+                return False
+
+            return True
+
         else:
             return False
 
@@ -134,5 +151,38 @@ class Instrument:
         if 'params' in self.commands_map[command_name]:
             return self.commands_map[command_name]['command'].format(*commands_parts[1:])
 
-    def __process_c_lib_call(self):
-        pass
+    def __map_type_to_ctype(self, type):
+        if type == TYPE_INT:
+            return ctypes.c_int
+        elif type == TYPE_FLOAT:
+            return ctypes.c_float
+        else:
+            # todo: raise exception?
+            pass
+
+    def __convert_param_value(self, type, value):
+        if type == TYPE_FLOAT:
+            return float(value)
+        if type == TYPE_INT:
+            return int(value)
+        return value
+
+    def __process_c_lib_call(self, command):
+        commands_parts = command.split(' ')
+        command_name = commands_parts[0]
+        command_obj = self.commands_map[command_name]
+        lib_path = command_obj["lib_path"]
+        c_function_name = command_obj["command"]
+        # Load the shared library into c types.
+        c_lib = ctypes.CDLL(lib_path)
+
+        # Set returning type for marshalling
+        return_type = command_obj["return"]["type"]
+        c_lib[c_function_name].restype = self.__map_type_to_ctype(return_type)
+
+        # Generate function arguments
+        arguments = [self.__map_type_to_ctype(param_obj["type"])(self.__convert_param_value(param_obj["type"], param_value)) for param_obj, param_value  in zip(command_obj["params"], commands_parts[1:])]
+
+        # Call function and return result
+        return c_lib[c_function_name](*arguments)
+

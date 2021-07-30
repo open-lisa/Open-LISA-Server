@@ -5,5 +5,12 @@
     "description": "Osciloscopio principal",
     "command_file": "tektronix_tds1002b_cmd.json",
     "id": "USB0::0x0699::0x0363::C107676::INSTR"
+  },
+  {
+    "brand": "MOCK_INSTRUMENT pixelfly",
+    "model": "qe",
+    "description": "Cámara de alta velocidad",
+    "command_file": "highspeed_cam_pixelfly_qe_cmd.json",
+    "id": "CAM_ID"
   }
 ]
