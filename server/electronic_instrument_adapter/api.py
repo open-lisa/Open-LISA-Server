@@ -1,5 +1,6 @@
 import socket
 import logging
+import traceback
 
 from .repositories.instruments_repository import InstrumentsRepository
 from .protocol.server_protocol import COMMAND_GET_INSTRUMENT, COMMAND_GET_INSTRUMENTS, COMMAND_GET_INSTRUMENT_COMMANDS, COMMAND_SEND_COMMAND, COMMAND_VALIDATE_COMMAND, ServerProtocol
@@ -53,6 +54,8 @@ class ElectronicInstrumentAdapter:
                     break
                 except Exception as ex:
                     logging.error("[ElectronicInstrumentAdapter][api][start][FATAL_ERROR]: {}".format(ex))
+                    # printing stack trace
+                    traceback.print_exc()
                     break
 
     def _update_instruments_status(self):

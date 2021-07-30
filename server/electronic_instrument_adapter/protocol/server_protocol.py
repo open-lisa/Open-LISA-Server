@@ -60,9 +60,13 @@ class ServerProtocol:
     try:
       instrument = instruments_repository.find_one(id)
       result = instrument.send_command(command)
-      self._message_protocol.send_msg(type(result).__name__)
       self._message_protocol.send_msg(SUCCESS_RESPONSE)
-      self._message_protocol.send_msg(result, encode=False)
+      format = type(result).__name__
+      encode = False
+      if format == "str":
+        encode = True
+      self._message_protocol.send_msg(format)
+      self._message_protocol.send_msg(result, encode=encode)
     except ElectronicInstrumentAdapterException as e:
       self._message_protocol.send_msg(ERROR_RESPONSE)
       self._message_protocol.send_msg(e.message)
