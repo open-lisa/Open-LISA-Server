@@ -85,16 +85,16 @@ class Instrument:
         command_type = self.commands_map[command_base]['type']
 
         # Inject command parameters
-        command = self.__generate_command_with_injected_params(command)
+        command_with_params = self.__generate_command_with_injected_params(command)
 
         if command_type == COMMAND_TYPE_SET:
-            written_bytes = self.device.write(self.commands_map[command_base]['command'])
+            written_bytes = self.device.write(command_with_params)
             return str(written_bytes)
         elif command_type == COMMAND_TYPE_QUERY:
-            response = self.device.query(self.commands_map[command_base]['command'])
+            response = self.device.query(command_with_params)
             return response
         elif command_type == COMMAND_TYPE_QUERY_BUFFER:
-            self.device.write(self.commands_map[command_base]['command'])
+            self.device.write(command_with_params)
             response = self.device.read_raw()
             return response
         elif command_type == COMMAND_TYPE_C_LIB:
@@ -143,7 +143,7 @@ class Instrument:
     def __generate_command_with_injected_params(self, command):
         commands_parts = command.split(' ')
         command_name = commands_parts[0]
-        if 'params' in self.commands_map[command_name]:
+        if 'params' in self.commands_map[command_name] and len(commands_parts) > 1:
             return self.commands_map[command_name]['command'].format(*commands_parts[1:])
 
     def __map_type_to_ctype(self, type):
