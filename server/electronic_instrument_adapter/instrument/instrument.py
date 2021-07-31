@@ -144,6 +144,8 @@ class Instrument:
         command_name = commands_parts[0]
         if 'params' in self.commands_map[command_name] and len(commands_parts) > 1:
             return self.commands_map[command_name]['command'].format(*commands_parts[1:])
+        else:
+            return self.commands_map[command_name]['command']
 
     def __map_type_to_ctype(self, type):
         if type == TYPE_INT:
