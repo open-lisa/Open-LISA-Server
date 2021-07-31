@@ -89,7 +89,7 @@ class Instrument:
 
         if command_type == COMMAND_TYPE_SET:
             written_bytes = self.device.write(self.commands_map[command_base]['command'])
-            # todo: handlear el caso en que written_bytes = 0 por posible error en conexión
+            return str(written_bytes)
         elif command_type == COMMAND_TYPE_QUERY:
             response = self.device.query(self.commands_map[command_base]['command'])
             return response
@@ -100,11 +100,6 @@ class Instrument:
         elif command_type == COMMAND_TYPE_C_LIB:
             # For now, only return strings
             return str(self.__process_c_lib_call(command))
-        else:
-            # todo: handlear este caso en un validador de formato general para el _cmd.json
-            pass
-
-        return "OK"
 
     def validate_command(self, command):
         commands_parts = command.split(' ')
