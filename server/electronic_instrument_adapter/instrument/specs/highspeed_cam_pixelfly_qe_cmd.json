@@ -22,5 +22,25 @@
       "type": "int",
       "description": "Provide an explanation of return values for documentation purposes"
     }
+  },
+  "get_image": {
+    "command": "get_image",
+    "type": "clib",
+    "lib_path": "/Users/ariel.alvarez/Repositories/fiuba/taller-iii/electronic-instrument-adapter/server/c/osx/pixelflyqe/libpixelflyqe.so",
+    "description": "Provide a full description of what this command intends to do",
+    "return": {
+      "type": "bytes",
+      "description": "Provide an explanation of return values for documentation purposes"
+    }
+  },
+  "close_cammera": {
+    "command": "close",
+    "type": "clib",
+    "lib_path": "/Users/ariel.alvarez/Repositories/fiuba/taller-iii/electronic-instrument-adapter/server/c/osx/pixelflyqe/libpixelflyqe.so",
+    "description": "Provide a full description of what this command intends to do",
+    "return": {
+      "type": "int",
+      "description": "Provide an explanation of return values for documentation purposes"
+    }
   }
 }

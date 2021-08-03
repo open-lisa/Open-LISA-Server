@@ -1,9 +1,10 @@
 import json
 import logging
 import ctypes
+from os import remove
 
 import pyvisa
-from .constants import INSTRUMENT_STATUS_AVAILABLE, INSTRUMENT_STATUS_UNAVAILABLE, INSTRUMENT_STATUS_NOT_REGISTERED, COMMAND_TYPE_SET, COMMAND_TYPE_QUERY, COMMAND_TYPE_QUERY_BUFFER, COMMAND_TYPE_C_LIB, TYPE_FLOAT, TYPE_INT
+from .constants import C_TYPE_BYTES, INSTRUMENT_STATUS_AVAILABLE, INSTRUMENT_STATUS_UNAVAILABLE, INSTRUMENT_STATUS_NOT_REGISTERED, COMMAND_TYPE_SET, COMMAND_TYPE_QUERY, COMMAND_TYPE_QUERY_BUFFER, COMMAND_TYPE_C_LIB, C_TYPE_FLOAT, C_TYPE_INT, C_TYPE_STRING
 from electronic_instrument_adapter.exceptions.command_not_found_error import CommandNotFoundError
 from electronic_instrument_adapter.exceptions.invalid_parameter_error import InvalidParameterError
 from electronic_instrument_adapter.exceptions.invalid_amount_parameters_error import InvalidAmountParametersError
@@ -97,8 +98,7 @@ class Instrument:
             response = self.device.read_raw()
             return response
         elif command_type == COMMAND_TYPE_C_LIB:
-            # For now, only return strings
-            return str(self.__process_c_lib_call(command))
+            return self.__process_c_lib_call(command)
 
     def validate_command(self, command):
         commands_parts = command.split(' ')
@@ -136,6 +136,14 @@ class Instrument:
 
             return True
 
+        if required_param_info['type'] == "string":
+            try:
+                str(sent_param)
+            except ValueError:
+                return False
+
+            return True
+
         else:
             return False
 
@@ -148,18 +156,23 @@ class Instrument:
             return self.commands_map[command_name]['command']
 
     def __map_type_to_ctype(self, type):
-        if type == TYPE_INT:
+        if type == C_TYPE_INT:
             return ctypes.c_int
-        elif type == TYPE_FLOAT:
+        elif type == C_TYPE_FLOAT:
             return ctypes.c_float
+        elif type == C_TYPE_BYTES:
+            # functions that returns bytes should return int error codes. If code is 0 the bytes were successfully saved into the file
+            return ctypes.c_int
+        elif type == C_TYPE_STRING:
+            return ctypes.c_char_p
         else:
             # todo: raise exception?
             pass
 
     def __convert_param_value(self, type, value):
-        if type == TYPE_FLOAT:
+        if type == C_TYPE_FLOAT:
             return float(value)
-        if type == TYPE_INT:
+        if type == C_TYPE_INT:
             return int(value)
         return value
 
@@ -177,8 +190,36 @@ class Instrument:
         c_lib[c_function_name].restype = self.__map_type_to_ctype(return_type)
 
         # Generate function arguments
-        arguments = [self.__map_type_to_ctype(param_obj["type"])(self.__convert_param_value(param_obj["type"], param_value)) for param_obj, param_value  in zip(command_obj["params"], commands_parts[1:])]
+        arguments = []
+        if "params" in command_obj:
+            arguments = [self.__map_type_to_ctype(param_obj["type"])(self.__convert_param_value(param_obj["type"], param_value)) for param_obj, param_value  in zip(command_obj["params"], commands_parts[1:])]
 
         # Call function and return result
-        return c_lib[c_function_name](*arguments)
+        if return_type == C_TYPE_BYTES:
+            # If return type is bytes check that if result is OK and manage file
+            try:
+                file_path = "tmp_file_buffer.bin"
+                arguments.append(ctypes.c_char_p(file_path.encode()))
+                result = c_lib[c_function_name](*arguments)
+                logging.debug("[__process_c_lib_call] result from C function: {}".format(result))
+                if result:
+                    message = bytes("error code from C function: {}".format(result).encode())
+                    logging.debug("[__process_c_lib_call] returning error message as bytes: '{}'".format(message))
+                    return message
+                else:
+                    data = bytes()
+                    with open(file_path, "rb") as f:
+                        # todo: stream data instead of sending one message with all the bytes
+                        data = f.read()
+
+                    # Delete file
+                    remove(file_path)
+
+                    return data
+            except Exception as e:
+                logging.error("[__process_c_lib_call] error handling C function that returns bytes: {}".format(e))
+                return b"error trying to execute C function that returns bytes"
+        else:
+            # If return type is not bytes just return the result
+            return str(c_lib[c_function_name](*arguments))
 
