@@ -25,7 +25,9 @@ class InstrumentsRepository:
     rm = pyvisa.ResourceManager()
     resources = rm.list_resources()
     for resource_id in resources:
-      if not self.find_one(resource_id): # Check if it is not already registered
+      try:
+        self.find_one(resource_id)
+      except InstrumentNotFoundError:
         instrument = Instrument(
           id=resource_id,
           brand="UNKNOWN",
