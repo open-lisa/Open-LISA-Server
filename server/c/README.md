@@ -13,7 +13,7 @@ gcc -shared -o libmult.so mult.o
 ## Windows
 1. Create the C lib for the `mult.c` function (this commands will generate `libmult.so` and `mult.o`):
 ```bash
-gcc -c -Wall -Werror -fpic mult.c
+gcc -c -Wall -fpic mult.c
 gcc -shared -o libmult.dll mult.o
 ```
 2. Run the Python scriptxw

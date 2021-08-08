@@ -215,7 +215,7 @@ class Instrument:
                     # Delete file
                     remove(file_path)
 
-                    return data
+                    return bytes(data)
             except Exception as e:
                 logging.error("[__process_c_lib_call] error handling C function that returns bytes: {}".format(e))
                 return b"error trying to execute C function that returns bytes"
