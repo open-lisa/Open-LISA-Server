@@ -3,8 +3,10 @@ pcPythonExe = 'C:\Users\gabro\AppData\Local\Programs\Python\Python39\python.exe'
 %[ver, exec, loaded]	= pyversion(pcPythonExe);
 pyversion
 
-py.print("Conexion con el servidor")
-eia_sdk = py.electronic_instrument_adapter_sdk.EIA("127.0.0.1", "8080")
+py.print("Conexión con el servidor")
+server_ip = "192.168.1.109"
+server_port = 8080
+eia_sdk = py.electronic_instrument_adapter_sdk.EIA(server_ip, server_port)
 
 try
     py.print("************ Lista de Instrumentos: ************ ")

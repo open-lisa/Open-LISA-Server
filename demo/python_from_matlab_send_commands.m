@@ -3,7 +3,9 @@ pcPythonExe = 'C:\Users\gabro\AppData\Local\Programs\Python\Python39\python.exe'
 pyversion
 
 py.print("Conexión con el servidor")
-eia_sdk = py.electronic_instrument_adapter_sdk.EIA("127.0.0.1", int32(8080))
+server_ip = "192.168.1.109"
+server_port = 8080
+eia_sdk = py.electronic_instrument_adapter_sdk.EIA(server_ip, server_port)
 
 try
     py.print("************ Lista de Instrumentos: ************ ")
@@ -18,7 +20,7 @@ try
     osciliscopio.available_commands()
     
     py.print("*********** Set channel 1 volts scale to 5.0V ************");
-    osciliscopio.send("set_channel_volts_scale_ch1 5.0")
+    osciliscopio.send("set_channel_volts_scale_ch1 2.0")
 
 catch e
     fprintf(1,'The identifier was:\n%s',e.identifier);
