@@ -1,0 +1,1 @@
+Download Control Software from: https://www.tek.com/keithley-kickstart

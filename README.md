@@ -1,22 +1,64 @@
-# Manual – Configuración del servidor
+# Manual – Electronic Instrument Adapter Server
 
-## Dependencias
-Se recomienda correr el servidor en Sistemas Operativos Microsoft Windows. La primera versión fue probada en Windows 10. Además se debe tener instalado:
-* Python 3
-* [`pyvisa`](https://pyvisa.readthedocs.io/en/latest/)
-* Compilador C en caso de requerir instrumentos que se integren a través de este lenguaje
-* Drivers indicados por los fabricantes de los instrumentos a integrar
+Esta programa provee servicios para ser integrados con la SDK desde nodos clientes 
+[Electronic Instrument Adapter SDK](https://github.com/aalvarezwindey/electronic_instrument_adapter_sdk/).
 
-## Ejecución
-Ubicado en el directorio `server` ejecutar:
+## Instalación
 
-```bash
-python main.py
-```
+Para ejecutar el servidor se requieren instalar las siguientes dependencias, cada una desarrollada en un punto de este
+documento
+
+1. Python 3.9.6 for Windows
+2. Librerías Python pyvisa y pyvisa-py
+3. Controladores de cada instrumento provistos por el fabricante
+4. Compilador de C
+
+### 1. Python
+
+La lógica del servidor que hace de interfaz con los instrumentos fue codificada en el lenguaje de programación Python.
+Dicho lenguaje debe ser ejecutado por un intérprete de Python, y la versión necesaria (con la que se probó) es la
+3.9.6, que se puede encontrar en el siguiente link:
+
+https://www.python.org/downloads/
+
+### 2. Librerías Python pyvisa y pyvisa-py
+
+Estas librerías son las encargadas de enviar y recibir información a los instrumentos mediante el protocolo SCPI,
+independientemente si éste esté conectado por USB, Ethernet, RS232, etc. Para más información sobre esta librería
+puede ingresar al siguiente link: https://pyvisa.readthedocs.io/en/latest/
+
+Para instalar estas librerías debe ejecutar:
+
+`pip install pyvisa`
+
+`pip install pyvisa-py`
+
+### 3. Controladores de cada instrumento provistos por el fabricante
+
+Para la demo de este proyecto se controla un osciloscopio de la marca Tektronix. El fabricante provee un instalador
+para Windows con los controladores para comunicarse via SCPI con los instrumentos de su marca (DAQ, osciloscopios,
+fuentes, voltímetros, etc.). En la carpeta `controllers/tektronix` de este repositorio se encuentra el manual que indica
+todos los modelos de instrumentos soportados, y un README con el link para descargar este controlador.
+
+### 4. Compilador de C
+
+El servidor permite integrar instrumentos para los cuales el fabricante provea drivers que sean integrables en el 
+lenguaje de programación C. Para ver más detalle, ver la sección "Integración con código C". Si éste es el caso,
+se necesita un compilador de éste lenguaje de programación para Windows.
+
 
 ## Registrar un nuevo instrumento
 
-Agregar una nueva entrada en el archivo de instrumentos `electronic_instrument_adapter/instrument/instruments.json`
+Registrar un nuevo instrumento consta de dos partes:
+
+1. Registrar el instrumento y su dirección física.
+2. Registrar el mapeo de comandos del instrumento.
+
+Cada una se desarrollará en una sección.
+
+### 1. Registrar el instrumento y su dirección física.
+
+Se debe agregar una nueva entrada en el archivo de instrumentos `server/electronic_instrument_adapter/instrument/instruments.json`
 
 ```json
 {
@@ -28,7 +70,7 @@ Agregar una nueva entrada en el archivo de instrumentos `electronic_instrument_a
 }
 ```
 
-De donde:
+En donde:
 
 | Campo          | Descripción                                          |
 |----------------|------------------------------------------------------|
@@ -38,13 +80,21 @@ De donde:
 |`command_file`  | Archivo de configuración de los comandos disponibles |
 |`id`            | Dirección física del instrumento                     |
 
-Para verificar el registro exitoso debemos ver la información del instrumento impresa por pantalla al ejecutar el servidor.
+Tras agregar un nuevo instrumento, se recomienda ejecutar el validador de este archivo, de la siguiente manera:
 
-## Agregar comandos al instrumento
+1. Ubicar una terminal en el directorio `server/electronic_instrument_adapter/instrument/`
+2. Ejecutar `python validate_instruments.py`
+3. Observar la salida del programa, hacer las correcciones indicadas.
 
-Para agregar comandos al instrumento se debe agregar un archivo con el nombre indicado en el campo `command_file` del archivo anterior en la carpeta `electronic_instrument_adapter/instrument/specs`. Por ejemplo:
 
-### Comandos SCPI
+### 2. Registrar el mapeo de comandos del instrumento.
+
+Para agregar comandos al instrumento se debe agregar un archivo con el nombre indicado en el campo `command_file` del 
+archivo en `server/electronic_instrument_adapter/instrument/instruments.json`, en la carpeta 
+`electronic_instrument_adapter/instrument/specs`. Existen dos tipos de archivo, dependiendo el controlador del instrumento
+elegido: si es mediante comandos SCPI o mediante librería customizada en C. A continuación se da un ejemplo de cada caso:
+
+#### Comandos SCPI
 A un instrumento que cumple con el protocolo SCPI se le pueden registrar los comandos con un archivo JSON con el siguiente formato
 
 ```json
@@ -89,7 +139,16 @@ Donde:
   * `example`: ejemplo del valor que se espera en el parámetro. Este campo tieen fines informativos para el cliente en caso de ejecutar un comando equívocamente.
   * `description`: campo con fines documentativos para el parámetro.
 
-### Integración con código C
+Tras conformar este archivo, se recomienda ejecutar un validador del mismo de la siguiente manera:
+
+1. Ubicar una terminal en el directorio `electronic_instrument_adapter/instrument/specs`
+2. Ejecutar `python validate_specs.py <filename>`
+3. Observar la salida del programa, hacer las correcciones indicadas.
+
+PD: El validador solo debe utilizarse para archivos de mapeo de comandos de instrumentosn que pretendan controlarse
+mediante comandos SCPI, y no con librerías de C.
+
+#### Integración con código C
 Es común en la industria que determinados instrumentos no cumplan con el protocolo SCPI en cuyos casos los fabricantes proveen sus propias SDKs para integrarse con el instrumento. Las SDKs suelen estar implementadas en lenguajes de bajo nivel como C, es por esto que se pueden registrar comandos cuya función este implementada en dicho lenguaje. Por ejemplo:
 
 ```json
@@ -135,4 +194,14 @@ Diferencias a tener en cuenta con el formato de los comandos SCPI:
 * `init_cammera` en el primer ejemplo corresponde al comando que envía el cliente a través de la EIA-SDK y `command` corresponde a la función C expuesta por la librería.
 * `lib_path` ruta a la librería C (`.so` para sistemas Unix o `.dll` para sistemas Windows). Se recomienda que sea la ruta absoluta.
 * `return` indica el tipo de dato devuelto por la función C. Valores soportados actualmente `int`, `float` y `bytes`. Para el último caso es necesario que la función C expuesta por la librería reciba un último argumento del tipo `char *`. Esto es necesario ya que para la integración entre Python y C para el caso de este tipo de dato de retorna se utiliza un archivo binario temporal cuya ruta es indicado en este parámetro adicional y es donde debe ser escrito el resultado a retornar al client (como por ejemplo bytes correspondientes a imágenes capturadas por una cámara)
+
+
+## Ejecución
+Ubicado en el directorio `server` ejecutar:
+
+```bash
+python main.py
+```
+
+Este comando ejecutará el servidor que escuchará nuevas conexiones en el puerto 8080.
 
