@@ -205,3 +205,15 @@ python main.py
 
 Este comando ejecutará el servidor que escuchará nuevas conexiones en el puerto 8080.
 
+Para obtener la dirección IP del servidor: 
+
+1) Abrir una terminal en Windows:
+![image](https://user-images.githubusercontent.com/12588243/132144280-377a1ae6-b36b-4608-a76c-90b416da3727.png)
+
+2) Ejecutar el siguiente comando: `ipconfig`
+
+3) En la salida del programa, identificar la dirección IPv4 de la interfaz de red utilizada para conectarse a la red de área local. En la MINI PC ésta interfaz posiblemente sea la de WiFi, ya que la interfaz Ethernet estaría reservada para comunicarse con algún instrumento:
+
+En el caso del ejemplo esta dirección es 192.168.1.109
+
+
