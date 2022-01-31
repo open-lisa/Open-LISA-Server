@@ -1,6 +1,6 @@
 # Manual – Electronic Instrument Adapter Server
 
-Esta programa provee servicios para ser integrados con la SDK desde nodos clientes 
+Esta programa provee servicios para ser integrados con la SDK desde nodos clientes
 [Electronic Instrument Adapter SDK](https://github.com/aalvarezwindey/electronic_instrument_adapter_sdk/).
 
 ## Instalación
@@ -42,10 +42,9 @@ todos los modelos de instrumentos soportados, y un README con el link para desca
 
 ### 4. Compilador de C
 
-El servidor permite integrar instrumentos para los cuales el fabricante provea drivers que sean integrables en el 
+El servidor permite integrar instrumentos para los cuales el fabricante provea drivers que sean integrables en el
 lenguaje de programación C. Para ver más detalle, ver la sección "Integración con código C". Si éste es el caso,
 se necesita un compilador de éste lenguaje de programación para Windows.
-
 
 ## Registrar un nuevo instrumento
 
@@ -72,13 +71,13 @@ Se debe agregar una nueva entrada en el archivo de instrumentos `server/electron
 
 En donde:
 
-| Campo          | Descripción                                          |
-|----------------|------------------------------------------------------|
-|`brand`         | Marca del instrumento                                |
-|`model`         | Modelo del instrumento                               |
-|`description`   | Texto libre como descripción a fines de documentación|
-|`command_file`  | Archivo de configuración de los comandos disponibles |
-|`id`            | Dirección física del instrumento                     |
+| Campo          | Descripción                                           |
+| -------------- | ----------------------------------------------------- |
+| `brand`        | Marca del instrumento                                 |
+| `model`        | Modelo del instrumento                                |
+| `description`  | Texto libre como descripción a fines de documentación |
+| `command_file` | Archivo de configuración de los comandos disponibles  |
+| `id`           | Dirección física del instrumento                      |
 
 Tras agregar un nuevo instrumento, se recomienda ejecutar el validador de este archivo, de la siguiente manera:
 
@@ -86,15 +85,15 @@ Tras agregar un nuevo instrumento, se recomienda ejecutar el validador de este a
 2. Ejecutar `python validate_instruments.py`
 3. Observar la salida del programa, hacer las correcciones indicadas.
 
-
 ### 2. Registrar el mapeo de comandos del instrumento.
 
-Para agregar comandos al instrumento se debe agregar un archivo con el nombre indicado en el campo `command_file` del 
-archivo en `server/electronic_instrument_adapter/instrument/instruments.json`, en la carpeta 
+Para agregar comandos al instrumento se debe agregar un archivo con el nombre indicado en el campo `command_file` del
+archivo en `server/electronic_instrument_adapter/instrument/instruments.json`, en la carpeta
 `electronic_instrument_adapter/instrument/specs`. Existen dos tipos de archivo, dependiendo el controlador del instrumento
 elegido: si es mediante comandos SCPI o mediante librería customizada en C. A continuación se da un ejemplo de cada caso:
 
 #### Comandos SCPI
+
 A un instrumento que cumple con el protocolo SCPI se le pueden registrar los comandos con un archivo JSON con el siguiente formato
 
 ```json
@@ -117,27 +116,29 @@ A un instrumento que cumple con el protocolo SCPI se le pueden registrar los com
       }
     ]
   },
-  "get_waveform_data" : {
+  "get_waveform_data": {
     "command": "CURVE?",
     "type": "query_buffer",
     "description": "Transfers oscilloscope waveform data to and from the oscilloscope in binary or ASCII format. Each waveform that is transferred has an associated waveform preamble that contains information such as data format and scale."
-  },
+  }
 }
 ```
+
 Donde:
-* `get_is_in_acquisitions_state` es el nombre del comando o función que invocará el cliente a través de la SDK.
-* `command` corresponde al comando SCPI indicado en el manual del instrumento.
-* `type` indica el tipo de comando, los tipos soportados son:
-  * `query`: comando de consulta que se espera que devuelva un valor de interés
-  * `set`: comando para establecer un valor en el instrumento (a la SDK cliente se le envía la cantidad de bytes enviados al instrumento)
-  * `query_buffer`: comando para leer del buffer de datos del instrumento (por debajo utiliza la función `read_raw` del módulo `pyvisa`)
-  * `clib`: ver sección siguiente
-* `description`: campo con fines documentativos para el comando
-* `params`: listado opcional de parámetros que recibe el comando, la cantidad de parámetros se condice con la cantidad de _placeholders_ `{}` que tiene el campo `command`:
-  * `position`: indica la posición del argumento recibido (iniciando en 1 y contando según lo enviado por el cliente de izquierda a derecha)
-  * `type`: tipo de dato del parámetro. Tipos soportados son: `float`, `int`, `string`.
-  * `example`: ejemplo del valor que se espera en el parámetro. Este campo tieen fines informativos para el cliente en caso de ejecutar un comando equívocamente.
-  * `description`: campo con fines documentativos para el parámetro.
+
+- `get_is_in_acquisitions_state` es el nombre del comando o función que invocará el cliente a través de la SDK.
+- `command` corresponde al comando SCPI indicado en el manual del instrumento.
+- `type` indica el tipo de comando, los tipos soportados son:
+  - `query`: comando de consulta que se espera que devuelva un valor de interés
+  - `set`: comando para establecer un valor en el instrumento (a la SDK cliente se le envía la cantidad de bytes enviados al instrumento)
+  - `query_buffer`: comando para leer del buffer de datos del instrumento (por debajo utiliza la función `read_raw` del módulo `pyvisa`)
+  - `clib`: ver sección siguiente
+- `description`: campo con fines documentativos para el comando
+- `params`: listado opcional de parámetros que recibe el comando, la cantidad de parámetros se condice con la cantidad de _placeholders_ `{}` que tiene el campo `command`:
+  - `position`: indica la posición del argumento recibido (iniciando en 1 y contando según lo enviado por el cliente de izquierda a derecha)
+  - `type`: tipo de dato del parámetro. Tipos soportados son: `float`, `int`, `string`.
+  - `example`: ejemplo del valor que se espera en el parámetro. Este campo tieen fines informativos para el cliente en caso de ejecutar un comando equívocamente.
+  - `description`: campo con fines documentativos para el parámetro.
 
 Tras conformar este archivo, se recomienda ejecutar un validador del mismo de la siguiente manera:
 
@@ -149,6 +150,7 @@ PD: El validador solo debe utilizarse para archivos de mapeo de comandos de inst
 mediante comandos SCPI, y no con librerías de C.
 
 #### Integración con código C
+
 Es común en la industria que determinados instrumentos no cumplan con el protocolo SCPI en cuyos casos los fabricantes proveen sus propias SDKs para integrarse con el instrumento. Las SDKs suelen estar implementadas en lenguajes de bajo nivel como C, es por esto que se pueden registrar comandos cuya función este implementada en dicho lenguaje. Por ejemplo:
 
 ```json
@@ -191,32 +193,37 @@ Es común en la industria que determinados instrumentos no cumplan con el protoc
 ```
 
 Diferencias a tener en cuenta con el formato de los comandos SCPI:
-* `init_cammera` en el primer ejemplo corresponde al comando que envía el cliente a través de la EIA-SDK y `command` corresponde a la función C expuesta por la librería.
-* `lib_path` ruta a la librería C (`.so` para sistemas Unix o `.dll` para sistemas Windows). Se recomienda que sea la ruta absoluta.
-* `return` indica el tipo de dato devuelto por la función C. Valores soportados actualmente `int`, `float` y `bytes`. Para el último caso es necesario que la función C expuesta por la librería reciba un último argumento del tipo `char *`. Esto es necesario ya que para la integración entre Python y C para el caso de este tipo de dato de retorna se utiliza un archivo binario temporal cuya ruta es indicado en este parámetro adicional y es donde debe ser escrito el resultado a retornar al client (como por ejemplo bytes correspondientes a imágenes capturadas por una cámara)
 
+- `init_cammera` en el primer ejemplo corresponde al comando que envía el cliente a través de la EIA-SDK y `command` corresponde a la función C expuesta por la librería.
+- `lib_path` ruta a la librería C (`.so` para sistemas Unix o `.dll` para sistemas Windows). Se recomienda que sea la ruta absoluta.
+- `return` indica el tipo de dato devuelto por la función C. Valores soportados actualmente `int`, `float` y `bytes`. Para el último caso es necesario que la función C expuesta por la librería reciba un último argumento del tipo `char *`. Esto es necesario ya que para la integración entre Python y C para el caso de este tipo de dato de retorna se utiliza un archivo binario temporal cuya ruta es indicado en este parámetro adicional y es donde debe ser escrito el resultado a retornar al client (como por ejemplo bytes correspondientes a imágenes capturadas por una cámara)
 
 ## Ejecución
-Ubicado en el directorio `server` ejecutar:
+
+Ubicado en la raíz del proyecto ejecutar:
 
 ```bash
-python main.py
+make run
 ```
 
-Este comando ejecutará el servidor que escuchará nuevas conexiones en el puerto 8080.
+Para detener la ejecución se debe ejecutar:
 
-Para obtener la dirección IP del servidor: 
+```bash
+make down
+```
 
-1) Abrir una terminal en Windows:
+Una vez ejecutado, el servidor escuchará nuevas conexiones en el puerto 8080.
+
+Para obtener la dirección IP del servidor:
+
+1. Abrir una terminal en Windows:
 
 ![image](https://user-images.githubusercontent.com/12588243/132144280-377a1ae6-b36b-4608-a76c-90b416da3727.png)
 
-2) Ejecutar el siguiente comando: `ipconfig`
+2. Ejecutar el siguiente comando: `ipconfig`
 
-3) En la salida del programa, identificar la dirección IPv4 de la interfaz de red utilizada para conectarse a la red de área local. En la MINI PC ésta interfaz posiblemente sea la de WiFi, ya que la interfaz Ethernet estaría reservada para comunicarse con algún instrumento:
+3. En la salida del programa, identificar la dirección IPv4 de la interfaz de red utilizada para conectarse a la red de área local. En la MINI PC ésta interfaz posiblemente sea la de WiFi, ya que la interfaz Ethernet estaría reservada para comunicarse con algún instrumento:
 
 ![image](https://user-images.githubusercontent.com/12588243/132144404-3f07af75-7ce7-43cd-a791-673cd9072164.png)
 
 En el caso del ejemplo esta dirección es 192.168.1.109
-
-
