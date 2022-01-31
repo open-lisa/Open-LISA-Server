@@ -1,0 +1,15 @@
+version: '3'
+services:
+  eia-server:
+    container_name: eia-server
+    image: eia-server:latest
+    environment:
+      - PYTHONUNBUFFERED=1
+    # networks:
+    #   - eia_network
+    entrypoint: /main.py
+
+# networks:
+#   default:
+#     external:
+#       name: eia_network
