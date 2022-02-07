@@ -5,8 +5,6 @@ services:
     image: eia-server:latest
     environment:
       - PYTHONUNBUFFERED=1
-    # networks:
-    #   - eia_network
     entrypoint: /main.py
 
   eia-ui:
@@ -23,8 +21,3 @@ services:
       - 3333:3000
     environment:
       - CHOKIDAR_USEPOLLING=true
-
-# networks:
-#   default:
-#     external:
-#       name: eia_network
