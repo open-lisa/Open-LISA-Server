@@ -14,7 +14,7 @@ for i in range(1, 9):
         if not connection.isOpen():
             connection.open()
 
-        connection.write(b'ping')
+        connection.write("OPEN".encode())
 
         response = connection.read(4)
         if len(response) > 0:

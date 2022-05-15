@@ -9,6 +9,6 @@ x = connection.read(4)
 
 print("received from client: {}".format(x.decode("utf-8")))
 
-connection.write(b'pong')
+connection.write("LISA".encode('utf-8'))
 
 connection.close()
