@@ -4,7 +4,6 @@ from .message_protocol import MessageProtocol
 
 
 # TODO: Duplicado en server y SDK, ver de usar uno en comun
-# Source: https://stackoverflow.com/questions/17667903/python-socket-receive-large-amount-of-data
 class MessageProtocolRS232(MessageProtocol):
     def __init__(self, rs232_connection):
         self._connection = rs232_connection
