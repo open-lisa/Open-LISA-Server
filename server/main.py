@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
+import argparse
 import logging
-import os
 
 from electronic_instrument_adapter.api import ElectronicInstrumentAdapter
+from electronic_instrument_adapter.protocol.rs232configuration import RS232Configuration
 
 
 def parse_config_params():
@@ -13,17 +14,22 @@ def parse_config_params():
     be parsed, a ValueError is thrown. If parsing succeeded, the function
     returns a map with the env variables
     """
+    parser = argparse.ArgumentParser("Optional app description")
+    parser.add_argument('--mode', required=True, help='SERIAL or TCP', choices=['SERIAL', 'TCP'])
+    parser.add_argument('--rs_232_port', help='RS232 connection port, i.e. COM3')
+    parser.add_argument('--tcp_port', type=int, help='TCP Listening port, i.e. 8080')
+    parser.add_argument('--rs_232_baudrate', type=int, help='Baudrate of RS232 connection, i.e. 19200')
+    parser.add_argument('--rs_232_timeout', type=int, help='Timeout in seconds for RS232 connection reads')
 
-    config_params = {}
-    try:
-        config_params["listening_port"] = int(os.environ["LISTENING_PORT"])
+    args = parser.parse_args()
+    if args.mode == "SERIAL" and args.rs_232_port is None:
+        logging.error("Serial port must be specified in Serial mode")
+        exit(1)
+    if args.mode == "TCP" and args.tcp_port is None:
+        logging.error("Port must be specified in TCP mode")
+        exit(1)
 
-    except KeyError as e:
-        raise KeyError("Key was not found. Error: {} .Aborting server".format(e))
-    except ValueError as e:
-        raise ValueError("Key could not be parsed. Error: {}. Aborting server".format(e))
-
-    return config_params
+    return parser.parse_args()
 
 
 def initialize_log():
@@ -35,20 +41,21 @@ def initialize_log():
 
     logging.basicConfig(
         format='%(asctime)s [EIA_SERVER] %(levelname)-8s %(message)s',
-        level=logging.DEBUG,
+        level=logging.INFO,
         datefmt='%Y-%m-%d %H:%M:%S'
     )
 
 
 def main():
     initialize_log()
-    # params = parse_config_params()
+    args = parse_config_params()
 
-    # logging.info(params)
+    rs232_config = RS232Configuration(args.rs_232_port, args.rs_232_baudrate, args.rs_232_timeout)
 
     eia_server = ElectronicInstrumentAdapter(
-        #params["listening_port"]
-        listening_port=8080
+        mode=args.mode,
+        rs232_config=rs232_config,
+        listening_port=args.tcp_port
     )
     eia_server.start()
 
