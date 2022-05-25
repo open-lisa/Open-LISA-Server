@@ -1,8 +1,8 @@
-from .base_exception import ElectronicInstrumentAdapterException
+from .base_exception import OpenLISAException
 
 DEFAULT_MESSAGE="command not found"
 
-class CommandNotFoundError(ElectronicInstrumentAdapterException):
+class CommandNotFoundError(OpenLISAException):
     """
     Raised when command does not exist
     """

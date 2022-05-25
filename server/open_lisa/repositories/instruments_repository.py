@@ -1,7 +1,7 @@
 import json
 import pyvisa
-from electronic_instrument_adapter.instrument.instrument import Instrument
-from electronic_instrument_adapter.exceptions.instrument_not_found import InstrumentNotFoundError
+from open_lisa.instrument.instrument import Instrument
+from open_lisa.exceptions.instrument_not_found import InstrumentNotFoundError
 
 class InstrumentsRepository:
   def __init__(self, path) -> None:

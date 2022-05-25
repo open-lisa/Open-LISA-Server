@@ -13,7 +13,7 @@ from .repositories.instruments_repository import InstrumentsRepository
 from .protocol.server_protocol import COMMAND_GET_INSTRUMENT, COMMAND_GET_INSTRUMENTS, COMMAND_GET_INSTRUMENT_COMMANDS, \
     COMMAND_SEND_COMMAND, COMMAND_VALIDATE_COMMAND, ServerProtocol
 
-PATH_INSTRUMENTS_REPOSITORY = 'electronic_instrument_adapter/instrument/instruments.json'
+PATH_INSTRUMENTS_REPOSITORY = 'open_lisa/instrument/instruments.json'
 MODE_SERIAL = 'SERIAL'
 MODE_TCP = 'TCP'
 MAX_CONCURRENT_CLIENTS = 1
@@ -21,7 +21,7 @@ RS232_EXPECTED_CLIENT_QUESTION = 'OPEN'
 RS232_ANSWER_TO_CLIENT_QUESTION = 'LISA'
 
 
-class ElectronicInstrumentAdapter:
+class OpenLISA:
 
     def __init__(self, mode, rs232_config, listening_port):
         self._server_protocol = None
@@ -47,31 +47,31 @@ class ElectronicInstrumentAdapter:
             while True:
                 try:
                     command = self._server_protocol.get_command()
-                    logging.debug("[ElectronicInstrumentAdapter][api][start] - command received: " + command)
+                    logging.debug("[OpenLISA][api][start] - command received: " + command)
                     self._update_instruments_status()
                     if command == COMMAND_GET_INSTRUMENTS:
-                        logging.debug("[ElectronicInstrumentAdapter][api][start] - getting instruments")
+                        logging.debug("[OpenLISA][api][start] - getting instruments")
                         self._server_protocol.handle_get_instruments(self._instruments_repository)
                     elif command == COMMAND_GET_INSTRUMENT:
-                        logging.debug("[ElectronicInstrumentAdapter][api][start] - getting specific instrument")
+                        logging.debug("[OpenLISA][api][start] - getting specific instrument")
                         self._server_protocol.handle_get_instrument(self._instruments_repository)
                     elif command == COMMAND_GET_INSTRUMENT_COMMANDS:
-                        logging.debug("[ElectronicInstrumentAdapter][api][start] - getting instrument commands")
+                        logging.debug("[OpenLISA][api][start] - getting instrument commands")
                         self._server_protocol.handle_get_instrument_commands(self._instruments_repository)
                     elif command == COMMAND_VALIDATE_COMMAND:
-                        logging.debug("[ElectronicInstrumentAdapter][api][start] - validating instrument command")
+                        logging.debug("[OpenLISA][api][start] - validating instrument command")
                         self._server_protocol.handle_validate_command(self._instruments_repository)
                     elif command == COMMAND_SEND_COMMAND:
-                        logging.debug("[ElectronicInstrumentAdapter][api][start] - sending command to instrument")
+                        logging.debug("[OpenLISA][api][start] - sending command to instrument")
                         self._server_protocol.handle_send_command(self._instruments_repository)
                     else:
                         logging.error(
-                            "[ElectronicInstrumentAdapter][api][start] - unknown command '{}'".format(command))
+                            "[OpenLISA][api][start] - unknown command '{}'".format(command))
                 except ConnectionResetError as ex:
-                    logging.info("[ElectronicInstrumentAdapter][api][start] - client socket disconnect {}".format(ex))
+                    logging.info("[OpenLISA][api][start] - client socket disconnect {}".format(ex))
                     break
                 except Exception as ex:
-                    logging.error("[ElectronicInstrumentAdapter][api][start][FATAL_ERROR]: {}".format(ex))
+                    logging.error("[OpenLISA][api][start][FATAL_ERROR]: {}".format(ex))
                     traceback.print_exc()
                     break
 
@@ -118,8 +118,8 @@ class ElectronicInstrumentAdapter:
         server_socket.bind(('', self._listening_port))
         server_socket.listen(MAX_CONCURRENT_CLIENTS - 1)  # Only handles one client
 
-        logging.debug("[ElectronicInstrumentAdapter][api][start] - proceed to accept new connection")
+        logging.debug("[OpenLISA][api][start] - proceed to accept new connection")
         socket_connection, addr = server_socket.accept()
-        logging.debug('[ElectronicInstrumentAdapter][api][start] - got connection from {}'.format(addr))
+        logging.debug('[OpenLISA][api][start] - got connection from {}'.format(addr))
 
         return ServerProtocol(MessageProtocolTCP(socket_connection))

@@ -2,8 +2,8 @@
 import argparse
 import logging
 
-from electronic_instrument_adapter.api import ElectronicInstrumentAdapter
-from electronic_instrument_adapter.protocol.rs232configuration import RS232Configuration
+from open_lisa.api import OpenLISA
+from open_lisa.protocol.rs232configuration import RS232Configuration
 
 
 def parse_config_params():
@@ -40,7 +40,7 @@ def initialize_log():
     """
 
     logging.basicConfig(
-        format='%(asctime)s [EIA_SERVER] %(levelname)-8s %(message)s',
+        format='%(asctime)s [OPEN_LISA_SERVER] %(levelname)-8s %(message)s',
         level=logging.INFO,
         datefmt='%Y-%m-%d %H:%M:%S'
     )
@@ -52,12 +52,12 @@ def main():
 
     rs232_config = RS232Configuration(args.rs_232_port, args.rs_232_baudrate, args.rs_232_timeout)
 
-    eia_server = ElectronicInstrumentAdapter(
+    open_lisa = OpenLISA(
         mode=args.mode,
         rs232_config=rs232_config,
         listening_port=args.tcp_port
     )
-    eia_server.start()
+    open_lisa.start()
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
-from .base_exception import ElectronicInstrumentAdapterException
+from .base_exception import OpenLISAException
 
-class InvalidAmountParametersError(ElectronicInstrumentAdapterException):
+class InvalidAmountParametersError(OpenLISAException):
     def __init__(self, sent, required):
         self.parameters_amount_sent = sent
         self.parameters_amount_required = required

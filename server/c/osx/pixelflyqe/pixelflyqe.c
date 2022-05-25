@@ -20,6 +20,7 @@ int get_image(char * file_path) {
   // Simulation of getting image data from a file and returning in a file
   FILE* input_file, *output_file = NULL;
   unsigned char buffer[512];
+  // TODO: rename this path
   const char* mock_image_path = "/Users/ariel.alvarez/Repositories/fiuba/taller-iii/electronic-instrument-adapter/server/c/osx/pixelflyqe/mockimg.jpg";
   printf("[get_image] file path provided: %s\n", file_path);
   input_file = fopen(mock_image_path,"rb");

@@ -1,8 +1,8 @@
-from .base_exception import ElectronicInstrumentAdapterException
+from .base_exception import OpenLISAException
 
 DEFAULT_MESSAGE="instrument not found"
 
-class InstrumentNotFoundError(ElectronicInstrumentAdapterException):
+class InstrumentNotFoundError(OpenLISAException):
     """
     Raised when instrument does not exist
     """

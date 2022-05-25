@@ -6,8 +6,7 @@ default: build
 all:
 
 docker-images:
-	docker build -f ./server/Dockerfile -t "eia-server:latest" ./server
-	docker build -f ./backoffice/eia-ui/Dockerfile -t "eia-ui:latest" ./backoffice/eia-ui
+	docker build -f ./server/Dockerfile -t "open-lisa-server:latest" ./server
 
 run: docker-images
 	docker-compose -f docker-compose.yaml up --remove-orphans --build
@@ -20,7 +19,5 @@ down:
 	docker image prune -f
 
 logs-server:
-	docker-compose -f docker-compose.yaml logs -f eia-server
+	docker-compose -f docker-compose.yaml logs -f open-lisa-server
 
-logs-ui:
-	docker-compose -f docker-compose.yaml logs -f eia-ui
