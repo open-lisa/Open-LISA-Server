@@ -1,5 +1,3 @@
-import time
-
 import serial
 import socket
 import logging
@@ -92,6 +90,7 @@ class OpenLISA:
                 port=self._rs232_config.port,
                 baudrate=self._rs232_config.baudrate,
                 timeout=self._rs232_config.timeout)
+
         except serial.SerialException:
             logging.error("Error on open serial connection on {}".format(self._rs232_config.port))
             traceback.print_exception(*sys.exc_info())

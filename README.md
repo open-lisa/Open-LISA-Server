@@ -9,7 +9,7 @@ Para ejecutar el servidor se requieren instalar las siguientes dependencias, cad
 documento
 
 1. Python 3.9.6 for Windows
-2. Librerías Python pyvisa y pyvisa-py
+2. Librerías Python pyvisa, pyvisa-py y pyserial
 3. Controladores de cada instrumento provistos por el fabricante
 4. Compilador de C
 
@@ -33,18 +33,27 @@ Para instalar estas librerías debe ejecutar:
 
 `pip install pyvisa-py`
 
-### 3. Controladores de cada instrumento provistos por el fabricante
+### 3. Librería Python pyserial
+
+Esta librería es requerida para la conexión serial RS232 que puede establecer una PC cliente con el servidor OpenLISA.
+Para más información sobre esta librería puede ingresar al siguiente link: https://pythonhosted.org/pyserial/
+
+Para instalar esta librería se debe ejecutar:
+
+`pip install pyserial`
+
+### 4. Controladores de cada instrumento provistos por el fabricante
 
 Para la demo de este proyecto se controla un osciloscopio de la marca Tektronix. El fabricante provee un instalador
 para Windows con los controladores para comunicarse via SCPI con los instrumentos de su marca (DAQ, osciloscopios,
 fuentes, voltímetros, etc.). En la carpeta `controllers/tektronix` de este repositorio se encuentra el manual que indica
 todos los modelos de instrumentos soportados, y un README con el link para descargar este controlador.
 
-### 4. Compilador de C
+### 5. Compilador de C
 
 El servidor permite integrar instrumentos para los cuales el fabricante provea drivers que sean integrables en el
 lenguaje de programación C. Para ver más detalle, ver la sección "Integración con código C". Si éste es el caso,
-se necesita un compilador de éste lenguaje de programación para Windows.
+se necesita un compilador de este lenguaje de programación para Windows.
 
 ## Registrar un nuevo instrumento
 
@@ -81,14 +90,14 @@ En donde:
 
 Tras agregar un nuevo instrumento, se recomienda ejecutar el validador de este archivo, de la siguiente manera:
 
-1. Ubicar una terminal en el directorio `server/open_lisa/instrument/`
+1. Ubicar una terminal en el directorio `open_lisa/instrument/`
 2. Ejecutar `python validate_instruments.py`
 3. Observar la salida del programa, hacer las correcciones indicadas.
 
 ### 2. Registrar el mapeo de comandos del instrumento.
 
 Para agregar comandos al instrumento se debe agregar un archivo con el nombre indicado en el campo `command_file` del
-archivo en `server/open_lisa/instrument/instruments.json`, en la carpeta
+archivo en `open_lisa/instrument/instruments.json`, en la carpeta
 `open_lisa/instrument/specs`. Existen dos tipos de archivo, dependiendo el controlador del instrumento
 elegido: si es mediante comandos SCPI o mediante librería customizada en C. A continuación se da un ejemplo de cada caso:
 
@@ -203,18 +212,29 @@ Diferencias a tener en cuenta con el formato de los comandos SCPI:
 Ubicado en la raíz del proyecto ejecutar:
 
 ```bash
-make run
+python main.py -h
 ```
 
-Para detener la ejecución se debe ejecutar:
+Para obtener la siguiente ayuda de ejecución:
 
 ```bash
-make down
+usage: Optional app description [-h] --mode {SERIAL,TCP} [--rs_232_port RS_232_PORT] [--tcp_port TCP_PORT] [--rs_232_baudrate RS_232_BAUDRATE] [--rs_232_timeout RS_232_TIMEOUT]
+                                                                                                                                                                                
+optional arguments:                                                                                                                                                             
+  -h, --help            show this help message and exit                                                                                                                         
+  --mode {SERIAL,TCP}   SERIAL or TCP                                                                                                                                           
+  --rs_232_port RS_232_PORT                                                                                                                                                     
+                        RS232 connection port, i.e. COM3                                                                                                                        
+  --tcp_port TCP_PORT   TCP Listening port, i.e. 8080                                                                                                                           
+  --rs_232_baudrate RS_232_BAUDRATE                                                                                                                                             
+                        Baudrate of RS232 connection, i.e. 19200                                                                                                                
+  --rs_232_timeout RS_232_TIMEOUT                                                                                                                                               
+                        Timeout in seconds for RS232 connection reads  
 ```
 
-Una vez ejecutado, el servidor escuchará nuevas conexiones en el puerto 8080.
+Una vez ejecutado, el servidor escuchará nuevas conexiones en el puerto TCP o COM Serial indicado
 
-Para obtener la dirección IP del servidor:
+### Para obtener la dirección IP del servidor:
 
 1. Abrir una terminal en Windows:
 
@@ -227,3 +247,15 @@ Para obtener la dirección IP del servidor:
 ![image](https://user-images.githubusercontent.com/12588243/132144404-3f07af75-7ce7-43cd-a791-673cd9072164.png)
 
 En el caso del ejemplo esta dirección es 192.168.1.109
+
+### Para obtener la el puerto serial COM del servidor:
+
+1. Abrir "Administrador de dispositivos" en Windows:
+
+Insertar imagen "serial_1"
+
+2. Desplegar "Puertos (COM y LPT)"
+
+Insertar imagen "serial_2"
+
+En el ejemplo de la foto anterior, el puerto COM utilizado por el servidor será "COM4"
