@@ -1,8 +1,0 @@
-version: '3'
-services:
-  open-lisa-server:
-    container_name: open-lisa-server
-    image: open-lisa-server:latest
-    environment:
-      - PYTHONUNBUFFERED=1
-    entrypoint: /main.py
