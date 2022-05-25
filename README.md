@@ -252,10 +252,11 @@ En el caso del ejemplo esta dirección es 192.168.1.109
 
 1. Abrir "Administrador de dispositivos" en Windows:
 
-Insertar imagen "serial_1"
+![serial_1](https://user-images.githubusercontent.com/12588243/170373974-053fc59b-587c-47d4-a19d-35f0afa2a836.png)
 
 2. Desplegar "Puertos (COM y LPT)"
 
-Insertar imagen "serial_2"
+![serial_2](https://user-images.githubusercontent.com/12588243/170374010-2774d99e-df08-436b-ae0c-a4d3205c426e.PNG)
+
 
 En el ejemplo de la foto anterior, el puerto COM utilizado por el servidor será "COM4"
