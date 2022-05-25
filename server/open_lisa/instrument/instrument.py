@@ -5,10 +5,10 @@ from os import remove
 
 import pyvisa
 from .constants import C_TYPE_BYTES, INSTRUMENT_STATUS_AVAILABLE, INSTRUMENT_STATUS_UNAVAILABLE, INSTRUMENT_STATUS_NOT_REGISTERED, INSTRUMENT_STATUS_BUSY, COMMAND_TYPE_SET, COMMAND_TYPE_QUERY, COMMAND_TYPE_QUERY_BUFFER, COMMAND_TYPE_C_LIB, C_TYPE_FLOAT, C_TYPE_INT, C_TYPE_STRING
-from electronic_instrument_adapter.exceptions.command_not_found_error import CommandNotFoundError
-from electronic_instrument_adapter.exceptions.invalid_parameter_error import InvalidParameterError
-from electronic_instrument_adapter.exceptions.invalid_amount_parameters_error import InvalidAmountParametersError
-from electronic_instrument_adapter.exceptions.instrument_unavailable_error import InstrumentUnavailableError
+from open_lisa.exceptions.command_not_found_error import CommandNotFoundError
+from open_lisa.exceptions.invalid_parameter_error import InvalidParameterError
+from open_lisa.exceptions.invalid_amount_parameters_error import InvalidAmountParametersError
+from open_lisa.exceptions.instrument_unavailable_error import InstrumentUnavailableError
 
 class Instrument:
     def __init__(self, id, brand, model, description, command_file):
@@ -28,7 +28,7 @@ class Instrument:
 
     def load_commands(self):
         try:
-            with open('electronic_instrument_adapter/instrument/specs/{}'.format(self.command_file)) as file:
+            with open('open_lisa/instrument/specs/{}'.format(self.command_file)) as file:
                 self.commands_map = json.load(file)
         except OSError as e:
             logging.error("[Instrument][load_commands][OPEN_FILE_FAIL] - {}".format(e))
@@ -48,7 +48,7 @@ class Instrument:
                 self.device = rm.open_resource(self.id)
                 self.status = INSTRUMENT_STATUS_AVAILABLE
             except pyvisa.errors.VisaIOError as ex:
-                logging.warning("[ElectronicInstrumentAdapter][instrument][update_status] Error opening pyvisa "
+                logging.warning("[OpenLISA][instrument][update_status] Error opening pyvisa "
                               "resource: {}".format(ex))
                 self.status = INSTRUMENT_STATUS_BUSY
         elif self.commands_map:

@@ -1,6 +1,6 @@
 import json
 from .message_protocol import MessageProtocol
-from electronic_instrument_adapter.exceptions.base_exception import ElectronicInstrumentAdapterException
+from open_lisa.exceptions.base_exception import OpenLISAException
 
 SUCCESS_RESPONSE = "OK"
 ERROR_RESPONSE = "ERROR"
@@ -28,7 +28,7 @@ class ServerProtocol:
             instrument = instruments_repository.find_one(id)
             self._message_protocol.send_msg(SUCCESS_RESPONSE)
             self._message_protocol.send_msg(instrument.as_dict())
-        except ElectronicInstrumentAdapterException as e:
+        except OpenLISAException as e:
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)
 
@@ -38,7 +38,7 @@ class ServerProtocol:
             instrument = instruments_repository.find_one(id)
             self._message_protocol.send_msg(SUCCESS_RESPONSE)
             self._message_protocol.send_msg(json.dumps(instrument.commands_map))
-        except ElectronicInstrumentAdapterException as e:
+        except OpenLISAException as e:
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)
             return
@@ -50,7 +50,7 @@ class ServerProtocol:
             instrument = instruments_repository.find_one(id)
             instrument.validate_command(command)
             self._message_protocol.send_msg(SUCCESS_RESPONSE)
-        except ElectronicInstrumentAdapterException as e:
+        except OpenLISAException as e:
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)
 
@@ -67,6 +67,6 @@ class ServerProtocol:
                 encode = True
             self._message_protocol.send_msg(format)
             self._message_protocol.send_msg(result, encode=encode)
-        except ElectronicInstrumentAdapterException as e:
+        except OpenLISAException as e:
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)

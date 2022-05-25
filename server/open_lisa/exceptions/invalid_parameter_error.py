@@ -1,6 +1,6 @@
-from .base_exception import ElectronicInstrumentAdapterException
+from .base_exception import OpenLISAException
 
-class InvalidParameterError(ElectronicInstrumentAdapterException):
+class InvalidParameterError(OpenLISAException):
     """
     Raised when command exist but format is incorrect
     """

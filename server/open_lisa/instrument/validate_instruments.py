@@ -21,7 +21,7 @@ def initialize_log():
     """
 
     logging.basicConfig(
-        format='%(asctime)s [EIA_INSTRUMENTS_VALIDATOR] %(levelname)-8s %(message)s',
+        format='%(asctime)s [OPEN_LISA_INSTRUMENTS_VALIDATOR] %(levelname)-8s %(message)s',
         level=logging.DEBUG,
         datefmt='%Y-%m-%d %H:%M:%S'
     )

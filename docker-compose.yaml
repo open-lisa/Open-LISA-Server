@@ -1,23 +1,8 @@
 version: '3'
 services:
-  eia-server:
-    container_name: eia-server
-    image: eia-server:latest
+  open-lisa-server:
+    container_name: open-lisa-server
+    image: open-lisa-server:latest
     environment:
       - PYTHONUNBUFFERED=1
     entrypoint: /main.py
-
-  eia-ui:
-    container_name: eia-ui
-    build:
-      context: ./backoffice/eia-ui
-      dockerfile: Dockerfile
-    image: eia-ui:latest
-    volumes:
-      - './backoffice/eia-ui:/app'
-      - '/app/node_modules'
-
-    ports:
-      - 3333:3000
-    environment:
-      - CHOKIDAR_USEPOLLING=true

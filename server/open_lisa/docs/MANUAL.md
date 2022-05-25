@@ -1,63 +1,25 @@
-# Manual – Open LISA Server
+# Manual – Configuración del servidor
 
-Esta programa provee servicios para ser integrados con la SDK desde nodos clientes
-[Open LISA SDK](https://github.com/aalvarezwindey/Open-LISA-SDK).
+## Dependencias
 
-## Instalación
+Se recomienda correr el servidor en Sistemas Operativos Microsoft Windows. La primera versión fue probada en Windows 10. Además se debe tener instalado:
 
-Para ejecutar el servidor se requieren instalar las siguientes dependencias, cada una desarrollada en un punto de este
-documento
+- Python 3
+- [`pyvisa`](https://pyvisa.readthedocs.io/en/latest/)
+- Compilador C en caso de requerir instrumentos que se integren a través de este lenguaje
+- Drivers indicados por los fabricantes de los instrumentos a integrar
 
-1. Python 3.9.6 for Windows
-2. Librerías Python pyvisa y pyvisa-py
-3. Controladores de cada instrumento provistos por el fabricante
-4. Compilador de C
+## Ejecución
 
-### 1. Python
+Ubicado en el directorio `server` ejecutar:
 
-La lógica del servidor que hace de interfaz con los instrumentos fue codificada en el lenguaje de programación Python.
-Dicho lenguaje debe ser ejecutado por un intérprete de Python, y la versión necesaria (con la que se probó) es la
-3.9.6, que se puede encontrar en el siguiente link:
-
-https://www.python.org/downloads/
-
-### 2. Librerías Python pyvisa y pyvisa-py
-
-Estas librerías son las encargadas de enviar y recibir información a los instrumentos mediante el protocolo SCPI,
-independientemente si éste esté conectado por USB, Ethernet, RS232, etc. Para más información sobre esta librería
-puede ingresar al siguiente link: https://pyvisa.readthedocs.io/en/latest/
-
-Para instalar estas librerías debe ejecutar:
-
-`pip install pyvisa`
-
-`pip install pyvisa-py`
-
-### 3. Controladores de cada instrumento provistos por el fabricante
-
-Para la demo de este proyecto se controla un osciloscopio de la marca Tektronix. El fabricante provee un instalador
-para Windows con los controladores para comunicarse via SCPI con los instrumentos de su marca (DAQ, osciloscopios,
-fuentes, voltímetros, etc.). En la carpeta `controllers/tektronix` de este repositorio se encuentra el manual que indica
-todos los modelos de instrumentos soportados, y un README con el link para descargar este controlador.
-
-### 4. Compilador de C
-
-El servidor permite integrar instrumentos para los cuales el fabricante provea drivers que sean integrables en el
-lenguaje de programación C. Para ver más detalle, ver la sección "Integración con código C". Si éste es el caso,
-se necesita un compilador de éste lenguaje de programación para Windows.
+```bash
+python main.py
+```
 
 ## Registrar un nuevo instrumento
 
-Registrar un nuevo instrumento consta de dos partes:
-
-1. Registrar el instrumento y su dirección física.
-2. Registrar el mapeo de comandos del instrumento.
-
-Cada una se desarrollará en una sección.
-
-### 1. Registrar el instrumento y su dirección física.
-
-Se debe agregar una nueva entrada en el archivo de instrumentos `server/open_lisa/instrument/instruments.json`
+Agregar una nueva entrada en el archivo de instrumentos `open_lisa/instrument/instruments.json`
 
 ```json
 {
@@ -69,7 +31,7 @@ Se debe agregar una nueva entrada en el archivo de instrumentos `server/open_lis
 }
 ```
 
-En donde:
+De donde:
 
 | Campo          | Descripción                                           |
 | -------------- | ----------------------------------------------------- |
@@ -79,20 +41,13 @@ En donde:
 | `command_file` | Archivo de configuración de los comandos disponibles  |
 | `id`           | Dirección física del instrumento                      |
 
-Tras agregar un nuevo instrumento, se recomienda ejecutar el validador de este archivo, de la siguiente manera:
+Para verificar el registro exitoso debemos ver la información del instrumento impresa por pantalla al ejecutar el servidor.
 
-1. Ubicar una terminal en el directorio `server/open_lisa/instrument/`
-2. Ejecutar `python validate_instruments.py`
-3. Observar la salida del programa, hacer las correcciones indicadas.
+## Agregar comandos al instrumento
 
-### 2. Registrar el mapeo de comandos del instrumento.
+Para agregar comandos al instrumento se debe agregar un archivo con el nombre indicado en el campo `command_file` del archivo anterior en la carpeta `open_lisa/instrument/specs`. Por ejemplo:
 
-Para agregar comandos al instrumento se debe agregar un archivo con el nombre indicado en el campo `command_file` del
-archivo en `server/open_lisa/instrument/instruments.json`, en la carpeta
-`open_lisa/instrument/specs`. Existen dos tipos de archivo, dependiendo el controlador del instrumento
-elegido: si es mediante comandos SCPI o mediante librería customizada en C. A continuación se da un ejemplo de cada caso:
-
-#### Comandos SCPI
+### Comandos SCPI
 
 A un instrumento que cumple con el protocolo SCPI se le pueden registrar los comandos con un archivo JSON con el siguiente formato
 
@@ -140,16 +95,7 @@ Donde:
   - `example`: ejemplo del valor que se espera en el parámetro. Este campo tieen fines informativos para el cliente en caso de ejecutar un comando equívocamente.
   - `description`: campo con fines documentativos para el parámetro.
 
-Tras conformar este archivo, se recomienda ejecutar un validador del mismo de la siguiente manera:
-
-1. Ubicar una terminal en el directorio `open_lisa/instrument/specs`
-2. Ejecutar `python validate_specs.py <filename>`
-3. Observar la salida del programa, hacer las correcciones indicadas.
-
-PD: El validador solo debe utilizarse para archivos de mapeo de comandos de instrumentosn que pretendan controlarse
-mediante comandos SCPI, y no con librerías de C.
-
-#### Integración con código C
+### Integración con código C
 
 Es común en la industria que determinados instrumentos no cumplan con el protocolo SCPI en cuyos casos los fabricantes proveen sus propias SDKs para integrarse con el instrumento. Las SDKs suelen estar implementadas en lenguajes de bajo nivel como C, es por esto que se pueden registrar comandos cuya función este implementada en dicho lenguaje. Por ejemplo:
 
@@ -197,33 +143,3 @@ Diferencias a tener en cuenta con el formato de los comandos SCPI:
 - `init_cammera` en el primer ejemplo corresponde al comando que envía el cliente a través de la Open-LISA-SDK y `command` corresponde a la función C expuesta por la librería.
 - `lib_path` ruta a la librería C (`.so` para sistemas Unix o `.dll` para sistemas Windows). Se recomienda que sea la ruta absoluta.
 - `return` indica el tipo de dato devuelto por la función C. Valores soportados actualmente `int`, `float` y `bytes`. Para el último caso es necesario que la función C expuesta por la librería reciba un último argumento del tipo `char *`. Esto es necesario ya que para la integración entre Python y C para el caso de este tipo de dato de retorna se utiliza un archivo binario temporal cuya ruta es indicado en este parámetro adicional y es donde debe ser escrito el resultado a retornar al client (como por ejemplo bytes correspondientes a imágenes capturadas por una cámara)
-
-## Ejecución
-
-Ubicado en la raíz del proyecto ejecutar:
-
-```bash
-make run
-```
-
-Para detener la ejecución se debe ejecutar:
-
-```bash
-make down
-```
-
-Una vez ejecutado, el servidor escuchará nuevas conexiones en el puerto 8080.
-
-Para obtener la dirección IP del servidor:
-
-1. Abrir una terminal en Windows:
-
-![image](https://user-images.githubusercontent.com/12588243/132144280-377a1ae6-b36b-4608-a76c-90b416da3727.png)
-
-2. Ejecutar el siguiente comando: `ipconfig`
-
-3. En la salida del programa, identificar la dirección IPv4 de la interfaz de red utilizada para conectarse a la red de área local. En la MINI PC ésta interfaz posiblemente sea la de WiFi, ya que la interfaz Ethernet estaría reservada para comunicarse con algún instrumento:
-
-![image](https://user-images.githubusercontent.com/12588243/132144404-3f07af75-7ce7-43cd-a791-673cd9072164.png)
-
-En el caso del ejemplo esta dirección es 192.168.1.109
