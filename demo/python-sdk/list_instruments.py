@@ -6,3 +6,4 @@ sdk.connect_through_RS232()
 
 # List instruments
 print(sdk.list_instruments())
+sdk.disconnect()

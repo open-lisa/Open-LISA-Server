@@ -45,6 +45,8 @@ def main():
     else:
         print("Oscilloscope TDS1002B not found")
 
+    sdk.disconnect()
+
 
 if __name__ == "__main__":
     main()
