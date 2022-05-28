@@ -1,6 +1,7 @@
-import serial
 import struct
 from .message_protocol import MessageProtocol
+
+MAX_RECEIVE_SIZE_BYTES = 2048
 
 
 # TODO: Duplicado en server y SDK, ver de usar uno en comun
@@ -36,8 +37,10 @@ class MessageProtocolRS232(MessageProtocol):
         # Helper function to recv n bytes or raise ConnectionResetError if EOF is hit
         data = bytearray()
         while len(data) < n:
-            packet = self._connection.read(n - len(data))
+            bytes_to_read = max(1, min(MAX_RECEIVE_SIZE_BYTES, self._connection.in_waiting, n))
+            packet = self._connection.read(bytes_to_read)
             if not packet:
                 raise ConnectionResetError
             data.extend(packet)
+            print("received: {} bytes".format(len(data)))
         return data
