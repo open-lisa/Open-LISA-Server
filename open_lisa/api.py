@@ -91,6 +91,11 @@ class OpenLISA:
                 baudrate=self._rs232_config.baudrate,
                 timeout=self._rs232_config.timeout)
 
+            logging.info("Serial RS232 connection created at {} with baudrate of {}".format(
+                self._rs232_config.port,
+                self._rs232_config.baudrate
+            ))
+
         except serial.SerialException:
             logging.error("Error on open serial connection on {}".format(self._rs232_config.port))
             traceback.print_exception(*sys.exc_info())

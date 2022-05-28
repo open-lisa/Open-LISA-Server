@@ -11,6 +11,9 @@ class MessageProtocolRS232(MessageProtocol):
         if not self._connection.isOpen():
             self._connection.open()
 
+        MAX_UNSIGNED_INT = 4_294_967_295
+        self._connection.set_buffer_size(rx_size=MAX_UNSIGNED_INT, tx_size=MAX_UNSIGNED_INT)
+
     def __del__(self):
         self._connection.close()
 
@@ -37,10 +40,9 @@ class MessageProtocolRS232(MessageProtocol):
         # Helper function to recv n bytes or raise ConnectionResetError if EOF is hit
         data = bytearray()
         while len(data) < n:
-            bytes_to_read = max(1, min(MAX_RECEIVE_SIZE_BYTES, self._connection.in_waiting, n))
+            bytes_to_read = max(1, min(MAX_RECEIVE_SIZE_BYTES, self._connection.in_waiting, n - len(data)))
             packet = self._connection.read(bytes_to_read)
             if not packet:
                 raise ConnectionResetError
             data.extend(packet)
-            print("received: {} bytes".format(len(data)))
         return data
