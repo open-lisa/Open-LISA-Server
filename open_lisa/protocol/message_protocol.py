@@ -1,6 +1,6 @@
 class MessageProtocol:
-    def __del__(self, connection):
-        raise NotImplementedError("Please Implement this method: destructor")
+    def disconnect(self):
+        raise NotImplementedError("Please Implement this method: disconnect")
 
     def send_msg(self, msg, encode=True):
         raise NotImplementedError("Please Implement this method: send_msg")

@@ -10,6 +10,7 @@ COMMAND_GET_INSTRUMENT = "GET_INSTRUMENT"
 COMMAND_GET_INSTRUMENT_COMMANDS = "GET_INSTRUMENT_COMMANDS"
 COMMAND_VALIDATE_COMMAND = "VALIDATE_COMMAND"
 COMMAND_SEND_COMMAND = "SEND_COMMAND"
+COMMAND_DISCONNECT = "DISCONNECT"
 
 
 class ServerProtocol:
@@ -70,3 +71,6 @@ class ServerProtocol:
         except OpenLISAException as e:
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)
+
+    def handle_disconnect_command(self):
+        self._message_protocol.disconnect()

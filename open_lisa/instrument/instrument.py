@@ -48,7 +48,7 @@ class Instrument:
                 self.device = rm.open_resource(self.id)
                 self.status = INSTRUMENT_STATUS_AVAILABLE
             except pyvisa.errors.VisaIOError as ex:
-                logging.warning("[OpenLISA][instrument][update_status] Error opening pyvisa "
+                logging.debug("[OpenLISA][instrument][update_status] Error opening pyvisa "
                               "resource: {}".format(ex))
                 self.status = INSTRUMENT_STATUS_BUSY
         elif self.commands_map:

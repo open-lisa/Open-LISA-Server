@@ -9,7 +9,7 @@ class MessageProtocolTCP(MessageProtocol):
     def __init__(self, tcp_socket):
         self._socket = tcp_socket
 
-    def __del__(self):
+    def disconnect(self):
         try:
             self._socket.shutdown(socket.SHUT_RDWR)
         except (socket.error, OSError, ValueError):

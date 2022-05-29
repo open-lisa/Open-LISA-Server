@@ -14,7 +14,7 @@ class MessageProtocolRS232(MessageProtocol):
         MAX_UNSIGNED_INT = 4_294_967_295
         self._connection.set_buffer_size(rx_size=MAX_UNSIGNED_INT, tx_size=MAX_UNSIGNED_INT)
 
-    def __del__(self):
+    def disconnect(self):
         self._connection.close()
 
     def send_msg(self, msg, encode=True):

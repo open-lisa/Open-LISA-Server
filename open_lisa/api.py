@@ -9,7 +9,7 @@ from .protocol.message_protocol_rs232 import MessageProtocolRS232
 from .protocol.message_protocol_tcp import MessageProtocolTCP
 from .repositories.instruments_repository import InstrumentsRepository
 from .protocol.server_protocol import COMMAND_GET_INSTRUMENT, COMMAND_GET_INSTRUMENTS, COMMAND_GET_INSTRUMENT_COMMANDS, \
-    COMMAND_SEND_COMMAND, COMMAND_VALIDATE_COMMAND, ServerProtocol
+    COMMAND_SEND_COMMAND, COMMAND_VALIDATE_COMMAND, COMMAND_DISCONNECT, ServerProtocol
 
 PATH_INSTRUMENTS_REPOSITORY = 'open_lisa/instrument/instruments.json'
 MODE_SERIAL = 'SERIAL'
@@ -29,23 +29,23 @@ class OpenLISA:
         self._instruments_repository = None
 
     def start(self):
-        if self._mode == MODE_SERIAL:
-            self._server_protocol = self._rs232_wait_connection()
-        elif self._mode == MODE_TCP:
-            self._server_protocol = self._tcp_wait_connection()
-        else:
-            logging.error("OpenLisa started with invalid mode: {}".format(self._mode))
-            exit(1)
-
-        self._instruments_repository = InstrumentsRepository(PATH_INSTRUMENTS_REPOSITORY)
-        self._list_instruments()
-
-        logging.info("Waiting for commands from client")
         while True:
+            logging.info("Waiting for client connection...")
+            if self._mode == MODE_SERIAL:
+                self._server_protocol = self._rs232_wait_connection()
+            elif self._mode == MODE_TCP:
+                self._server_protocol = self._tcp_wait_connection()
+            else:
+                logging.error("OpenLisa started with invalid mode: {}".format(self._mode))
+                exit(1)
+
+            self._instruments_repository = InstrumentsRepository(PATH_INSTRUMENTS_REPOSITORY)
+            self._list_instruments()
+
             while True:
                 try:
                     command = self._server_protocol.get_command()
-                    logging.debug("[OpenLISA][api][start] - command received: " + command)
+                    logging.info("[OpenLISA][api][start] - command received: " + command)
                     self._update_instruments_status()
                     if command == COMMAND_GET_INSTRUMENTS:
                         logging.debug("[OpenLISA][api][start] - getting instruments")
@@ -62,6 +62,10 @@ class OpenLISA:
                     elif command == COMMAND_SEND_COMMAND:
                         logging.debug("[OpenLISA][api][start] - sending command to instrument")
                         self._server_protocol.handle_send_command(self._instruments_repository)
+                    elif command == COMMAND_DISCONNECT:
+                        logging.info("[OpenLISA][api][start] - client order disconnect")
+                        self._server_protocol.handle_disconnect_command()
+                        break
                     else:
                         logging.error(
                             "[OpenLISA][api][start] - unknown command '{}'".format(command))
@@ -78,10 +82,10 @@ class OpenLISA:
             instrument.update_status()
 
     def _list_instruments(self):
-        print("* * * * * * * * * * Instruments List * * * * * * * * * *")
+        logging.debug("* * * * * * * * * * Instruments List * * * * * * * * * *")
         for instrument in self._instruments_repository.get_all():
-            print(instrument)
-        print("* * * * * * * * * * * * * * * * * * * * * * * * * * * * *")
+            logging.debug(instrument)
+        logging.debug("* * * * * * * * * * * * * * * * * * * * * * * * * * * * *")
 
     def _rs232_wait_connection(self):
         rs232_connection = None
@@ -122,8 +126,8 @@ class OpenLISA:
         server_socket.bind(('', self._listening_port))
         server_socket.listen(MAX_CONCURRENT_CLIENTS - 1)  # Only handles one client
 
-        logging.debug("[OpenLISA][api][start] - proceed to accept new connection")
+        logging.debug("[OpenLISA][api][start] - TPC proceed to accept new connection")
         socket_connection, addr = server_socket.accept()
-        logging.debug('[OpenLISA][api][start] - got connection from {}'.format(addr))
+        logging.debug('[OpenLISA][api][start] - TCP got connection from {}'.format(addr))
 
         return ServerProtocol(MessageProtocolTCP(socket_connection))
