@@ -21,5 +21,12 @@ class Command:
         assert isinstance(parameters, CommandParameters)
         self.parameters = parameters
 
+    @staticmethod
+    def from_dict():
+        raise NotImplementedError("Please Implement this method: from_dict")
+
+    def to_dict(self):
+        raise NotImplementedError("Please Implement this method: to_dict")
+
     def execute(self, params):
         raise NotImplementedError("Please Implement this method: execute")

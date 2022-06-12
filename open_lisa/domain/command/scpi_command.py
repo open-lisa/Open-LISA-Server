@@ -24,6 +24,26 @@ class SCPICommand(Command):
             raise InvalidSCPISyntaxForCommandParameters(
                 syntax=scpi_template_syntax, placeholders_amount=self.parameters.amount)
 
+    @staticmethod
+    def from_dict(command_dict, pyvisa_resource):
+        return SCPICommand(
+            name=command_dict["name"],
+            pyvisa_resource=pyvisa_resource,
+            scpi_template_syntax=command_dict["command"],
+            parameters=CommandParameters.from_dict(command_dict["params"]),
+            description=command_dict["description"]
+        )
+
+    def to_dict(self, instrument_id):
+        return {
+            "instrument_id": instrument_id,
+            "name": self.name,
+            "command": self.command,
+            "type": str(self.type),
+            "description": self.description,
+            "params": self.parameters.to_dict()
+        }
+
     def execute(self, params_values=[]):
         self.parameters.validate_parameters_values(params_values)
 

@@ -32,3 +32,18 @@ class CommandParameter():
         except ValueError:
             raise InvalidCommandParameterValueError(
                 value_provided=value, expected_type=self.type)
+
+    @staticmethod
+    def from_dict(parameter_dict):
+        return CommandParameter(
+            type=CommandParameterType[parameter_dict["type"]],
+            position=parameter_dict["position"],
+            description=parameter_dict["description"],
+        )
+
+    def to_dict(self):
+        return {
+            "position": self.position,
+            "type": str(self.type),
+            "description": self.description
+        }
