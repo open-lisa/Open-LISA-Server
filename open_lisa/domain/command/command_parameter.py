@@ -8,6 +8,9 @@ class CommandParameterType(Enum):
     INT = "int"
     STRING = "string"
 
+    def __str__(self):
+        return self.value
+
 
 class CommandParameter():
     def __init__(self, type, position, description=''):
