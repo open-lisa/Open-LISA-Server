@@ -8,7 +8,7 @@ class CommandType(Enum):
     CLIB = "clib"
 
     def __str__(self):
-        return self.value
+        return self.name
 
 
 class Command:

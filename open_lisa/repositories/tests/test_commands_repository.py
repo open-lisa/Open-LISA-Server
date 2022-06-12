@@ -1,6 +1,7 @@
 
 import pytest
 import os
+from open_lisa.domain.command.command import Command
 from open_lisa.domain.command.command_parameter import CommandParameter, CommandParameterType
 from open_lisa.domain.command.command_parameters import CommandParameters
 from open_lisa.domain.command.scpi_command import SCPICommand
@@ -35,6 +36,8 @@ def after_each():
         os.remove("{}.lock".format(TMP_DB_PATH))
     except:
         pass
+
+# Begin JSONRepository tests
 
 
 def test_CommandsRepository_initialization_should_create_json_file():
@@ -139,3 +142,28 @@ def test_remove_by_id():
     assert len(repo.get_all()) != 0
     repo.remove_by_id(command_id)
     assert len(repo.get_all()) == 0
+# End JSONRepository tests
+
+
+# Begin CommandsRepository tests
+def test_get_instrument_commands_should_return_a_list_of_commands_objects():
+    repo = CommandsRepository(path=TMP_DB_PATH)
+    other_instrument_id = 999
+    repo.add(
+        command=some_valid_scpi_command,
+        instrument_id=some_instrument_id
+    )
+    repo.add(
+        command=some_valid_scpi_command,
+        instrument_id=some_instrument_id
+    )
+    repo.add(
+        command=some_valid_scpi_command,
+        instrument_id=other_instrument_id
+    )
+
+    commands = repo.get_instrument_commands(instrument_id=some_instrument_id)
+    assert len(commands) == 2
+    for command in commands:
+        assert isinstance(command, Command)
+# End CommandsRepository tests
