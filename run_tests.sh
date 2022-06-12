@@ -1,1 +1,1 @@
-python -m pytest ./open_lisa
+python -m pytest ./open_lisa -s
