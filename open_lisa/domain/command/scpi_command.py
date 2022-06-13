@@ -1,4 +1,4 @@
-from open_lisa.domain.command.command import Command
+from open_lisa.domain.command.command import Command, CommandType
 from open_lisa.domain.command.command_parameters import CommandParameters
 from open_lisa.exceptions.invalid_scpi_syntax_for_command_parameters import InvalidSCPISyntaxForCommandParameters
 
@@ -6,7 +6,7 @@ SCPI_PARAMETER_VALUE_PLACEHOLDER = "{}"
 
 
 class SCPICommand(Command):
-    def __init__(self, name, pyvisa_resource, scpi_template_syntax, parameters=CommandParameters()):
+    def __init__(self, name, pyvisa_resource, scpi_template_syntax, parameters=CommandParameters(), description=''):
         """Creates a new SCPI command
 
         Args:
@@ -15,19 +15,37 @@ class SCPICommand(Command):
             scpi_template_syntax (string): SCPI command to be sent to pyvisa_resource, '{}' placeholders will be populated with parameters. Example 'CH{}:VOLts {}'
             parameters (CommandParameters): an instance of command parameters
         """
-        self._name = name
+        super().__init__(name=name, command=scpi_template_syntax,
+                         parameters=parameters, type=CommandType.SCPI, description=description)
         self._resource = pyvisa_resource
         self._scpi_template_syntax = scpi_template_syntax
 
-        assert isinstance(parameters, CommandParameters)
-        self._parameters = parameters
-
-        if self._parameters.amount != scpi_template_syntax.count(SCPI_PARAMETER_VALUE_PLACEHOLDER):
+        if self.parameters.amount != scpi_template_syntax.count(SCPI_PARAMETER_VALUE_PLACEHOLDER):
             raise InvalidSCPISyntaxForCommandParameters(
-                syntax=scpi_template_syntax, placeholders_amount=self._parameters.amount)
+                syntax=scpi_template_syntax, placeholders_amount=self.parameters.amount)
+
+    @staticmethod
+    def from_dict(command_dict, pyvisa_resource):
+        return SCPICommand(
+            name=command_dict["name"],
+            pyvisa_resource=pyvisa_resource,
+            scpi_template_syntax=command_dict["command"],
+            parameters=CommandParameters.from_dict(command_dict["params"]),
+            description=command_dict["description"]
+        )
+
+    def to_dict(self, instrument_id):
+        return {
+            "instrument_id": instrument_id,
+            "name": self.name,
+            "command": self.command,
+            "type": str(self.type),
+            "description": self.description,
+            "params": self.parameters.to_dict()
+        }
 
     def execute(self, params_values=[]):
-        self._parameters.validate_parameters_values(params_values)
+        self.parameters.validate_parameters_values(params_values)
 
         scpi_command = self.__generate_scpi_command_with_injected_params(
             params_values)
