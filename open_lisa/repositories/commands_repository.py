@@ -2,7 +2,7 @@ from open_lisa.domain.command.command import Command, CommandType
 from open_lisa.domain.command.scpi_command import SCPICommand
 from open_lisa.repositories.json_repository import JSONRepository
 
-DEFAULT_PATH = 'database/commands.db.json'
+DEFAULT_PATH = 'data/database/commands.db.json'
 
 
 class CommandsRepository(JSONRepository):
@@ -24,4 +24,6 @@ class CommandsRepository(JSONRepository):
     def __deserialize_commands(self, command_dict, pyvisa_resource):
         if command_dict["type"] == str(CommandType.SCPI):
             return SCPICommand.from_dict(command_dict=command_dict, pyvisa_resource=pyvisa_resource)
-        # TODO is type CLibCommand
+        if command_dict["type"] == str(CommandType.CLIB):
+            pass
+            # TODO is type CLibCommand
