@@ -52,6 +52,8 @@ class SCPICommand(Command):
 
         # TODO: test that with write + read_raw is enough https://trello.com/c/tLuwyeAD/26-refactor-tipos-de-comandos-scpi
         self._resource.write(scpi_command)
+
+        # TODO: return an instance of CommandReturn
         return self._resource.read_raw()
 
     def __generate_scpi_command_with_injected_params(self, params_values):
