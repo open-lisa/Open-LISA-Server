@@ -2,6 +2,7 @@ import json
 import logging
 import ctypes
 from os import remove
+from open_lisa.repositories.commands_repository import CommandsRepository
 
 import pyvisa
 from .constants import C_TYPE_BYTES, INSTRUMENT_STATUS_AVAILABLE, INSTRUMENT_STATUS_UNAVAILABLE, INSTRUMENT_STATUS_NOT_REGISTERED, INSTRUMENT_STATUS_BUSY, COMMAND_TYPE_SET, COMMAND_TYPE_QUERY, COMMAND_TYPE_QUERY_BUFFER, COMMAND_TYPE_C_LIB, C_TYPE_FLOAT, C_TYPE_INT, C_TYPE_STRING
@@ -9,6 +10,56 @@ from open_lisa.exceptions.command_not_found_error import CommandNotFoundError
 from open_lisa.exceptions.invalid_parameter_error import InvalidParameterError
 from open_lisa.exceptions.invalid_amount_parameters_error import InvalidAmountParametersError
 from open_lisa.exceptions.instrument_unavailable_error import InstrumentUnavailableError
+
+UNKNOWN_FIELD_VALUE = "UNKNOWN"
+UNKNOWN_INSTRUMENT_DESCRIPTION = "Not registered instrument"
+# TODO: change name to Instrument when all is integrated and legacy code removed
+# TODO: move to domain folder
+
+
+class InstrumentV2:
+    def __init__(self, id, physical_address=UNKNOWN_FIELD_VALUE, brand=UNKNOWN_FIELD_VALUE, model=UNKNOWN_FIELD_VALUE, description=UNKNOWN_INSTRUMENT_DESCRIPTION,
+                 pyvisa_resource=None, status=INSTRUMENT_STATUS_UNAVAILABLE):
+        self.id = id
+        self.physical_address = physical_address
+        self.brand = brand
+        self.model = model
+        self.description = description
+        self.pyvisa_resource = pyvisa_resource
+        self.status = status
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "physical_address": self.physical_address,
+            "brand": self.brand,
+            "model": self.model,
+            "status": self.status,
+            "description": self.description,
+        }
+
+    def __str__(self):
+        # TODO: print for debugging and logs
+        pass
+
+    def send_command(self, command_name, command_parameters_values):
+        pass
+        # TODO: validate that instrument is at a valid status to receive commands
+        # TODO: command_parameters_values should be parsed here or in server_protocol?
+        command = self.__get_command_by_name(command_name)
+        command.execute(command_parameters_values)
+        # TODO: return CommandReturn.value
+        # NOTE: that value always is sent as string to the SDK
+        # but somewhere should be validated that can be parsed as the return type
+        # that was specified
+
+    def __get_command_by_name(self, command_name):
+        # TODO: validate that command_name exists for this instrument
+        for command in self._commands:
+            if command.name == command_name:
+                return command
+        # TODO: raise exception
+
 
 class Instrument:
     def __init__(self, id, brand, model, description, command_file):
@@ -31,7 +82,8 @@ class Instrument:
             with open('open_lisa/instrument/specs/{}'.format(self.command_file)) as file:
                 self.commands_map = json.load(file)
         except OSError as e:
-            logging.error("[Instrument][load_commands][OPEN_FILE_FAIL] - {}".format(e))
+            logging.error(
+                "[Instrument][load_commands][OPEN_FILE_FAIL] - {}".format(e))
 
     def update_status(self):
         rm = pyvisa.ResourceManager()
@@ -63,12 +115,12 @@ class Instrument:
                "ID       : {}\n\t" \
                "Cmd File : {}\n\t" \
                "Status   : {}".format(
-            self.description,
-            self.brand,
-            self.model,
-            self.id,
-            self.command_file,
-            self.status)
+                   self.description,
+                   self.brand,
+                   self.model,
+                   self.id,
+                   self.command_file,
+                   self.status)
 
     def as_dict(self):
         return {
@@ -81,7 +133,8 @@ class Instrument:
 
     def send_command(self, command):
         if not self.status == INSTRUMENT_STATUS_AVAILABLE:
-            raise InstrumentUnavailableError("instrument {} {} not available for sending command".format(self.brand, self.model))
+            raise InstrumentUnavailableError(
+                "instrument {} {} not available for sending command".format(self.brand, self.model))
 
         self.validate_command(command)
         commands_parts = command.split(' ')
@@ -90,7 +143,8 @@ class Instrument:
         command_type = self.commands_map[command_base]['type']
 
         # Inject command parameters
-        command_with_params = self.__generate_command_with_injected_params(command)
+        command_with_params = self.__generate_command_with_injected_params(
+            command)
 
         if command_type == COMMAND_TYPE_SET:
             written_bytes = self.device.write(command_with_params)
@@ -113,9 +167,11 @@ class Instrument:
 
         number_of_parameters_sent = len(commands_parts) - 1
         if 'params' in self.commands_map[command_base]:
-            number_of_parameters_required = len(self.commands_map[command_base]['params'])
+            number_of_parameters_required = len(
+                self.commands_map[command_base]['params'])
             if number_of_parameters_required != number_of_parameters_sent:
-                raise InvalidAmountParametersError(number_of_parameters_sent, number_of_parameters_required)
+                raise InvalidAmountParametersError(
+                    number_of_parameters_sent, number_of_parameters_required)
 
             for required_param_info in self.commands_map[command_base]['params']:
                 sent_param = commands_parts[required_param_info['position']]
@@ -197,7 +253,8 @@ class Instrument:
         # Generate function arguments
         arguments = []
         if "params" in command_obj:
-            arguments = [self.__map_type_to_ctype(param_obj["type"])(self.__convert_param_value(param_obj["type"], param_value)) for param_obj, param_value  in zip(command_obj["params"], commands_parts[1:])]
+            arguments = [self.__map_type_to_ctype(param_obj["type"])(self.__convert_param_value(
+                param_obj["type"], param_value)) for param_obj, param_value in zip(command_obj["params"], commands_parts[1:])]
 
         # Call function and return result
         if return_type == C_TYPE_BYTES:
@@ -206,10 +263,13 @@ class Instrument:
                 file_path = "tmp_file_buffer.bin"
                 arguments.append(ctypes.c_char_p(file_path.encode()))
                 result = c_lib[c_function_name](*arguments)
-                logging.debug("[__process_c_lib_call] result from C function: {}".format(result))
+                logging.debug(
+                    "[__process_c_lib_call] result from C function: {}".format(result))
                 if result:
-                    message = bytes("error code from C function: {}".format(result).encode())
-                    logging.debug("[__process_c_lib_call] returning error message as bytes: '{}'".format(message))
+                    message = bytes(
+                        "error code from C function: {}".format(result).encode())
+                    logging.debug(
+                        "[__process_c_lib_call] returning error message as bytes: '{}'".format(message))
                     return message
                 else:
                     data = bytes()
@@ -222,9 +282,9 @@ class Instrument:
 
                     return bytes(data)
             except Exception as e:
-                logging.error("[__process_c_lib_call] error handling C function that returns bytes: {}".format(e))
+                logging.error(
+                    "[__process_c_lib_call] error handling C function that returns bytes: {}".format(e))
                 return b"error trying to execute C function that returns bytes"
         else:
             # If return type is not bytes just return the result
             return str(c_lib[c_function_name](*arguments))
-
