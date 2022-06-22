@@ -1,6 +1,7 @@
 from enum import Enum
 
 from open_lisa.domain.command.command_parameters import CommandParameters
+from open_lisa.domain.command.command_return import CommandReturn
 
 
 class CommandType(Enum):
@@ -12,14 +13,16 @@ class CommandType(Enum):
 
 
 class Command:
-    def __init__(self, name, command, parameters, type, description) -> None:
+    def __init__(self, name, command, parameters, command_return, type, description) -> None:
         self.name = name
         self.command = command
         self.type = type
         self.description = description
 
         assert isinstance(parameters, CommandParameters)
+        assert isinstance(command_return, CommandReturn)
         self.parameters = parameters
+        self.command_return = command_return
 
     @staticmethod
     def from_dict():
