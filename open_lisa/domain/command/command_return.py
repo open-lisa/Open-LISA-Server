@@ -19,7 +19,6 @@ class CommandReturn():
         assert isinstance(type, CommandReturnType)
         self.type = type
         self.description = description
-        self.value = None
 
     @staticmethod
     def from_dict(parameter_dict):
@@ -27,10 +26,6 @@ class CommandReturn():
             type=CommandReturnType[parameter_dict["type"]],
             description=parameter_dict["description"],
         )
-
-    def set_value(self, value):
-        # TODO: validate type
-        self.value = value
 
     def to_dict(self):
         return {
