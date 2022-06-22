@@ -1,1 +1,1 @@
-python -m pytest ./open_lisa -s
+python -m pytest ./open_lisa -s  --pdb
