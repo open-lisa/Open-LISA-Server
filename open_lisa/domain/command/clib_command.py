@@ -1,8 +1,13 @@
+import ctypes
+import logging
+import os
 from open_lisa.domain.command.command import Command, CommandType
 from open_lisa.domain.command.command_parameters import CommandParameters
-from open_lisa.domain.command.command_return import CommandReturn
+from open_lisa.domain.command.command_return import CommandReturn, CommandReturnType
 
 C_LIBS_PATH = 'data/clibs/'
+
+TMP_BUFFER_FILE = "tmp_file_buffer.bin"
 
 
 class CLibCommand(Command):
@@ -45,7 +50,40 @@ class CLibCommand(Command):
         }
 
     def execute(self, params_values=[]):
-        # TODO: implement execution
-        # similar to __process_c_lib_call in Instrument
-        # remember to handle bytes CommandReturn type with a tmp file
-        pass
+        self.parameters.validate_parameters_values(params_values)
+
+        # Load the shared library into c types.
+        c_lib = ctypes.CDLL(self.lib_file_name)
+
+        # c_lib is an object instance and function name is accessed like
+        # an object property, doing c_lib[self.lib_function] is incorrect
+        c_function = getattr(c_lib, self.lib_function)
+
+        # Set returning type for marshalling
+        command_return_ctype = self.command_return.to_ctype()
+        c_function.restype = command_return_ctype
+
+        # Generate C function arguments
+        arguments = self.parameters.parameters_values_to_c_function_arguments(
+            params_values)
+
+        if self.command_return.type == CommandReturnType.BYTES:
+            arguments.append(ctypes.c_char_p(TMP_BUFFER_FILE.encode()))
+            result = c_function(*arguments)
+            if result:
+                logging.error("[CLibCommand][command={}] fail calling C function that returns bytes, result code is {}".format(
+                    self.name, result))
+                return bytes("C function error code {}".format(result).encode())
+            else:
+                data = bytes()
+                with open(TMP_BUFFER_FILE, "rb") as f:
+                    data = f.read()
+
+                # Delete file
+                os.remove(TMP_BUFFER_FILE)
+
+                return bytes(data)
+        else:
+            result = c_function(*arguments)
+            # ctypes c_char_p is returned as bytes
+            return result.decode() if c_function.restype == ctypes.c_char_p else result
