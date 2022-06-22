@@ -1,11 +1,13 @@
 
 import pytest
+import sys
 import os
+from open_lisa.domain.command.clib_command import CLibCommand
 from open_lisa.domain.command.command import Command
 from open_lisa.domain.command.command_parameter import CommandParameter, CommandParameterType
 from open_lisa.domain.command.command_parameters import CommandParameters
 from open_lisa.domain.command.scpi_command import SCPICommand
-from open_lisa.repositories.commands_repository import CommandsRepository
+from open_lisa.repositories.commands_repository import DEFAULT_C_LIBS_PATH, CommandsRepository
 
 TMP_DB_PATH = "tmp.commands.db.json"
 
@@ -26,6 +28,13 @@ some_valid_scpi_command = SCPICommand(
 some_instrument_id = 1234
 
 
+# Windows systems should use .dll files and Linux based systems .so files
+C_LIB_EXTENSION = "dll" if sys.platform.startswith("win") else "so"
+
+MOCK_LIB_NAME = "mock_lib.{}".format(C_LIB_EXTENSION)
+MOCK_LIB_PATH = "{}{}".format(DEFAULT_C_LIBS_PATH, MOCK_LIB_NAME)
+
+
 @pytest.fixture(autouse=True)
 def after_each():
     # code here is before each
@@ -41,12 +50,12 @@ def after_each():
 
 
 def test_CommandsRepository_initialization_should_create_json_file():
-    CommandsRepository(path=TMP_DB_PATH)
+    CommandsRepository(commands_db_path=TMP_DB_PATH)
     assert os.path.isfile(TMP_DB_PATH)
 
 
 def test_add_scpi_command_should_add_an_entry_in_json_file():
-    repo = CommandsRepository(path=TMP_DB_PATH)
+    repo = CommandsRepository(commands_db_path=TMP_DB_PATH)
     command_id = repo.add(command=some_valid_scpi_command,
                           instrument_id=some_instrument_id)
 
@@ -60,7 +69,7 @@ def test_add_scpi_command_should_add_an_entry_in_json_file():
 
 
 def test_add_scpi_command_should_do_that_get_all_returns_data():
-    repo = CommandsRepository(path=TMP_DB_PATH)
+    repo = CommandsRepository(commands_db_path=TMP_DB_PATH)
     assert len(repo.get_all()) == 0
     repo.add(
         command=some_valid_scpi_command,
@@ -70,7 +79,7 @@ def test_add_scpi_command_should_do_that_get_all_returns_data():
 
 
 def test_get_existing_command_by_name():
-    repo = CommandsRepository(path=TMP_DB_PATH)
+    repo = CommandsRepository(commands_db_path=TMP_DB_PATH)
     repo.add(
         command=some_valid_scpi_command,
         instrument_id=some_instrument_id
@@ -81,7 +90,7 @@ def test_get_existing_command_by_name():
 
 
 def test_get_commands_of_an_instrument():
-    repo = CommandsRepository(path=TMP_DB_PATH)
+    repo = CommandsRepository(commands_db_path=TMP_DB_PATH)
     repo.add(
         command=some_valid_scpi_command,
         instrument_id=some_instrument_id
@@ -99,14 +108,14 @@ def test_get_commands_of_an_instrument():
 
 
 def test_get_not_existing_command_by_name():
-    repo = CommandsRepository(path=TMP_DB_PATH)
+    repo = CommandsRepository(commands_db_path=TMP_DB_PATH)
     command = repo.get_first_by_key_value(
         key="name", value=some_valid_scpi_command.name)
     assert command is None
 
 
 def test_update_by_id_should_update_entry():
-    repo = CommandsRepository(path=TMP_DB_PATH)
+    repo = CommandsRepository(commands_db_path=TMP_DB_PATH)
     id = repo.add(
         command=some_valid_scpi_command,
         instrument_id=some_instrument_id
@@ -118,7 +127,7 @@ def test_update_by_id_should_update_entry():
 
 
 def test_update_all_should_update_entry():
-    repo = CommandsRepository(path=TMP_DB_PATH)
+    repo = CommandsRepository(commands_db_path=TMP_DB_PATH)
     id = repo.add(
         command=some_valid_scpi_command,
         instrument_id=some_instrument_id
@@ -133,7 +142,7 @@ def test_update_all_should_update_entry():
 
 
 def test_remove_by_id():
-    repo = CommandsRepository(path=TMP_DB_PATH)
+    repo = CommandsRepository(commands_db_path=TMP_DB_PATH)
     assert len(repo.get_all()) == 0
     command_id = repo.add(
         command=some_valid_scpi_command,
@@ -147,7 +156,7 @@ def test_remove_by_id():
 
 # Begin CommandsRepository tests
 def test_get_instrument_commands_should_return_a_list_of_commands_objects():
-    repo = CommandsRepository(path=TMP_DB_PATH)
+    repo = CommandsRepository(commands_db_path=TMP_DB_PATH)
     other_instrument_id = 999
     repo.add(
         command=some_valid_scpi_command,
@@ -166,4 +175,14 @@ def test_get_instrument_commands_should_return_a_list_of_commands_objects():
     assert len(commands) == 2
     for command in commands:
         assert isinstance(command, Command)
+
+
+def test_should_only_store_c_lib_filename_without_path_for_CLibCommands():
+    repo = CommandsRepository(commands_db_path=TMP_DB_PATH)
+    clib_command = CLibCommand(
+        name="name", lib_function="sum", lib_file_name=MOCK_LIB_PATH)
+    command_id = repo.add(command=clib_command,
+                          instrument_id=some_instrument_id)
+    command_dict = repo.get_by_id(command_id)
+    assert command_dict["lib_file_name"] == MOCK_LIB_NAME
 # End CommandsRepository tests
