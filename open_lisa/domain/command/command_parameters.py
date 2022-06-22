@@ -1,4 +1,4 @@
-from open_lisa.domain.command.command_parameter import CommandParameter
+from open_lisa.domain.command.command_parameter import CommandParameter, CommandParameterType
 from open_lisa.exceptions.invalid_amount_parameters_error import InvalidAmountParametersError
 
 
@@ -35,6 +35,19 @@ class CommandParameters():
         return [
             param.to_dict() for param in self._parameters
         ]
+
+    def parameters_values_to_c_function_arguments(self, params_values=[]):
+        function_arguments = []
+        for param in self._parameters:
+            param_value = params_values[param.position - 1]
+            param_ctype = param.to_ctype()
+            casted_value = param.validate_value(param_value)
+            ctype_value = \
+                casted_value.encode() if param.type == CommandParameterType.STRING else casted_value
+            function_arguments.append(
+                param_ctype(ctype_value))
+
+        return function_arguments
 
     def __sort_parameters_by_position(self):
         self._parameters.sort(key=lambda param: param.position)
