@@ -49,6 +49,5 @@ int copy_image(const char * mock_image_path, const char* tmp_file_buffer) {
 
     fclose(input_file);
     fclose(output_file);
-    printf("[copy_image] success\n");
     return 0;
 }

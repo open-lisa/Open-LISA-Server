@@ -7,6 +7,6 @@ class InvalidCommandParameterValueError(OpenLISAException):
     """
 
     def __init__(self, value_provided, expected_type):
-        message = "parameter value {} is not valid for a command parameter of type '{}".format(
+        message = "parameter value {} is not valid for a command parameter of type {}".format(
             value_provided, expected_type)
         super().__init__(message)

@@ -4,6 +4,8 @@ import os
 from open_lisa.domain.command.command import Command, CommandType
 from open_lisa.domain.command.command_parameters import CommandParameters
 from open_lisa.domain.command.command_return import CommandReturn, CommandReturnType
+from open_lisa.exceptions.invalid_clib_command_function_name import InvalidCLibCommandFunctionNameError
+from open_lisa.exceptions.invalid_clib_command_lib_file import InvalidCLibCommandLibFileError
 
 C_LIBS_PATH = 'data/clibs/'
 
@@ -26,6 +28,27 @@ class CLibCommand(Command):
         self.lib_function = lib_function
         self.lib_file_name = lib_file_name
         self.command_return = command_return
+
+        try:
+            # Load the shared library into c types.
+            self._c_lib = ctypes.CDLL(self.lib_file_name)
+        except Exception as e:
+            logging.error('[CLibCommand][__init__][CDLL] error: {}'.format(e))
+            raise InvalidCLibCommandLibFileError(lib_name=self.lib_file_name)
+
+        try:
+            # c_lib is an object instance and function name is accessed like
+            # an object property, doing c_lib[self.lib_function] is incorrect
+            self._c_function = getattr(self._c_lib, self.lib_function)
+        except Exception as e:
+            logging.error(
+                '[CLibCommand][__init__][INVALID_LIB_FUNCTION] error: {}'.format(e))
+            raise InvalidCLibCommandFunctionNameError(
+                function_name=self.lib_function, lib_name=self.lib_file_name)
+
+        # Set returning type for marshalling
+        command_return_ctype = self.command_return.to_ctype()
+        self._c_function.restype = command_return_ctype
 
     @staticmethod
     def from_dict(command_dict, pyvisa_resource):
@@ -52,24 +75,13 @@ class CLibCommand(Command):
     def execute(self, params_values=[]):
         self.parameters.validate_parameters_values(params_values)
 
-        # Load the shared library into c types.
-        c_lib = ctypes.CDLL(self.lib_file_name)
-
-        # c_lib is an object instance and function name is accessed like
-        # an object property, doing c_lib[self.lib_function] is incorrect
-        c_function = getattr(c_lib, self.lib_function)
-
-        # Set returning type for marshalling
-        command_return_ctype = self.command_return.to_ctype()
-        c_function.restype = command_return_ctype
-
         # Generate C function arguments
         arguments = self.parameters.parameters_values_to_c_function_arguments(
             params_values)
 
         if self.command_return.type == CommandReturnType.BYTES:
             arguments.append(ctypes.c_char_p(TMP_BUFFER_FILE.encode()))
-            result = c_function(*arguments)
+            result = self._c_function(*arguments)
             if result:
                 logging.error("[CLibCommand][command={}] fail calling C function that returns bytes, result code is {}".format(
                     self.name, result))
@@ -84,6 +96,6 @@ class CLibCommand(Command):
 
                 return bytes(data)
         else:
-            result = c_function(*arguments)
+            result = self._c_function(*arguments)
             # ctypes c_char_p is returned as bytes
-            return result.decode() if c_function.restype == ctypes.c_char_p else result
+            return result.decode() if self._c_function.restype == ctypes.c_char_p else result

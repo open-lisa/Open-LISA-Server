@@ -6,6 +6,8 @@ from open_lisa.domain.command.clib_command import CLibCommand
 from open_lisa.domain.command.command_parameter import CommandParameter, CommandParameterType
 from open_lisa.domain.command.command_parameters import CommandParameters
 from open_lisa.domain.command.command_return import CommandReturn, CommandReturnType
+from open_lisa.exceptions.invalid_clib_command_function_name import InvalidCLibCommandFunctionNameError
+from open_lisa.exceptions.invalid_clib_command_lib_file import InvalidCLibCommandLibFileError
 
 # Windows systems should use .dll files and Linux based systems .so files
 C_LIB_EXTENSION = "dll" if sys.platform.startswith("win") else "so"
@@ -47,7 +49,10 @@ COPY_IMAGE_RETURN = CommandReturn(type=CommandReturnType.BYTES)
 
 def test_clib_command_creation_returns_an_instance_of_CLibCommand():
     some_clib_command = CLibCommand(
-        name="some name", lib_function="some_function", lib_file_name="pixelflyqe.dll")
+        name="some name",
+        lib_function="sum",
+        lib_file_name=MOCK_LIB_ABSOLUTE_PATH
+    )
     assert isinstance(some_clib_command, CLibCommand)
 
 
@@ -120,5 +125,23 @@ def test_execute_should_call_the_copy_image_function_from_the_c_lib():
     assert original == copy
 
 
-def test_execute_exceptions():
-    pass
+def test_invalid_function_name_exception():
+    with pytest.raises(InvalidCLibCommandFunctionNameError):
+        CLibCommand(
+            name="a_name",
+            lib_function="unexisting_sum_function",
+            lib_file_name=MOCK_LIB_ABSOLUTE_PATH,
+            parameters=SUM_PARAMETERS,
+            command_return=SUM_RETURN
+        )
+
+
+def test_invalid_function_name_exception():
+    with pytest.raises(InvalidCLibCommandLibFileError):
+        CLibCommand(
+            name="a_name",
+            lib_function="sum",
+            lib_file_name="unexisting.dll",
+            parameters=SUM_PARAMETERS,
+            command_return=SUM_RETURN
+        )
