@@ -1,3 +1,4 @@
+import ctypes
 from enum import Enum
 
 from open_lisa.exceptions.invalid_command_parameter_value_error import InvalidCommandParameterValueError
@@ -22,13 +23,15 @@ class CommandParameter():
     def validate_value(self, value):
         try:
             if self.type == CommandParameterType.FLOAT:
-                float(value)
+                return float(value)
             if self.type == CommandParameterType.INT:
                 int(value)
                 if str(int(value)) != str(value):  # it is a float
                     raise ValueError
+                return int(value)
             if self.type == CommandParameterType.STRING:
                 str(value)
+                return str(value)
         except ValueError:
             raise InvalidCommandParameterValueError(
                 value_provided=value, expected_type=self.type)
@@ -47,3 +50,11 @@ class CommandParameter():
             "type": str(self.type),
             "description": self.description
         }
+
+    def to_ctype(self):
+        if self.type == CommandParameterType.INT:
+            return ctypes.c_int
+        elif self.type == CommandParameterType.FLOAT:
+            return ctypes.c_float
+        elif self.type == CommandParameterType.STRING:
+            return ctypes.c_char_p
