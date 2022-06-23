@@ -99,5 +99,6 @@ class CLibCommand(Command):
                 return bytes(data)
         else:
             result = self._c_function(*arguments)
-            # ctypes c_char_p is returned as bytes
-            return result.decode() if self._c_function.restype == ctypes.c_char_p else result
+            # CommandReturnType.STRING does not exist in C, for that reason char* in C
+            # is mapped to bytes() in Python and should be decoded
+            return result.decode() if self.command_return.type == CommandReturnType.STRING else result
