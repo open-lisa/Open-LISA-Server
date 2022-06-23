@@ -6,6 +6,7 @@ from open_lisa.domain.command.clib_command import CLibCommand
 from open_lisa.domain.command.command_parameter import CommandParameter, CommandParameterType
 from open_lisa.domain.command.command_parameters import CommandParameters
 from open_lisa.domain.command.command_return import CommandReturn, CommandReturnType
+from open_lisa.exceptions.command_execution_error import CommandExecutionError
 from open_lisa.exceptions.invalid_clib_command_function_name import InvalidCLibCommandFunctionNameError
 from open_lisa.exceptions.invalid_clib_command_lib_file import InvalidCLibCommandLibFileError
 
@@ -133,6 +134,22 @@ def test_execute_should_call_the_copy_image_function_from_the_c_lib():
     with open(mock_image_path, "rb") as f:
         original = f.read()
     assert original == copy
+
+
+def test_execute_should_call_the_copy_image_function_from_the_c_lib_and_raise_CommandExecutionError_if_img_path_is_invalid():
+    copy_image_clib_command = CLibCommand(
+        name="a_name",
+        lib_function="copy_image",
+        lib_file_name=MOCK_LIB_ABSOLUTE_PATH,
+        parameters=COPY_IMAGE_PARAMETERS,
+        command_return=COPY_IMAGE_RETURN
+    )
+    unexisting_image = "unexisting.jpg"
+    mock_image_path = "{}/mock_libs/{}".format(
+        os.path.dirname(__file__), unexisting_image)
+
+    with pytest.raises(CommandExecutionError):
+        copy_image_clib_command.execute([mock_image_path])
 
 
 def test_invalid_function_name_exception():

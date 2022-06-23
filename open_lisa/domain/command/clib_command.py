@@ -4,6 +4,7 @@ import os
 from open_lisa.domain.command.command import Command, CommandType
 from open_lisa.domain.command.command_parameters import CommandParameters
 from open_lisa.domain.command.command_return import CommandReturn, CommandReturnType
+from open_lisa.exceptions.command_execution_error import CommandExecutionError
 from open_lisa.exceptions.invalid_clib_command_function_name import InvalidCLibCommandFunctionNameError
 from open_lisa.exceptions.invalid_clib_command_lib_file import InvalidCLibCommandLibFileError
 
@@ -79,12 +80,15 @@ class CLibCommand(Command):
             params_values)
 
         if self.command_return.type == CommandReturnType.BYTES:
+            # NOTE: functions that returns bytes should return int error codes.
+            # If code is 0 the bytes were successfully saved into the file buffer
             arguments.append(ctypes.c_char_p(TMP_BUFFER_FILE.encode()))
-            result = self._c_function(*arguments)
-            if result:
-                logging.error("[CLibCommand][command={}] fail calling C function that returns bytes, result code is {}".format(
-                    self.name, result))
-                return bytes("C function error code {}".format(result).encode())
+            error_code = self._c_function(*arguments)
+            if error_code != 0:
+                logging.error("[CLibCommand][command={}] fail calling C function that returns bytes, error code is {}".format(
+                    self.name, error_code))
+                raise CommandExecutionError(command=self.name, additional_info="C function {} returned error_code {}".format(
+                    self.lib_function, error_code))
             else:
                 data = bytes()
                 with open(TMP_BUFFER_FILE, "rb") as f:
@@ -96,5 +100,6 @@ class CLibCommand(Command):
                 return bytes(data)
         else:
             result = self._c_function(*arguments)
-            # ctypes c_char_p is returned as bytes
-            return result.decode() if self._c_function.restype == ctypes.c_char_p else result
+            # CommandReturnType.STRING does not exist in C, for that reason char* in C
+            # is mapped to bytes() in Python and should be decoded
+            return result.decode() if self.command_return.type == CommandReturnType.STRING else result
