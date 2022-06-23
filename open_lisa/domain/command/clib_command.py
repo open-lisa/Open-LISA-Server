@@ -81,6 +81,8 @@ class CLibCommand(Command):
             params_values)
 
         if self.command_return.type == CommandReturnType.BYTES:
+            # NOTE: functions that returns bytes should return int error codes.
+            # If code is 0 the bytes were successfully saved into the file buffer
             arguments.append(ctypes.c_char_p(TMP_BUFFER_FILE.encode()))
             error_code = self._c_function(*arguments)
             if error_code != 0:
