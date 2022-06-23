@@ -1,12 +1,13 @@
 from open_lisa.domain.command.command import Command, CommandType
 from open_lisa.domain.command.command_parameters import CommandParameters
+from open_lisa.domain.command.command_return import CommandReturn, CommandReturnType
 from open_lisa.exceptions.invalid_scpi_syntax_for_command_parameters import InvalidSCPISyntaxForCommandParameters
 
 SCPI_PARAMETER_VALUE_PLACEHOLDER = "{}"
 
 
 class SCPICommand(Command):
-    def __init__(self, name, pyvisa_resource, scpi_template_syntax, parameters=CommandParameters(), description=''):
+    def __init__(self, name, pyvisa_resource, scpi_template_syntax, parameters=CommandParameters(), command_return=CommandReturn(), description=''):
         """Creates a new SCPI command
 
         Args:
@@ -14,9 +15,10 @@ class SCPICommand(Command):
             pyvisa_resource (pyvisa.Resource): a valid pyvisa Resource instance https://pyvisa.readthedocs.io/en/latest/api/resources.html#pyvisa.resources.Resource
             scpi_template_syntax (string): SCPI command to be sent to pyvisa_resource, '{}' placeholders will be populated with parameters. Example 'CH{}:VOLts {}'
             parameters (CommandParameters): an instance of command parameters
+            command_return (CommandReturn): an instance of command return
         """
         super().__init__(name=name, command=scpi_template_syntax,
-                         parameters=parameters, type=CommandType.SCPI, description=description)
+                         parameters=parameters, command_return=command_return, type=CommandType.SCPI, description=description)
         self._resource = pyvisa_resource
         self._scpi_template_syntax = scpi_template_syntax
 
@@ -31,6 +33,7 @@ class SCPICommand(Command):
             pyvisa_resource=pyvisa_resource,
             scpi_template_syntax=command_dict["command"],
             parameters=CommandParameters.from_dict(command_dict["params"]),
+            command_return=CommandReturn.from_dict(command_dict["return"]),
             description=command_dict["description"]
         )
 
@@ -41,7 +44,8 @@ class SCPICommand(Command):
             "command": self.command,
             "type": str(self.type),
             "description": self.description,
-            "params": self.parameters.to_dict()
+            "params": self.parameters.to_dict(),
+            "return": self.command_return.to_dict(),
         }
 
     def execute(self, params_values=[]):
@@ -50,8 +54,17 @@ class SCPICommand(Command):
         scpi_command = self.__generate_scpi_command_with_injected_params(
             params_values)
 
-        # TODO: test that with write + read_raw is enough https://trello.com/c/tLuwyeAD/26-refactor-tipos-de-comandos-scpi
-        self._resource.write(scpi_command)
+        # TODO: probar que tiene el mismo comportamiento que con el type=QUERY, QUERY_BUFFER, SET (proximo a deprecarse con este nuevo modelo)
+        if self.command_return.type == CommandReturnType.BYTES:
+            # returns read_raw as in QUERY_BUFFER
+            self._resource.write(scpi_command)
+            return self._resource.read_raw()
+        elif self.command_return.type == CommandReturnType.VOID:
+            # returns written bytes as in type SET
+            return str(self._resource.write(scpi_command))
+        else:
+            # assumes that is expected to behave as QUERY
+            return self._resource.query(scpi_command)
 
         # TODO: return an instance of CommandReturn
         return self._resource.read_raw()

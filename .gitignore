@@ -5,6 +5,7 @@ __pycache__/
 
 # C extensions
 *.so
+!mock_lib.so
 
 # Distribution / packaging
 .Python

@@ -8,8 +8,6 @@ from open_lisa.exceptions.command_execution_error import CommandExecutionError
 from open_lisa.exceptions.invalid_clib_command_function_name import InvalidCLibCommandFunctionNameError
 from open_lisa.exceptions.invalid_clib_command_lib_file import InvalidCLibCommandLibFileError
 
-C_LIBS_PATH = 'data/clibs/'
-
 TMP_BUFFER_FILE = "tmp_file_buffer.bin"
 
 
@@ -20,15 +18,14 @@ class CLibCommand(Command):
         Args:
             name (string): the string syntax that identifies the command
             lib_function (string): Lib function to be called in the lib file
-            lib_file_name (string): Lib file name (C libs should be stored in C_LIBS_PATH)
+            lib_file_name (string): Lib file name should be an absolute path in order to find the library
             parameters (CommandParameters): an instance of command parameters
         """
         super().__init__(name=name, command=lib_function,
-                         parameters=parameters, type=CommandType.CLIB, description=description)
+                         parameters=parameters, command_return=command_return, type=CommandType.CLIB, description=description)
 
         self.lib_function = lib_function
         self.lib_file_name = lib_file_name
-        self.command_return = command_return
 
         try:
             # Load the shared library into c types.
@@ -52,12 +49,13 @@ class CLibCommand(Command):
         self._c_function.restype = command_return_ctype
 
     @staticmethod
-    def from_dict(command_dict, pyvisa_resource):
+    def from_dict(command_dict, lib_base_path):
         return CLibCommand(
             name=command_dict["name"],
-            lib_function=pyvisa_resource,
-            lib_file_name=command_dict["lib_file_name"],
+            lib_function=command_dict["command"],
+            lib_file_name=lib_base_path + command_dict["lib_file_name"],
             parameters=CommandParameters.from_dict(command_dict["params"]),
+            command_return=CommandReturn.from_dict(command_dict["return"]),
             description=command_dict["description"]
         )
 
@@ -67,7 +65,8 @@ class CLibCommand(Command):
             "name": self.name,
             "command": self.lib_function,
             "type": str(self.type),
-            "lib_file_name": self.lib_file_name,
+            # only return filename
+            "lib_file_name": os.path.basename(self.lib_file_name),
             "description": self.description,
             "params": self.parameters.to_dict(),
             "return": self.command_return.to_dict()
