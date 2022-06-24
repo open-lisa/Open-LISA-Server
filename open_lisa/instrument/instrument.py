@@ -48,10 +48,6 @@ class InstrumentV2:
         # TODO: command_parameters_values should be parsed here or in server_protocol?
         command = self.__get_command_by_name(command_name)
         command.execute(command_parameters_values)
-        # TODO: return CommandReturn.value
-        # NOTE: that value always is sent as string to the SDK
-        # but somewhere should be validated that can be parsed as the return type
-        # that was specified
 
     def __get_command_by_name(self, command_name):
         # TODO: validate that command_name exists for this instrument
