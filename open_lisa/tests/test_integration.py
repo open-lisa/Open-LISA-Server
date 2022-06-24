@@ -60,6 +60,6 @@ def test_get_instrument_commands():
     sdk.disconnect()
 
 
-def test_get_image_from_mock_camera():
-    pass
-    # Implement after refactor with GUASONESCO image
+# def test_get_image_from_mock_camera():
+#     pass
+#     # Implement after refactor with GUASONESCO image
