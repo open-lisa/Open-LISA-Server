@@ -66,9 +66,6 @@ class SCPICommand(Command):
             # assumes that is expected to behave as QUERY
             return self._resource.query(scpi_command)
 
-        # TODO: return an instance of CommandReturn
-        return self._resource.read_raw()
-
     def __generate_scpi_command_with_injected_params(self, params_values):
         if len(params_values):
             return self._scpi_template_syntax.format(*params_values)
