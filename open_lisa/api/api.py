@@ -24,6 +24,7 @@ RS232_ANSWER_TO_CLIENT_QUESTION = 'LISA'
 class OpenLISA:
 
     def __init__(self, mode, rs232_config, listening_port):
+        self._rs232_connection = None
         self._server_protocol = None
         self._mode = mode
         self._rs232_config = rs232_config
@@ -81,7 +82,7 @@ class OpenLISA:
                     elif command == COMMAND_DISCONNECT:
                         logging.info(
                             "[OpenLISA][api][start] - client order disconnect")
-                        self._server_protocol.handle_disconnect_command()
+                        # self._server_protocol.handle_disconnect_command()
                         break
                     else:
                         logging.error(
@@ -112,9 +113,29 @@ class OpenLISA:
             "* * * * * * * * * * * * * * * * * * * * * * * * * * * * *")
 
     def _rs232_wait_connection(self):
-        rs232_connection = None
+        if not self._rs232_connection:
+            self._rs232_create_connection()
+
+        while True:
+            logging.info("Waiting for RS232 client question...")
+            client_question = self._rs232_connection.read(4)
+            logging.info("Question received from client: {}".format(
+                client_question.decode()))
+            if RS232_EXPECTED_CLIENT_QUESTION == client_question.decode():
+                logging.info(
+                    "Question match with expected. Starting RS232 connection...")
+                self._rs232_connection.write(
+                    RS232_ANSWER_TO_CLIENT_QUESTION.encode('utf-8'))
+                break
+            else:
+                logging.info(
+                    "Question does not match the expected, still waiting for a client...")
+
+        return ServerProtocol(MessageProtocolRS232(self._rs232_connection))
+
+    def _rs232_create_connection(self):
         try:
-            rs232_connection = serial.Serial(
+            self._rs232_connection = serial.Serial(
                 port=self._rs232_config.port,
                 baudrate=self._rs232_config.baudrate,
                 timeout=self._rs232_config.timeout)
@@ -130,25 +151,8 @@ class OpenLISA:
             traceback.print_exception(*sys.exc_info())
             exit(1)
 
-        if not rs232_connection.isOpen():
-            rs232_connection.open()
-
-        while True:
-            logging.info("Waiting for RS232 client question...")
-            client_question = rs232_connection.read(4)
-            logging.info("Question received from client: {}".format(
-                client_question.decode()))
-            if RS232_EXPECTED_CLIENT_QUESTION == client_question.decode():
-                logging.info(
-                    "Question match with expected. Starting RS232 connection...")
-                rs232_connection.write(
-                    RS232_ANSWER_TO_CLIENT_QUESTION.encode('utf-8'))
-                break
-            else:
-                logging.info(
-                    "Question does not match the expected, still waiting for a client...")
-
-        return ServerProtocol(MessageProtocolRS232(rs232_connection))
+        if not self._rs232_connection.is_open:
+            self._rs232_connection.open()
 
     def _tcp_wait_connection(self):
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
