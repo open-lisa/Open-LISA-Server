@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 import argparse
 import logging
+from open_lisa.api.api import OpenLISA
+from open_lisa.config.config import load_config
 
-from open_lisa.api import OpenLISA
+
 from open_lisa.protocol.rs232configuration import RS232Configuration
 
 
@@ -15,11 +17,18 @@ def parse_config_params():
     returns a map with the env variables
     """
     parser = argparse.ArgumentParser("Optional app description")
-    parser.add_argument('--mode', required=True, help='SERIAL or TCP', choices=['SERIAL', 'TCP'])
-    parser.add_argument('--rs_232_port', help='RS232 connection port, i.e. COM3')
-    parser.add_argument('--tcp_port', type=int, help='TCP Listening port, i.e. 8080')
-    parser.add_argument('--rs_232_baudrate', type=int, help='Baudrate of RS232 connection, i.e. 19200')
-    parser.add_argument('--rs_232_timeout', type=int, help='Timeout in seconds for RS232 connection reads')
+    parser.add_argument('--mode', required=True,
+                        help='SERIAL or TCP', choices=['SERIAL', 'TCP'])
+    parser.add_argument('--env', required=True,
+                        help='Environment value determines Open LISA configuration file', choices=['dev', 'test', 'production'], default='dev')
+    parser.add_argument(
+        '--rs_232_port', help='RS232 connection port, i.e. COM3')
+    parser.add_argument('--tcp_port', type=int,
+                        help='TCP Listening port, i.e. 8080')
+    parser.add_argument('--rs_232_baudrate', type=int,
+                        help='Baudrate of RS232 connection, i.e. 19200')
+    parser.add_argument('--rs_232_timeout', type=int,
+                        help='Timeout in seconds for RS232 connection reads')
 
     args = parser.parse_args()
     if args.mode == "SERIAL" and args.rs_232_port is None:
@@ -50,7 +59,10 @@ def main():
     initialize_log()
     args = parse_config_params()
 
-    rs232_config = RS232Configuration(args.rs_232_port, args.rs_232_baudrate, args.rs_232_timeout)
+    load_config(env=args.env)
+
+    rs232_config = RS232Configuration(
+        args.rs_232_port, args.rs_232_baudrate, args.rs_232_timeout)
 
     open_lisa = OpenLISA(
         mode=args.mode,
