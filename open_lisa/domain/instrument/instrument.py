@@ -10,7 +10,7 @@ class InstrumentType(Enum):
     CLIB = "clib"
 
     @staticmethod
-    def from_str(self, string_type):
+    def from_str(string_type):
         if string_type == str(InstrumentType.CLIB):
             return InstrumentType.CLIB
         elif string_type == str(InstrumentType.SCPI):
@@ -29,6 +29,7 @@ class InstrumentV2:
         self.physical_address = physical_address
         self.brand = brand
         self.model = model
+        self.type = type
         self.description = description
         self.pyvisa_resource = pyvisa_resource
         self._commands = commands
@@ -42,6 +43,23 @@ class InstrumentV2:
         else:
             # Instrument is SCPI type and no pyvisa resource was provided
             self.status = INSTRUMENT_STATUS_UNAVAILABLE
+
+    @staticmethod
+    def from_dict(dict, commands, pyvisa_resource):
+        instrument_id = dict["id"]
+        instrument_type = InstrumentType.from_str(dict["type"])
+        physical_address = dict["physical_address"]
+
+        return InstrumentV2(
+            id=instrument_id,
+            physical_address=physical_address,
+            brand=dict["brand"],
+            model=dict["model"],
+            type=instrument_type,
+            description=dict["description"],
+            commands=commands,
+            pyvisa_resource=pyvisa_resource,
+        )
 
     def to_dict(self):
         return {
