@@ -23,32 +23,25 @@ class InstrumentRepositoryV2(JSONRepository):
         resources = rm.list_resources()
         for instrument_dict in instrument_dicts:
             physical_address = instrument_dict["physical_address"]
+            pyvisa_resource = None
+            instrument_id = instrument_dict["id"]
 
             if physical_address in resources:
                 try:
-                    pyvisa_resource = None
-                    instrument_id = instrument_dict["id"]
-                    instrument_type = InstrumentType.from_str(
-                        instrument_dict["type"])
-                    if InstrumentType.SCPI == instrument_type:
-                        pyvisa_resource = rm.open_resource(physical_address)
-
-                    instrument = InstrumentV2(
-                        id=instrument_id,
-                        physical_address=physical_address,
-                        brand=instrument_dict["brand"],
-                        model=instrument_dict["model"],
-                        type=instrument_type,
-                        description=instrument_dict["description"],
-                        commands=self._commands_repository.get_instrument_commands(
-                            instrument_id=instrument_id, pyvisa_resource=pyvisa_resource),
-                        pyvisa_resource=pyvisa_resource,
-                    )
-                    instruments.append(instrument)
+                    pyvisa_resource = rm.open_resource(physical_address)
                 except pyvisa.errors.VisaIOError as ex:
                     # Registered instruments should never be detected as BUSY
                     logging.error(
                         "[OpenLISA][InstrumentRepository][get_all] Error opening pyvisa resource: {} for instrument {}".format(ex, instrument_dict))
+
+            instrument_commands = self._commands_repository.get_instrument_commands(
+                instrument_id=instrument_id, pyvisa_resource=pyvisa_resource)
+            instrument = InstrumentV2.from_dict(
+                dict=instrument_dict,
+                commands=instrument_commands,
+                pyvisa_resource=pyvisa_resource
+            )
+            instruments.append(instrument)
 
         return instruments
 
