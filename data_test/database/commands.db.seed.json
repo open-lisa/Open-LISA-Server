@@ -45,7 +45,7 @@
       "params": [
         {
           "position": 1,
-          "type": "float",
+          "type": "FLOAT",
           "example": "5.0",
           "description": "Vertical gain of the channel 1 in volts."
         }
@@ -64,7 +64,7 @@
       "params": [
         {
           "position": 1,
-          "type": "float",
+          "type": "FLOAT",
           "example": "5.0",
           "description": "Vertical gain of the channel 2 in volts."
         }
@@ -251,7 +251,7 @@
       "params": [
         {
           "position": 1,
-          "type": "float",
+          "type": "FLOAT",
           "example": "2.5",
           "description": "Time per division in seconds."
         }
@@ -630,7 +630,7 @@
       "params": [
         {
           "position": 1,
-          "type": "float",
+          "type": "FLOAT",
           "example": "1.4",
           "description": "Main trigger level, in volts."
         }
@@ -890,19 +890,19 @@
       "params": [
         {
           "position": 1,
-          "type": "int",
+          "type": "INT",
           "example": "5",
           "description": "Documentation for param"
         },
         {
           "position": 2,
-          "type": "float",
+          "type": "FLOAT",
           "example": "5.0",
           "description": "Documentation for param"
         }
       ],
       "return": {
-        "type": "int",
+        "type": "INT",
         "description": "Provide an explanation of return values for documentation purposes"
       }
     },
@@ -915,7 +915,7 @@
       "lib_file_name": "libpixelflyqe.dll",
       "params": [],
       "return": {
-        "type": "bytes",
+        "type": "BYTES",
         "description": "Provide an explanation of return values for documentation purposes"
       }
     },
@@ -928,7 +928,7 @@
       "lib_file_name": "libpixelflyqe.dll",
       "params": [],
       "return": {
-        "type": "int",
+        "type": "INT",
         "description": "Provide an explanation of return values for documentation purposes"
       }
     }
