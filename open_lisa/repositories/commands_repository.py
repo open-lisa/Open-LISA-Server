@@ -1,10 +1,11 @@
+import os
 from open_lisa.domain.command.clib_command import CLibCommand
 from open_lisa.domain.command.command import Command, CommandType
 from open_lisa.domain.command.scpi_command import SCPICommand
 from open_lisa.repositories.json_repository import JSONRepository
 
-DEFAULT_PATH = 'data/database/commands.db.json'
-DEFAULT_C_LIBS_PATH = 'data/clibs/'
+DEFAULT_PATH = os.getenv("DATABASE_COMMANDS_PATH")
+DEFAULT_C_LIBS_PATH = os.getenv("CLIBS_PATH")
 
 
 class CommandsRepository(JSONRepository):
