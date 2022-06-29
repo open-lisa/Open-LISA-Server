@@ -2,7 +2,6 @@ import json
 import logging
 import ctypes
 from os import remove
-from open_lisa.repositories.commands_repository import CommandsRepository
 
 import pyvisa
 from .constants import C_TYPE_BYTES, INSTRUMENT_STATUS_AVAILABLE, INSTRUMENT_STATUS_UNAVAILABLE, INSTRUMENT_STATUS_NOT_REGISTERED, INSTRUMENT_STATUS_BUSY, COMMAND_TYPE_SET, COMMAND_TYPE_QUERY, COMMAND_TYPE_QUERY_BUFFER, COMMAND_TYPE_C_LIB, C_TYPE_FLOAT, C_TYPE_INT, C_TYPE_STRING
@@ -13,48 +12,6 @@ from open_lisa.exceptions.instrument_unavailable_error import InstrumentUnavaila
 
 UNKNOWN_FIELD_VALUE = "UNKNOWN"
 UNKNOWN_INSTRUMENT_DESCRIPTION = "Not registered instrument"
-# TODO: change name to Instrument when all is integrated and legacy code removed
-# TODO: move to domain folder
-
-
-class InstrumentV2:
-    def __init__(self, id, physical_address=UNKNOWN_FIELD_VALUE, brand=UNKNOWN_FIELD_VALUE, model=UNKNOWN_FIELD_VALUE, description=UNKNOWN_INSTRUMENT_DESCRIPTION,
-                 pyvisa_resource=None, status=INSTRUMENT_STATUS_UNAVAILABLE):
-        self.id = id
-        self.physical_address = physical_address
-        self.brand = brand
-        self.model = model
-        self.description = description
-        self.pyvisa_resource = pyvisa_resource
-        self.status = status
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "physical_address": self.physical_address,
-            "brand": self.brand,
-            "model": self.model,
-            "status": self.status,
-            "description": self.description,
-        }
-
-    def __str__(self):
-        # TODO: print for debugging and logs
-        pass
-
-    def send_command(self, command_name, command_parameters_values):
-        pass
-        # TODO: validate that instrument is at a valid status to receive commands
-        # TODO: command_parameters_values should be parsed here or in server_protocol?
-        command = self.__get_command_by_name(command_name)
-        command.execute(command_parameters_values)
-
-    def __get_command_by_name(self, command_name):
-        # TODO: validate that command_name exists for this instrument
-        for command in self._commands:
-            if command.name == command_name:
-                return command
-        # TODO: raise exception
 
 
 class Instrument:
