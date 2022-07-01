@@ -21,14 +21,23 @@ class ServerProtocol:
         return self._message_protocol.receive_msg()
 
     def handle_get_instruments(self, instruments_repository):
-        self._message_protocol.send_msg(instruments_repository.get_all_as_json())
+        # TODO: Temporary send physical_address as id in order to be retrocompatible with SDK
+        jsons_string = instruments_repository.get_all_as_json()
+        list_of_dicts = json.loads(jsons_string)
+        for instrument_dict in list_of_dicts:
+            instrument_dict["id"] = instrument_dict["physical_address"]
+
+        self._message_protocol.send_msg(json.dumps(list_of_dicts))
 
     def handle_get_instrument(self, instruments_repository):
         id = self._message_protocol.receive_msg()
         try:
-            instrument = instruments_repository.find_one(id)
+            instrument = instruments_repository.get_by_physical_address(id)
             self._message_protocol.send_msg(SUCCESS_RESPONSE)
-            self._message_protocol.send_msg(instrument.as_dict())
+            # TODO: Temporary send physical_address as id in order to be retrocompatible with SDK
+            instrument_dict = instrument.to_dict()
+            instrument_dict["id"] = instrument_dict["physical_address"]
+            self._message_protocol.send_msg(instrument_dict)
         except OpenLISAException as e:
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)
@@ -36,9 +45,10 @@ class ServerProtocol:
     def handle_get_instrument_commands(self, instruments_repository):
         id = self._message_protocol.receive_msg()
         try:
-            instrument = instruments_repository.find_one(id)
+            instrument = instruments_repository.get_by_physical_address(id)
             self._message_protocol.send_msg(SUCCESS_RESPONSE)
-            self._message_protocol.send_msg(json.dumps(instrument.commands_map))
+            self._message_protocol.send_msg(
+                json.dumps(instrument.commands_map))
         except OpenLISAException as e:
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)
@@ -48,8 +58,12 @@ class ServerProtocol:
         id = self._message_protocol.receive_msg()
         command = self._message_protocol.receive_msg()
         try:
-            instrument = instruments_repository.find_one(id)
-            instrument.validate_command(command)
+            instrument = instruments_repository.get_by_physical_address(id)
+            commands_parts = command.split(' ')
+            command_name = commands_parts[0]
+            command_params = \
+                commands_parts[1:] if len(commands_parts) > 1 else []
+            instrument.validate_command(command_name, command_params)
             self._message_protocol.send_msg(SUCCESS_RESPONSE)
         except OpenLISAException as e:
             self._message_protocol.send_msg(ERROR_RESPONSE)
@@ -59,8 +73,12 @@ class ServerProtocol:
         id = self._message_protocol.receive_msg()
         command = self._message_protocol.receive_msg()
         try:
-            instrument = instruments_repository.find_one(id)
-            result = instrument.send_command(command)
+            instrument = instruments_repository.get_by_physical_address(id)
+            commands_parts = command.split(' ')
+            command_name = commands_parts[0]
+            command_params = \
+                commands_parts[1:] if len(commands_parts) > 1 else []
+            result = instrument.send_command(command_name, command_params)
             self._message_protocol.send_msg(SUCCESS_RESPONSE)
             format = type(result).__name__
             encode = False

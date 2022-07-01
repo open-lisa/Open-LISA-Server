@@ -5,12 +5,9 @@ import traceback
 import sys
 import os
 
-from open_lisa.config.config import OPEN_LISA_CFG
-
-
 from ..protocol.message_protocol_rs232 import MessageProtocolRS232
 from ..protocol.message_protocol_tcp import MessageProtocolTCP
-from ..repositories.instruments_repository import InstrumentsRepository
+from ..repositories.instruments_repository import InstrumentRepositoryV2
 from ..protocol.server_protocol import COMMAND_GET_INSTRUMENT, COMMAND_GET_INSTRUMENTS, COMMAND_GET_INSTRUMENT_COMMANDS, \
     COMMAND_SEND_COMMAND, COMMAND_VALIDATE_COMMAND, COMMAND_DISCONNECT, ServerProtocol
 
@@ -44,8 +41,7 @@ class OpenLISA:
                     "OpenLisa started with invalid mode: {}".format(self._mode))
                 exit(1)
 
-            self._instruments_repository = InstrumentsRepository(
-                os.getenv("DATABASE_LEGACY_INSTRUMENTS_PATH"))  # example on how to use env variables
+            self._instruments_repository = InstrumentRepositoryV2()
             self._list_instruments()
 
             while True:
@@ -53,7 +49,6 @@ class OpenLISA:
                     command = self._server_protocol.get_command()
                     logging.info(
                         "[OpenLISA][api][start] - command received: " + command)
-                    self._update_instruments_status()
                     if command == COMMAND_GET_INSTRUMENTS:
                         logging.debug(
                             "[OpenLISA][api][start] - getting instruments")
@@ -99,10 +94,6 @@ class OpenLISA:
 
             if self._shutdown_after_next_client_connection:
                 break
-
-    def _update_instruments_status(self):
-        for instrument in self._instruments_repository.get_all():
-            instrument.update_status()
 
     def _list_instruments(self):
         logging.debug(

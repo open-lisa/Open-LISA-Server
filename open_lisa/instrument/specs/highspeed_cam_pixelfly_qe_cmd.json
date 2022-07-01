@@ -2,7 +2,7 @@
   "init_camera": {
     "command": "init",
     "type": "clib",
-    "lib_path": "./c/win/pixelflyqe/libpixelflyqe.dll",
+    "lib_path": "./data_test/clibs/libpixelflyqe.dll",
     "description": "Provide a full description of what this command intends to do",
     "params": [
       {
@@ -26,7 +26,7 @@
   "get_image": {
     "command": "get_image",
     "type": "clib",
-    "lib_path": "./c/win/pixelflyqe/libpixelflyqe.dll",
+    "lib_path": "./data_test/clibs/libpixelflyqe.dll",
     "description": "Provide a full description of what this command intends to do",
     "return": {
       "type": "bytes",
@@ -36,7 +36,7 @@
   "close_cammera": {
     "command": "close",
     "type": "clib",
-    "lib_path": "./c/win/pixelflyqe/libpixelflyqe.dll",
+    "lib_path": "./data_test/clibs/libpixelflyqe.dll",
     "description": "Provide a full description of what this command intends to do",
     "return": {
       "type": "int",

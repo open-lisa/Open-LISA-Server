@@ -61,6 +61,13 @@ class InstrumentV2:
             pyvisa_resource=pyvisa_resource,
         )
 
+    @property
+    def commands_map(self):
+        commands_map = {}
+        for command in self._commands:
+            commands_map[command.name] = command.to_dict(instrument_id=self.id)
+        return commands_map
+
     def to_dict(self):
         return {
             "id": self.id,
@@ -80,6 +87,13 @@ class InstrumentV2:
                 "instrument {} {} not available for sending command".format(self.brand, self.model))
         command = self.__get_command_by_name(command_name)
         return command.execute(command_parameters_values)
+
+    def validate_command(self, command_name, command_parameters_values=[]):
+        command = self.__get_command_by_name(command_name=command_name)
+
+        if len(command_parameters_values):
+            command.parameters.validate_parameters_values(
+                command_parameters_values)
 
     def __get_command_by_name(self, command_name):
         for command in self._commands:
