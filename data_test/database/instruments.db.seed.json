@@ -10,7 +10,7 @@
     },
     {
       "id": 2,
-      "physical_address": null,
+      "physical_address": "CAM_ID",
       "brand": "pixelfly",
       "model": "qe",
       "type": "CLIB",
