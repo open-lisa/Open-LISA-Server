@@ -7,7 +7,7 @@ import os
 
 from ..protocol.message_protocol_rs232 import MessageProtocolRS232
 from ..protocol.message_protocol_tcp import MessageProtocolTCP
-from ..repositories.instruments_repository import InstrumentRepositoryV2
+from ..repositories.instruments_repository import InstrumentRepository
 from ..protocol.server_protocol import COMMAND_GET_INSTRUMENT, COMMAND_GET_INSTRUMENTS, COMMAND_GET_INSTRUMENT_COMMANDS, \
     COMMAND_SEND_COMMAND, COMMAND_VALIDATE_COMMAND, COMMAND_DISCONNECT, ServerProtocol
 
@@ -41,7 +41,7 @@ class OpenLISA:
                     "OpenLisa started with invalid mode: {}".format(self._mode))
                 exit(1)
 
-            self._instruments_repository = InstrumentRepositoryV2()
+            self._instruments_repository = InstrumentRepository()
             self._list_instruments()
 
             while True:

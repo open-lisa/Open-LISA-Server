@@ -1,6 +1,5 @@
 import pytest
 import os
-import json
 import Open_LISA_SDK
 from open_lisa.api.api import OpenLISA
 from open_lisa.config.config import load_config
@@ -12,8 +11,6 @@ from threading import Thread
 MOCK_RS232_CONFIG = RS232Configuration(port="COM4")
 LOCALHOST = "127.0.0.1"
 SERVER_PORT = 8080
-COMMANDS_JSON_PATH = "{}/tektronix_test_commands.json".format(
-    os.path.dirname(__file__))
 MOCK_IMAGE_PATH = "data_test/clibs/mock_img.jpg"
 
 
@@ -53,12 +50,12 @@ def test_get_instrument_commands():
     sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
     instruments = sdk.list_instruments()
     tektronix_test = instruments[0]
-    commands = tektronix_test.available_commands()
-    with open(COMMANDS_JSON_PATH) as file:
-        commands_dict = json.load(file)
+    available_commands = tektronix_test.available_commands()
+    commands_repository = CommandsRepository()
+    commands = commands_repository.get_instrument_commands(instrument_id=1)
+    for c in commands:
+        assert available_commands.__contains__(c.name)
 
-    for command_name in commands_dict.keys():
-        assert commands.__contains__(command_name)
     sdk.disconnect()
 
 
