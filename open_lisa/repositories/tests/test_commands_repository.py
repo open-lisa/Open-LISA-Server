@@ -7,10 +7,10 @@ from open_lisa.domain.command.command import Command
 from open_lisa.domain.command.command_parameter import CommandParameter, CommandParameterType
 from open_lisa.domain.command.command_parameters import CommandParameters
 from open_lisa.domain.command.scpi_command import SCPICommand
-from open_lisa.repositories.commands_repository import DEFAULT_C_LIBS_PATH, CommandsRepository
+from open_lisa.repositories.commands_repository import CommandsRepository
 
+DEFAULT_C_LIBS_PATH = os.getenv("CLIBS_PATH")
 TMP_DB_PATH = "tmp.commands.db.json"
-
 SET_CHANNEL_VOLTS_NAME = "set_channel_volts"
 SET_CHANNEL_VOLTS_SCPI_SYNTAX = "CH{} VOLts {}"
 SET_CHANNEL_VOLTS_PARAMETERS = CommandParameters()
