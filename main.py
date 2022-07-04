@@ -17,10 +17,10 @@ def parse_config_params():
     returns a map with the env variables
     """
     parser = argparse.ArgumentParser("Optional app description")
-    parser.add_argument('--mode', required=True,
-                        help='SERIAL or TCP', choices=['SERIAL', 'TCP'])
     parser.add_argument('--env', required=True,
                         help='Environment value determines Open LISA configuration file', choices=['dev', 'test', 'production'], default='dev')
+    parser.add_argument('--mode', required=True,
+                        help='SERIAL or TCP', choices=['SERIAL', 'TCP'])
     parser.add_argument(
         '--rs_232_port', help='RS232 connection port, i.e. COM3')
     parser.add_argument('--tcp_port', type=int,
