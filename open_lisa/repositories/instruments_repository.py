@@ -7,11 +7,10 @@ from open_lisa.exceptions.instrument_not_found import InstrumentNotFoundError
 from open_lisa.repositories.commands_repository import CommandsRepository
 from open_lisa.repositories.json_repository import JSONRepository
 
-DEFAULT_PATH = os.getenv("DATABASE_INSTRUMENTS_PATH")
-
 
 class InstrumentRepository(JSONRepository):
-    def __init__(self, path=DEFAULT_PATH) -> None:
+    def __init__(self, path=os.getenv("DATABASE_INSTRUMENTS_PATH")) -> None:
+        path = os.getenv("DATABASE_INSTRUMENTS_PATH") if not path else path
         super().__init__(path)
         self._commands_repository = CommandsRepository()
 

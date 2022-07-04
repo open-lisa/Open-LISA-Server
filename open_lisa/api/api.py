@@ -26,7 +26,7 @@ class OpenLISA:
         self._mode = mode
         self._rs232_config = rs232_config
         self._listening_port = listening_port
-        self._instruments_repository = None
+        self._instruments_repository = InstrumentRepository()
         self._shutdown_after_next_client_connection = False  # Do something better than this
 
     def start(self):
@@ -41,7 +41,6 @@ class OpenLISA:
                     "OpenLisa started with invalid mode: {}".format(self._mode))
                 exit(1)
 
-            self._instruments_repository = InstrumentRepository()
             self._list_instruments()
 
             while True:

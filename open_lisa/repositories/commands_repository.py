@@ -4,12 +4,13 @@ from open_lisa.domain.command.command import Command, CommandType
 from open_lisa.domain.command.scpi_command import SCPICommand
 from open_lisa.repositories.json_repository import JSONRepository
 
-DEFAULT_PATH = os.getenv("DATABASE_COMMANDS_PATH")
-DEFAULT_C_LIBS_PATH = os.getenv("CLIBS_PATH")
-
 
 class CommandsRepository(JSONRepository):
-    def __init__(self, commands_db_path=DEFAULT_PATH, clibs_path=DEFAULT_C_LIBS_PATH) -> None:
+    def __init__(self, commands_db_path=os.getenv("DATABASE_COMMANDS_PATH"), clibs_path=os.getenv("CLIBS_PATH")) -> None:
+        commands_db_path = os.getenv(
+            "DATABASE_INSTRUMENTS_PATH") if not commands_db_path else commands_db_path
+        clibs_path = os.getenv(
+            "DATABASE_INSTRUMENTS_PATH") if not clibs_path else clibs_path
         super().__init__(commands_db_path)
         self._clibs_path = clibs_path
 

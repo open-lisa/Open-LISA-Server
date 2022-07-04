@@ -3,8 +3,6 @@ import argparse
 import logging
 from open_lisa.api.api import OpenLISA
 from open_lisa.config.config import load_config
-
-
 from open_lisa.protocol.rs232configuration import RS232Configuration
 
 
@@ -59,6 +57,8 @@ def main():
     initialize_log()
     args = parse_config_params()
 
+    logging.info(
+        "Configuring Open LISA Server for {} environment".format(args.env))
     load_config(env=args.env)
 
     rs232_config = RS232Configuration(
