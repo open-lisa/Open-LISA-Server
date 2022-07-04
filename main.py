@@ -27,6 +27,9 @@ def parse_config_params():
                         help='Baudrate of RS232 connection, i.e. 19200')
     parser.add_argument('--rs_232_timeout', type=int,
                         help='Timeout in seconds for RS232 connection reads')
+    parser.add_argument('--log-level', required=True,
+                        help='Environment value determines Open LISA configuration file',
+                        choices=['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG'], default='INFO')
 
     args = parser.parse_args()
     if args.mode == "SERIAL" and args.rs_232_port is None:
@@ -39,23 +42,22 @@ def parse_config_params():
     return parser.parse_args()
 
 
-def initialize_log():
+def initialize_log(level):
     """
     Python custom logging initialization
     Current timestamp is added to be able to identify in docker
     compose logs the date when the log has arrived
     """
-
     logging.basicConfig(
         format='%(asctime)s [OPEN_LISA_SERVER] %(levelname)-8s %(message)s',
-        level=logging.INFO,
+        level=level,
         datefmt='%Y-%m-%d %H:%M:%S'
     )
 
 
 def main():
-    initialize_log()
     args = parse_config_params()
+    initialize_log(args.log_level)
 
     logging.info(
         "Configuring Open LISA Server for {} environment".format(args.env))
