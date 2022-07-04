@@ -2,7 +2,7 @@ import json
 import logging
 import os
 import pyvisa
-from open_lisa.domain.instrument.instrument import InstrumentV2
+from open_lisa.domain.instrument.instrument import Instrument
 from open_lisa.exceptions.instrument_not_found import InstrumentNotFoundError
 from open_lisa.repositories.commands_repository import CommandsRepository
 from open_lisa.repositories.json_repository import JSONRepository
@@ -34,7 +34,7 @@ class InstrumentRepository(JSONRepository):
 
             instrument_commands = self._commands_repository.get_instrument_commands(
                 instrument_id=instrument_id, pyvisa_resource=pyvisa_resource)
-            instrument = InstrumentV2.from_dict(
+            instrument = Instrument.from_dict(
                 dict=instrument_dict,
                 commands=instrument_commands,
                 pyvisa_resource=pyvisa_resource

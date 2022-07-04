@@ -5,7 +5,7 @@ from open_lisa.domain.command.command_parameters import CommandParameters
 from open_lisa.domain.command.command_return import CommandReturn
 from open_lisa.domain.instrument.constants import INSTRUMENT_STATUS_AVAILABLE, INSTRUMENT_STATUS_UNAVAILABLE
 
-from open_lisa.domain.instrument.instrument import InstrumentType, InstrumentV2
+from open_lisa.domain.instrument.instrument import InstrumentType, Instrument
 from open_lisa.exceptions.command_not_found_error import CommandNotFoundError
 from open_lisa.exceptions.instrument_unavailable_error import InstrumentUnavailableError
 
@@ -29,7 +29,7 @@ class CommandMock(Command):
 
 
 def test_instrument_creation_should_return_an_instance_of_Instrument():
-    i = InstrumentV2(
+    i = Instrument(
         id=1,
         physical_address="USB:1234",
         brand="some brand",
@@ -37,11 +37,11 @@ def test_instrument_creation_should_return_an_instance_of_Instrument():
         type=InstrumentType.SCPI,
         description="some desc"
     )
-    assert isinstance(i, InstrumentV2)
+    assert isinstance(i, Instrument)
 
 
 def test_instrument_should_be_available_if_pyvisa_resource_is_provided():
-    i = InstrumentV2(
+    i = Instrument(
         id=1,
         physical_address="USB:1234",
         brand="some brand",
@@ -54,7 +54,7 @@ def test_instrument_should_be_available_if_pyvisa_resource_is_provided():
 
 
 def test_instrument_should_be_unavailable_if_pyvisa_resource_is_provided():
-    i = InstrumentV2(
+    i = Instrument(
         id=1,
         physical_address="USB:1234",
         brand="some brand",
@@ -66,7 +66,7 @@ def test_instrument_should_be_unavailable_if_pyvisa_resource_is_provided():
 
 
 def test_send_command_to_a_not_available_instrument_should_raise_error():
-    i = InstrumentV2(
+    i = Instrument(
         id=1,
         physical_address="USB:1234",
         brand="some brand",
@@ -78,7 +78,7 @@ def test_send_command_to_a_not_available_instrument_should_raise_error():
 
 
 def test_send_command_should_raise_exception_if_command_does_not_exist_for_instrument():
-    i = InstrumentV2(
+    i = Instrument(
         id=1,
         physical_address="USB:1234",
         brand="some brand",
@@ -92,7 +92,7 @@ def test_send_command_should_raise_exception_if_command_does_not_exist_for_instr
 
 def test_send_command_should_execute_command(mocker: MockerFixture):
     command = CommandMock(name=COMMAND_NAME)
-    i = InstrumentV2(
+    i = Instrument(
         id=1,
         physical_address="USB:1234",
         brand="some brand",
@@ -108,7 +108,7 @@ def test_send_command_should_execute_command(mocker: MockerFixture):
 
 def test_send_command_should_return_command_result():
     command = CommandMock(name=COMMAND_NAME)
-    i = InstrumentV2(
+    i = Instrument(
         id=1,
         physical_address="USB:1234",
         brand="some brand",

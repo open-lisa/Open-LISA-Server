@@ -21,7 +21,7 @@ class InstrumentType(Enum):
 
 
 # TODO: change name to Instrument when all is integrated and legacy code removed
-class InstrumentV2:
+class Instrument:
     def __init__(self, id, physical_address, brand, model, type, description="",
                  commands=[], pyvisa_resource=None):
         assert isinstance(type, InstrumentType)
@@ -50,7 +50,7 @@ class InstrumentV2:
         instrument_type = InstrumentType.from_str(dict["type"])
         physical_address = dict["physical_address"]
 
-        return InstrumentV2(
+        return Instrument(
             id=instrument_id,
             physical_address=physical_address,
             brand=dict["brand"],
