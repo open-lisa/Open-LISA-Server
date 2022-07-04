@@ -26,6 +26,7 @@ class OpenLISA:
         self._mode = mode
         self._rs232_config = rs232_config
         self._listening_port = listening_port
+        self._server_socket = None
         self._instruments_repository = InstrumentRepository()
         self._shutdown_after_next_client_connection = False  # Do something better than this
 
@@ -145,14 +146,16 @@ class OpenLISA:
             self._rs232_connection.open()
 
     def _tcp_wait_connection(self):
-        server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_socket.bind(('', self._listening_port))
-        # Only handles one client
-        server_socket.listen(MAX_CONCURRENT_CLIENTS - 1)
+        if not self._server_socket:
+            self._server_socket = socket.socket(
+                socket.AF_INET, socket.SOCK_STREAM)
+            self._server_socket.bind(('', self._listening_port))
+            # Only handles one client
+            self._server_socket.listen(MAX_CONCURRENT_CLIENTS - 1)
 
         logging.debug(
             "[OpenLISA][api][start] - TPC proceed to accept new connection")
-        socket_connection, addr = server_socket.accept()
+        socket_connection, addr = self._server_socket.accept()
         logging.debug(
             '[OpenLISA][api][start] - TCP got connection from {}'.format(addr))
 
