@@ -8,9 +8,9 @@ from open_lisa.repositories.json_repository import JSONRepository
 class CommandsRepository(JSONRepository):
     def __init__(self, commands_db_path=os.getenv("DATABASE_COMMANDS_PATH"), clibs_path=os.getenv("CLIBS_PATH")) -> None:
         commands_db_path = os.getenv(
-            "DATABASE_INSTRUMENTS_PATH") if not commands_db_path else commands_db_path
+            "DATABASE_COMMANDS_PATH") if not commands_db_path else commands_db_path
         clibs_path = os.getenv(
-            "DATABASE_INSTRUMENTS_PATH") if not clibs_path else clibs_path
+            "CLIBS_PATH") if not clibs_path else clibs_path
         super().__init__(commands_db_path)
         self._clibs_path = clibs_path
 

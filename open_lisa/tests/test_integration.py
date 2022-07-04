@@ -53,6 +53,8 @@ def test_get_instrument_commands():
     available_commands = tektronix_test.available_commands()
     commands_repository = CommandsRepository()
     commands = commands_repository.get_instrument_commands(instrument_id=1)
+    assert len(available_commands) > 0
+    assert len(commands) > 0
     for c in commands:
         assert available_commands.__contains__(c.name)
 
