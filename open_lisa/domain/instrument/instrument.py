@@ -46,16 +46,12 @@ class InstrumentV2:
 
     @staticmethod
     def from_dict(dict, commands, pyvisa_resource):
-        instrument_id = dict["id"]
-        instrument_type = InstrumentType.from_str(dict["type"])
-        physical_address = dict["physical_address"]
-
         return InstrumentV2(
-            id=instrument_id,
-            physical_address=physical_address,
+            id=dict["id"],
+            physical_address=dict["physical_address"],
             brand=dict["brand"],
             model=dict["model"],
-            type=instrument_type,
+            type=InstrumentType.from_str(dict["type"]),
             description=dict["description"],
             commands=commands,
             pyvisa_resource=pyvisa_resource,
