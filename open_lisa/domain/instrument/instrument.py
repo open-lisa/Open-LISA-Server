@@ -35,6 +35,8 @@ class Instrument:
         self._commands = commands
 
         if pyvisa_resource:
+            # If pyvisa_resource was provided the SCPI commands
+            # are ready to be executed, so the instrument is in AVAILABLE status
             self.status = INSTRUMENT_STATUS_AVAILABLE
         elif type == InstrumentType.CLIB:
             # TODO: if CLIB instruments are detected with pyvisa we can add
@@ -46,16 +48,12 @@ class Instrument:
 
     @staticmethod
     def from_dict(dict, commands, pyvisa_resource):
-        instrument_id = dict["id"]
-        instrument_type = InstrumentType.from_str(dict["type"])
-        physical_address = dict["physical_address"]
-
         return Instrument(
-            id=instrument_id,
-            physical_address=physical_address,
+            id=dict["id"],
+            physical_address=dict["physical_address"],
             brand=dict["brand"],
             model=dict["model"],
-            type=instrument_type,
+            type=InstrumentType.from_str(dict["type"]),
             description=dict["description"],
             commands=commands,
             pyvisa_resource=pyvisa_resource,

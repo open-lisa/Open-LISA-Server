@@ -53,13 +53,14 @@ def test_instrument_should_be_available_if_pyvisa_resource_is_provided():
     assert i.status == INSTRUMENT_STATUS_AVAILABLE
 
 
-def test_instrument_should_be_unavailable_if_pyvisa_resource_is_provided():
+def test_instrument_should_be_unavailable_if_pyvisa_resource_is_not_provided():
     i = Instrument(
         id=1,
         physical_address="USB:1234",
         brand="some brand",
         model="some model",
         type=InstrumentType.SCPI,
+        pyvisa_resource=None
     )
 
     assert i.status == INSTRUMENT_STATUS_UNAVAILABLE
