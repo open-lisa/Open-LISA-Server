@@ -35,6 +35,8 @@ class InstrumentV2:
         self._commands = commands
 
         if pyvisa_resource:
+            # If pyvisa_resource was provided the SCPI commands
+            # are ready to be executed, so the instrument is in AVAILABLE status
             self.status = INSTRUMENT_STATUS_AVAILABLE
         elif type == InstrumentType.CLIB:
             # TODO: if CLIB instruments are detected with pyvisa we can add
