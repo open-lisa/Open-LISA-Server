@@ -41,6 +41,7 @@ class Instrument:
         elif type == InstrumentType.CLIB:
             # TODO: if CLIB instruments are detected with pyvisa we can add
             # physical_address to them and set instrument status correctly
+            # for now we assume CLIB instruments always as AVAILABLE
             self.status = INSTRUMENT_STATUS_AVAILABLE
         else:
             # Instrument is SCPI type and no pyvisa resource was provided
