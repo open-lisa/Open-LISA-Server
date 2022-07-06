@@ -26,7 +26,7 @@ class CommandExecutionResult():
             # bytes are encoded in base64 in order to
             # can be represented in json format.
             # Ref: https://stackoverflow.com/questions/27837346/how-to-include-pictures-bytes-to-a-json-with-python-encoding-issue
-            self.value = base64.b64encode(raw_value)
+            self.value = base64.b64encode(raw_value).decode()
 
     def to_dict(self):
         return {

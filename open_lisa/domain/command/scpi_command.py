@@ -1,4 +1,5 @@
 from open_lisa.domain.command.command import Command, CommandType
+from open_lisa.domain.command.command_execution_result import CommandExecutionResult
 from open_lisa.domain.command.command_parameters import CommandParameters
 from open_lisa.domain.command.command_return import CommandReturn, CommandReturnType
 from open_lisa.exceptions.invalid_scpi_syntax_for_command_parameters import InvalidSCPISyntaxForCommandParameters
@@ -54,17 +55,19 @@ class SCPICommand(Command):
         scpi_command = self.__generate_scpi_command_with_injected_params(
             params_values)
 
-        # TODO: probar que tiene el mismo comportamiento que con el type=QUERY, QUERY_BUFFER, SET (proximo a deprecarse con este nuevo modelo)
         if self.command_return.type == CommandReturnType.BYTES:
             # returns read_raw as in QUERY_BUFFER
             self._resource.write(scpi_command)
-            return self._resource.read_raw()
+            raw_result_value = self._resource.read_raw()
         elif self.command_return.type == CommandReturnType.VOID:
             # returns written bytes as in type SET
-            return str(self._resource.write(scpi_command))
+            self._resource.write(scpi_command)
+            raw_result_value = None
         else:
             # assumes that is expected to behave as QUERY
-            return self._resource.query(scpi_command)
+            raw_result_value = self._resource.query(scpi_command)
+
+        return CommandExecutionResult(type=self.command_return.type, raw_value=raw_result_value)
 
     def __generate_scpi_command_with_injected_params(self, params_values):
         if len(params_values):

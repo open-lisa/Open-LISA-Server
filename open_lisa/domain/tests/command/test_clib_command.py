@@ -1,3 +1,4 @@
+import base64
 import pytest
 import sys
 import os
@@ -76,7 +77,7 @@ def test_execute_should_call_the_sum_function_from_the_c_lib():
         command_return=SUM_RETURN
     )
     result = sum_clib_command.execute(params_values=["1", "2"])
-    assert result == 3
+    assert result.value == 3
 
 
 def test_execute_should_call_the_multiply_function_from_the_c_lib():
@@ -88,7 +89,7 @@ def test_execute_should_call_the_multiply_function_from_the_c_lib():
         command_return=MULTIPLY_RETURN
     )
     result = multiply_clib_command.execute(params_values=["2", "2.5"])
-    assert result == 5
+    assert result.value == 5
 
 
 def test_execute_should_call_the_create_file_function_from_the_c_lib():
@@ -115,7 +116,7 @@ def test_execute_should_call_the_echo_function_from_the_c_lib():
     )
     message = "i am a bit tired..."
     output = echo_clib_command.execute([message])
-    assert output == message
+    assert output.value == message
 
 
 def test_execute_should_call_the_copy_image_function_from_the_c_lib():
@@ -133,7 +134,7 @@ def test_execute_should_call_the_copy_image_function_from_the_c_lib():
     copy = copy_image_clib_command.execute([mock_image_path])
     with open(mock_image_path, "rb") as f:
         original = f.read()
-    assert original == copy
+    assert original == base64.b64decode(copy.value)
 
 
 def test_execute_should_call_the_copy_image_function_from_the_c_lib_and_raise_CommandExecutionError_if_img_path_is_invalid():

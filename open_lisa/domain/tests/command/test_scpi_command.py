@@ -1,3 +1,4 @@
+import base64
 import pytest
 from pytest_mock import MockerFixture
 
@@ -72,11 +73,11 @@ def test_SCPICommand_execute_method_should_write_the_correct_scpi_command_in_pyv
     write_spy.assert_called_once_with(
         SET_CHANNEL_VOLTS_SCPI_SYNTAX.format(*SET_CHANNEL_VOLTS_PARAMETERS_VALUES))
 
-    assert execution_result == mock_result
+    assert execution_result.value == None
 
 
 def test_SCPICommand_execute_method_should_query_the_correct_scpi_command_in_pyvisa_resource_if_return_is_not_void_or_bytes(mocker: MockerFixture):
-    mock_result = bytes("data returned by instrument...".encode())
+    mock_result = 42
     pyvisa_resource = MockPyvisaResource()
     pyvisa_resource.query_mock_result = mock_result
     query_spy = mocker.spy(pyvisa_resource, 'query')
@@ -93,7 +94,7 @@ def test_SCPICommand_execute_method_should_query_the_correct_scpi_command_in_pyv
     query_spy.assert_called_once_with(
         SET_CHANNEL_VOLTS_SCPI_SYNTAX.format(*SET_CHANNEL_VOLTS_PARAMETERS_VALUES))
 
-    assert execution_result == mock_result
+    assert execution_result.value == mock_result
 
 
 def test_SCPICommand_execute_method_should_write_the_correct_scpi_command_in_pyvisa_resource_and_call_query_buffer_if_return_type_is_bytes(mocker: MockerFixture):
@@ -116,4 +117,4 @@ def test_SCPICommand_execute_method_should_write_the_correct_scpi_command_in_pyv
         SET_CHANNEL_VOLTS_SCPI_SYNTAX.format(*SET_CHANNEL_VOLTS_PARAMETERS_VALUES))
     read_raw_spy.assert_called_once()
 
-    assert execution_result == mock_result
+    assert execution_result.value == base64.b64encode(mock_result).decode()

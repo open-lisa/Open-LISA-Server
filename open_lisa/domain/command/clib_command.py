@@ -2,6 +2,7 @@ import ctypes
 import logging
 import os
 from open_lisa.domain.command.command import Command, CommandType
+from open_lisa.domain.command.command_execution_result import CommandExecutionResult
 from open_lisa.domain.command.command_parameters import CommandParameters
 from open_lisa.domain.command.command_return import CommandReturn, CommandReturnType
 from open_lisa.exceptions.command_execution_error import CommandExecutionError
@@ -97,9 +98,12 @@ class CLibCommand(Command):
                 # Delete file
                 os.remove(TMP_BUFFER_FILE)
 
-                return bytes(data)
+                raw_result_value = bytes(data)
+                return CommandExecutionResult(type=self.command_return.type, raw_value=raw_result_value)
         else:
             result = self._c_function(*arguments)
             # CommandReturnType.STRING does not exist in C, for that reason char* in C
             # is mapped to bytes() in Python and should be decoded
-            return result.decode() if self.command_return.type == CommandReturnType.STRING else result
+            raw_result_value = result.decode() \
+                if self.command_return.type == CommandReturnType.STRING else result
+            return CommandExecutionResult(type=self.command_return.type, raw_value=raw_result_value)

@@ -44,5 +44,5 @@ def test_command_execution_result_with_bytes_type():
         image_bytes = f.read()
         result = CommandExecutionResult(
             type=CommandReturnType.BYTES, raw_value=image_bytes)
-        assert result.value == base64.b64encode(image_bytes)
+        assert result.value == base64.b64encode(image_bytes).decode()
         assert image_bytes == base64.b64decode(result.value)
