@@ -2,17 +2,15 @@ import json
 import logging
 import os
 import pyvisa
-from open_lisa.domain.instrument.instrument import InstrumentType, InstrumentV2
-from open_lisa.instrument.instrument import Instrument
+from open_lisa.domain.instrument.instrument import Instrument
 from open_lisa.exceptions.instrument_not_found import InstrumentNotFoundError
 from open_lisa.repositories.commands_repository import CommandsRepository
 from open_lisa.repositories.json_repository import JSONRepository
 
-DEFAULT_PATH = os.getenv("DATABASE_INSTRUMENTS_PATH")
 
-
-class InstrumentRepositoryV2(JSONRepository):
-    def __init__(self, path=DEFAULT_PATH) -> None:
+class InstrumentRepository(JSONRepository):
+    def __init__(self, path=os.getenv("DATABASE_INSTRUMENTS_PATH")) -> None:
+        path = os.getenv("DATABASE_INSTRUMENTS_PATH") if not path else path
         super().__init__(path)
         self._commands_repository = CommandsRepository()
 
@@ -36,7 +34,7 @@ class InstrumentRepositoryV2(JSONRepository):
 
             instrument_commands = self._commands_repository.get_instrument_commands(
                 instrument_id=instrument_id, pyvisa_resource=pyvisa_resource)
-            instrument = InstrumentV2.from_dict(
+            instrument = Instrument.from_dict(
                 dict=instrument_dict,
                 commands=instrument_commands,
                 pyvisa_resource=pyvisa_resource
@@ -79,63 +77,5 @@ class InstrumentRepositoryV2(JSONRepository):
         if not match:
             raise InstrumentNotFoundError(
                 "instrument not found for id {}".format(id))
-
-        return match
-
-
-class InstrumentsRepository:
-    def __init__(self, path) -> None:
-        self._instruments = []
-
-        # Registered instruments
-        with open(path) as file:
-            data = json.load(file)
-
-            for raw_instrument in data:
-                instrument = Instrument(
-                    raw_instrument["id"],
-                    raw_instrument["brand"],
-                    raw_instrument["model"],
-                    raw_instrument["description"],
-                    raw_instrument["command_file"]
-                )
-                self._instruments.append(instrument)
-
-        # Not registered instruments
-        rm = pyvisa.ResourceManager()
-        resources = rm.list_resources()
-        for resource_id in resources:
-            try:
-                self.find_one(resource_id)
-            except InstrumentNotFoundError:
-                instrument = Instrument(
-                    id=resource_id,
-                    brand="UNKNOWN",
-                    model="UNKNOWN",
-                    description="Not registered instrument",
-                    command_file=None
-                )
-                self._instruments.append(instrument)
-
-    def get_all(self):
-        return self._instruments
-
-    def get_all_as_json(self):
-        formatted_instruments = []
-
-        for instrument in self._instruments:
-            formatted_instruments.append(instrument.as_dict())
-
-        return json.dumps(formatted_instruments)
-
-    def find_one(self, id):
-        match = None
-        for ins in self._instruments:
-            if ins.id == id:
-                match = ins
-                break
-
-        if not match:
-            raise InstrumentNotFoundError("instrument {} not found".format(id))
 
         return match

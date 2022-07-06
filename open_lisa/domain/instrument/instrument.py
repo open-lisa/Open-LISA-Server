@@ -21,7 +21,7 @@ class InstrumentType(Enum):
 
 
 # TODO: change name to Instrument when all is integrated and legacy code removed
-class InstrumentV2:
+class Instrument:
     def __init__(self, id, physical_address, brand, model, type, description="",
                  commands=[], pyvisa_resource=None):
         assert isinstance(type, InstrumentType)
@@ -49,7 +49,7 @@ class InstrumentV2:
 
     @staticmethod
     def from_dict(dict, commands, pyvisa_resource):
-        return InstrumentV2(
+        return Instrument(
             id=dict["id"],
             physical_address=dict["physical_address"],
             brand=dict["brand"],
@@ -59,6 +59,13 @@ class InstrumentV2:
             commands=commands,
             pyvisa_resource=pyvisa_resource,
         )
+
+    @property
+    def commands_map(self):
+        commands_map = {}
+        for command in self._commands:
+            commands_map[command.name] = command.to_dict(instrument_id=self.id)
+        return commands_map
 
     def to_dict(self):
         return {
@@ -79,6 +86,13 @@ class InstrumentV2:
                 "instrument {} {} not available for sending command".format(self.brand, self.model))
         command = self.__get_command_by_name(command_name)
         return command.execute(command_parameters_values)
+
+    def validate_command(self, command_name, command_parameters_values=[]):
+        command = self.__get_command_by_name(command_name=command_name)
+
+        if len(command_parameters_values):
+            command.parameters.validate_parameters_values(
+                command_parameters_values)
 
     def __get_command_by_name(self, command_name):
         for command in self._commands:

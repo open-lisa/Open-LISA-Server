@@ -1,10 +1,9 @@
 import json
-import os
 import pytest
 from open_lisa.domain.instrument.constants import INSTRUMENT_STATUS_AVAILABLE, INSTRUMENT_STATUS_UNAVAILABLE
 from open_lisa.domain.instrument.instrument import InstrumentType
 from open_lisa.exceptions.instrument_not_found import InstrumentNotFoundError
-from open_lisa.repositories.instruments_repository import InstrumentRepositoryV2
+from open_lisa.repositories.instruments_repository import InstrumentRepository
 from open_lisa.tests.utils import reset_databases
 
 SOME_VALID_PHYSICAL_ADDRESS = "USB0::0x0699::0x0363::C107676::INSTR"
@@ -22,7 +21,7 @@ def on_each():
 
 
 def test_instruments_repository_should_be_created_with_the_entries_of_json_file():
-    repo = InstrumentRepositoryV2()
+    repo = InstrumentRepository()
     jsons_string = repo.get_all_as_json()
     jsons = json.loads(jsons_string)
 
@@ -31,7 +30,7 @@ def test_instruments_repository_should_be_created_with_the_entries_of_json_file(
 
 
 def test_get_all_should_return_a_list_of_Instrument_instances():
-    repo = InstrumentRepositoryV2()
+    repo = InstrumentRepository()
     instruments = repo.get_all()
 
     assert instruments[0].id == 1
@@ -39,7 +38,7 @@ def test_get_all_should_return_a_list_of_Instrument_instances():
 
 
 def test_get_by_physical_address_should_return_an_Instrument_if_there_is_a_match():
-    repo = InstrumentRepositoryV2()
+    repo = InstrumentRepository()
     i = repo.get_by_physical_address(
         physical_addres=SOME_VALID_PHYSICAL_ADDRESS)
     assert i.physical_address == SOME_VALID_PHYSICAL_ADDRESS
@@ -47,13 +46,13 @@ def test_get_by_physical_address_should_return_an_Instrument_if_there_is_a_match
 
 def test_get_by_physical_address_should_raise_exception_if_there_is_no_match():
     with pytest.raises(InstrumentNotFoundError):
-        repo = InstrumentRepositoryV2()
+        repo = InstrumentRepository()
         repo.get_by_physical_address(
             physical_addres=SOME_INVALID_PHYSICAL_ADDRESS)
 
 
 def test_get_by_id_should_return_an_Instrument_if_there_is_a_match():
-    repo = InstrumentRepositoryV2()
+    repo = InstrumentRepository()
     i = repo.get_by_id(
         id=SOME_VALID_ID)
     assert i.id == SOME_VALID_ID
@@ -61,13 +60,13 @@ def test_get_by_id_should_return_an_Instrument_if_there_is_a_match():
 
 def test_get_by_id_should_raise_exception_if_there_is_no_match():
     with pytest.raises(InstrumentNotFoundError):
-        repo = InstrumentRepositoryV2()
+        repo = InstrumentRepository()
         repo.get_by_id(
             id=SOME_INVALID_ID)
 
 
 def test_seed_scpi_instruments_should_be_unavailable_since_they_are_not_detected_by_pyvisa():
-    repo = InstrumentRepositoryV2()
+    repo = InstrumentRepository()
     instruments = repo.get_all()
 
     for i in instruments:
@@ -77,7 +76,7 @@ def test_seed_scpi_instruments_should_be_unavailable_since_they_are_not_detected
 
 def test_seed_clib_instruments_should_be_available():
     # NOTE: if pyvisa detects CLIB instruments this test should be removed
-    repo = InstrumentRepositoryV2()
+    repo = InstrumentRepository()
     instruments = repo.get_all()
 
     for i in instruments:

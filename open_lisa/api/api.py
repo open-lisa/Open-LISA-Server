@@ -5,12 +5,9 @@ import traceback
 import sys
 import os
 
-from open_lisa.config.config import OPEN_LISA_CFG
-
-
 from ..protocol.message_protocol_rs232 import MessageProtocolRS232
 from ..protocol.message_protocol_tcp import MessageProtocolTCP
-from ..repositories.instruments_repository import InstrumentsRepository
+from ..repositories.instruments_repository import InstrumentRepository
 from ..protocol.server_protocol import COMMAND_GET_INSTRUMENT, COMMAND_GET_INSTRUMENTS, COMMAND_GET_INSTRUMENT_COMMANDS, \
     COMMAND_SEND_COMMAND, COMMAND_VALIDATE_COMMAND, COMMAND_DISCONNECT, ServerProtocol
 
@@ -29,7 +26,8 @@ class OpenLISA:
         self._mode = mode
         self._rs232_config = rs232_config
         self._listening_port = listening_port
-        self._instruments_repository = None
+        self._server_socket = None
+        self._instruments_repository = InstrumentRepository()
         self._shutdown_after_next_client_connection = False  # Do something better than this
 
     def start(self):
@@ -44,8 +42,6 @@ class OpenLISA:
                     "OpenLisa started with invalid mode: {}".format(self._mode))
                 exit(1)
 
-            self._instruments_repository = InstrumentsRepository(
-                os.getenv("DATABASE_LEGACY_INSTRUMENTS_PATH"))  # example on how to use env variables
             self._list_instruments()
 
             while True:
@@ -53,7 +49,6 @@ class OpenLISA:
                     command = self._server_protocol.get_command()
                     logging.info(
                         "[OpenLISA][api][start] - command received: " + command)
-                    self._update_instruments_status()
                     if command == COMMAND_GET_INSTRUMENTS:
                         logging.debug(
                             "[OpenLISA][api][start] - getting instruments")
@@ -99,10 +94,6 @@ class OpenLISA:
 
             if self._shutdown_after_next_client_connection:
                 break
-
-    def _update_instruments_status(self):
-        for instrument in self._instruments_repository.get_all():
-            instrument.update_status()
 
     def _list_instruments(self):
         logging.debug(
@@ -155,14 +146,16 @@ class OpenLISA:
             self._rs232_connection.open()
 
     def _tcp_wait_connection(self):
-        server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_socket.bind(('', self._listening_port))
-        # Only handles one client
-        server_socket.listen(MAX_CONCURRENT_CLIENTS - 1)
+        if not self._server_socket:
+            self._server_socket = socket.socket(
+                socket.AF_INET, socket.SOCK_STREAM)
+            self._server_socket.bind(('', self._listening_port))
+            # Only handles one client
+            self._server_socket.listen(MAX_CONCURRENT_CLIENTS - 1)
 
         logging.debug(
             "[OpenLISA][api][start] - TPC proceed to accept new connection")
-        socket_connection, addr = server_socket.accept()
+        socket_connection, addr = self._server_socket.accept()
         logging.debug(
             '[OpenLISA][api][start] - TCP got connection from {}'.format(addr))
 

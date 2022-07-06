@@ -1,18 +1,17 @@
 import pytest
 import os
-import json
 import Open_LISA_SDK
 from open_lisa.api.api import OpenLISA
 from open_lisa.config.config import load_config
 from open_lisa.protocol.rs232configuration import RS232Configuration
+from open_lisa.repositories.commands_repository import CommandsRepository
 from time import sleep
 from threading import Thread
 
 MOCK_RS232_CONFIG = RS232Configuration(port="COM4")
 LOCALHOST = "127.0.0.1"
 SERVER_PORT = 8080
-COMMANDS_JSON_PATH = "{}/tektronix_test_commands.json".format(
-    os.path.dirname(__file__))
+MOCK_IMAGE_PATH = "data_test/clibs/mock_img.jpg"
 
 
 def start_server():
@@ -51,15 +50,23 @@ def test_get_instrument_commands():
     sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
     instruments = sdk.list_instruments()
     tektronix_test = instruments[0]
-    commands = tektronix_test.available_commands()
-    with open(COMMANDS_JSON_PATH) as file:
-        commands_dict = json.load(file)
+    available_commands = tektronix_test.available_commands()
+    commands_repository = CommandsRepository()
+    commands = commands_repository.get_instrument_commands(instrument_id=1)
+    assert len(available_commands) > 0
+    assert len(commands) > 0
+    for c in commands:
+        assert available_commands.__contains__(c.name)
 
-    for command_name in commands_dict.keys():
-        assert commands.__contains__(command_name)
     sdk.disconnect()
 
 
-# def test_get_image_from_mock_camera():
-#     pass
-#     # Implement after refactor with GUASONESCO image
+def test_get_image_from_mock_camera():
+    sdk = Open_LISA_SDK.SDK(log_level="ERROR")
+    sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+    instruments = sdk.list_instruments()
+    mocked_camera = instruments[1]
+    image_bytes = mocked_camera.send("get_image", "bytes")
+
+    with open(MOCK_IMAGE_PATH, "rb") as f:
+        assert image_bytes == f.read()
