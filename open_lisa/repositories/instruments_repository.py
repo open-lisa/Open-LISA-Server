@@ -1,71 +1,48 @@
 import json
 import logging
-from open_lisa.instrument.constants import INSTRUMENT_STATUS_AVAILABLE, INSTRUMENT_STATUS_UNAVAILABLE
+import os
 import pyvisa
-from open_lisa.instrument.instrument import Instrument, InstrumentV2
+from open_lisa.domain.instrument.instrument import InstrumentType, InstrumentV2
+from open_lisa.instrument.instrument import Instrument
 from open_lisa.exceptions.instrument_not_found import InstrumentNotFoundError
+from open_lisa.repositories.commands_repository import CommandsRepository
 from open_lisa.repositories.json_repository import JSONRepository
 
-DEFAULT_PATH = 'data/database/instruments.db.json'
+DEFAULT_PATH = os.getenv("DATABASE_INSTRUMENTS_PATH")
 
 
 class InstrumentRepositoryV2(JSONRepository):
     def __init__(self, path=DEFAULT_PATH) -> None:
         super().__init__(path)
+        self._commands_repository = CommandsRepository()
 
-    def get_all():
+    def get_all(self):
         instruments = []
         instrument_dicts = super().get_all()
         rm = pyvisa.ResourceManager()
         resources = rm.list_resources()
-        for inststrument_dict in instrument_dicts:
-            physical_address = inststrument_dict["physical_address"]
+        for instrument_dict in instrument_dicts:
+            physical_address = instrument_dict["physical_address"]
+            pyvisa_resource = None
+            instrument_id = instrument_dict["id"]
 
-            if resources.__contains__(physical_address):
+            if physical_address in resources:
                 try:
                     pyvisa_resource = rm.open_resource(physical_address)
-                    instrument = InstrumentV2(
-                        id=inststrument_dict["id"],
-                        physical_address=physical_address,
-                        brand=inststrument_dict["brand"],
-                        model=inststrument_dict["model"],
-                        description=inststrument_dict["description"],
-                        pyvisa_resource=pyvisa_resource,
-                        status=INSTRUMENT_STATUS_AVAILABLE
-                    )
-                    instruments.append(instrument)
                 except pyvisa.errors.VisaIOError as ex:
-                    # NOTE: no creo que tenga sentido crear instrumentos en estado busy
-                    logging.debug(
-                        "[OpenLISA][InstrumentRepository][get_all] Error opening pyvisa resource: {}".format(ex))
-            else:
-                instrument = InstrumentV2(
-                    id=inststrument_dict["id"],
-                    physical_address=physical_address,
-                    brand=inststrument_dict["brand"],
-                    model=inststrument_dict["model"],
-                    description=inststrument_dict["description"],
-                    pyvisa_resource=None,
+                    # Registered instruments should never be detected as BUSY
+                    logging.error(
+                        "[OpenLISA][InstrumentRepository][get_all] Error opening pyvisa resource: {} for instrument {}".format(ex, instrument_dict))
 
-                    # TODO: be better than this
-                    status=INSTRUMENT_STATUS_AVAILABLE if "MOCK_INSTRUMENT" in inststrument_dict[
-                        "brand"] else INSTRUMENT_STATUS_UNAVAILABLE,
-                )
-                # TODO: no sabemos cómo determinar el status de instrumentos
-                # que no se conectan por por pyvisa (el unico instrument con CLib siempre
-                # lo poniamos en AVAILABLE por ser el mock :thinking:)
-                instruments.append(instrument)
+            instrument_commands = self._commands_repository.get_instrument_commands(
+                instrument_id=instrument_id, pyvisa_resource=pyvisa_resource)
+            instrument = InstrumentV2.from_dict(
+                dict=instrument_dict,
+                commands=instrument_commands,
+                pyvisa_resource=pyvisa_resource
+            )
+            instruments.append(instrument)
 
-        # TODO: no sé si tiene sentido crear instrumentos en estado NOT_REGISTERED
-        # o BUSSY ya que son simplemente direcciones fisicas por el momento o recursos
-        # pyvisa... de hecho en la UI vamos a mostrar (o queremos mostrar) las direcciones
-        # fisicas detectadas a las que no se tiene asociado un instrumento
-
-        # NOTE: notar que el "status" del instrumento es actualizado en cada llamada a
-        # get_all() del repositorio, con este enfoque la clase InstrumentV2 no tiene que
-        # saber como lidiar con el pyvisa_resource, es simplemente una dependencia de
-        # instanciación. Me parece que tiene sentido que esté acá ya que los pyvisa.resources
-        # son justamente una fuente de datos como lo es el JSON file
         return instruments
 
     def get_all_as_json(self):
@@ -77,7 +54,6 @@ class InstrumentRepositoryV2(JSONRepository):
 
         return json.dumps(formatted_instruments)
 
-    # TODO: we should use instrument_id from sdk and UI in order to identify instruments
     def get_by_physical_address(self, physical_addres):
         instruments = self.get_all()
         match = None
@@ -88,7 +64,21 @@ class InstrumentRepositoryV2(JSONRepository):
 
         if not match:
             raise InstrumentNotFoundError(
-                "instrument {} not found".format(physical_addres))
+                "instrument not found for physical address {}".format(physical_addres))
+
+        return match
+
+    def get_by_id(self, id):
+        instruments = self.get_all()
+        match = None
+        for ins in instruments:
+            if ins.id == id:
+                match = ins
+                break
+
+        if not match:
+            raise InstrumentNotFoundError(
+                "instrument not found for id {}".format(id))
 
         return match
 
