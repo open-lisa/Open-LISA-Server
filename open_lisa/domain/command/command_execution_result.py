@@ -6,12 +6,12 @@ from open_lisa.utils.date import get_UTC_timestamp
 
 
 class CommandExecutionResult():
-    def __init__(self, timestamp_execution_begin, type=CommandReturnType.VOID, raw_value=None):
+    def __init__(self, timestamp_execution_start, type=CommandReturnType.VOID, raw_value=None):
         assert isinstance(type, CommandReturnType)
 
-        self.timestamp_execution_finish = get_UTC_timestamp()
+        self.timestamp_execution_end = get_UTC_timestamp()
         self.type = type
-        self.timestamp_execution_begin = timestamp_execution_begin
+        self.timestamp_execution_start = timestamp_execution_start
 
         if type == CommandReturnType.VOID:
             self.value = None
@@ -31,6 +31,6 @@ class CommandExecutionResult():
         return {
             "type": str(self.type),
             "value": self.value,
-            "timestamp_execution_begin":  self.timestamp_execution_begin,
-            "timestamp_execution_finish": self.timestamp_execution_finish,
+            "timestamp_execution_start":  self.timestamp_execution_start,
+            "timestamp_execution_end": self.timestamp_execution_end,
         }

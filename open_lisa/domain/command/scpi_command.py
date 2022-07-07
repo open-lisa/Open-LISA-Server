@@ -56,7 +56,7 @@ class SCPICommand(Command):
         scpi_command = self.__generate_scpi_command_with_injected_params(
             params_values)
 
-        command_execution_begin = get_UTC_timestamp()
+        command_execution_start = get_UTC_timestamp()
         if self.command_return.type == CommandReturnType.BYTES:
             # returns read_raw as in QUERY_BUFFER
             self._resource.write(scpi_command)
@@ -69,7 +69,7 @@ class SCPICommand(Command):
             # assumes that is expected to behave as QUERY
             raw_result_value = self._resource.query(scpi_command)
 
-        return CommandExecutionResult(timestamp_execution_begin=command_execution_begin, type=self.command_return.type, raw_value=raw_result_value)
+        return CommandExecutionResult(timestamp_execution_start=command_execution_start, type=self.command_return.type, raw_value=raw_result_value)
 
     def __generate_scpi_command_with_injected_params(self, params_values):
         if len(params_values):

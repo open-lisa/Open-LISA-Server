@@ -85,7 +85,7 @@ class CLibCommand(Command):
             # NOTE: functions that returns bytes should return int error codes.
             # If code is 0 the bytes were successfully saved into the file buffer
             arguments.append(ctypes.c_char_p(TMP_BUFFER_FILE.encode()))
-            command_execution_begin = get_UTC_timestamp()
+            command_execution_start = get_UTC_timestamp()
             error_code = self._c_function(*arguments)
             if error_code != 0:
                 logging.error("[CLibCommand][command={}] fail calling C function that returns bytes, error code is {}".format(
@@ -101,12 +101,12 @@ class CLibCommand(Command):
                 os.remove(TMP_BUFFER_FILE)
 
                 raw_result_value = bytes(data)
-                return CommandExecutionResult(timestamp_execution_begin=command_execution_begin, type=self.command_return.type, raw_value=raw_result_value)
+                return CommandExecutionResult(timestamp_execution_start=command_execution_start, type=self.command_return.type, raw_value=raw_result_value)
         else:
-            command_execution_begin = get_UTC_timestamp()
+            command_execution_start = get_UTC_timestamp()
             result = self._c_function(*arguments)
             # CommandReturnType.STRING does not exist in C, for that reason char* in C
             # is mapped to bytes() in Python and should be decoded
             raw_result_value = result.decode() \
                 if self.command_return.type == CommandReturnType.STRING else result
-            return CommandExecutionResult(timestamp_execution_begin=command_execution_begin, type=self.command_return.type, raw_value=raw_result_value)
+            return CommandExecutionResult(timestamp_execution_start=command_execution_start, type=self.command_return.type, raw_value=raw_result_value)
