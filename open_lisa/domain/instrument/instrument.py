@@ -20,7 +20,6 @@ class InstrumentType(Enum):
         return self.name
 
 
-# TODO: change name to Instrument when all is integrated and legacy code removed
 class Instrument:
     def __init__(self, id, physical_address, brand, model, type, description="",
                  commands=[], pyvisa_resource=None):
@@ -39,9 +38,7 @@ class Instrument:
             # are ready to be executed, so the instrument is in AVAILABLE status
             self.status = INSTRUMENT_STATUS_AVAILABLE
         elif type == InstrumentType.CLIB:
-            # TODO: if CLIB instruments are detected with pyvisa we can add
-            # physical_address to them and set instrument status correctly
-            # for now we assume CLIB instruments always as AVAILABLE
+            # pyvisa seems to not detect CLib instruments
             self.status = INSTRUMENT_STATUS_AVAILABLE
         else:
             # Instrument is SCPI type and no pyvisa resource was provided

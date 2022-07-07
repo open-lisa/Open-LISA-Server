@@ -67,6 +67,7 @@ class InstrumentRepository(JSONRepository):
         return match
 
     def get_by_id(self, id):
+        id = int(id)
         instruments = self.get_all()
         match = None
         for ins in instruments:

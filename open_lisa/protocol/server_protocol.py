@@ -21,23 +21,15 @@ class ServerProtocol:
         return self._message_protocol.receive_msg()
 
     def handle_get_instruments(self, instruments_repository):
-        # TODO: Temporary send physical_address as id in order to be retrocompatible with SDK
         jsons_string = instruments_repository.get_all_as_json()
-        list_of_dicts = json.loads(jsons_string)
-        for instrument_dict in list_of_dicts:
-            instrument_dict["id"] = instrument_dict["physical_address"]
-
-        self._message_protocol.send_msg(json.dumps(list_of_dicts))
+        self._message_protocol.send_msg(jsons_string)
 
     def handle_get_instrument(self, instruments_repository):
         id = self._message_protocol.receive_msg()
         try:
-            instrument = instruments_repository.get_by_physical_address(id)
+            instrument = instruments_repository.get_by_id(id)
             self._message_protocol.send_msg(SUCCESS_RESPONSE)
-            # TODO: Temporary send physical_address as id in order to be retrocompatible with SDK
-            instrument_dict = instrument.to_dict()
-            instrument_dict["id"] = instrument_dict["physical_address"]
-            self._message_protocol.send_msg(json.dumps(instrument_dict))
+            self._message_protocol.send_msg(json.dumps(instrument.to_dict()))
         except OpenLISAException as e:
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)
@@ -45,7 +37,7 @@ class ServerProtocol:
     def handle_get_instrument_commands(self, instruments_repository):
         id = self._message_protocol.receive_msg()
         try:
-            instrument = instruments_repository.get_by_physical_address(id)
+            instrument = instruments_repository.get_by_id(id)
             self._message_protocol.send_msg(SUCCESS_RESPONSE)
             self._message_protocol.send_msg(
                 json.dumps(instrument.commands_map))
@@ -58,7 +50,7 @@ class ServerProtocol:
         id = self._message_protocol.receive_msg()
         command = self._message_protocol.receive_msg()
         try:
-            instrument = instruments_repository.get_by_physical_address(id)
+            instrument = instruments_repository.get_by_id(id)
             commands_parts = command.split(' ')
             command_name = commands_parts[0]
             command_params = \
@@ -73,7 +65,7 @@ class ServerProtocol:
         id = self._message_protocol.receive_msg()
         command = self._message_protocol.receive_msg()
         try:
-            instrument = instruments_repository.get_by_physical_address(id)
+            instrument = instruments_repository.get_by_id(id)
             commands_parts = command.split(' ')
             command_name = commands_parts[0]
             command_params = \

@@ -12,7 +12,6 @@ int init(int int_param, float float_param) {
 }
 
 int close(void) {
-  // TODO: Add code for free cammera resources
   return -1;
 }
 
@@ -21,7 +20,7 @@ int get_image(char * file_path) {
   FILE* input_file, *output_file = NULL;
   unsigned char buffer[512];
   const char* mock_image_path = "./data_test/clibs/mock_img.jpg";
-  printf("[get_image] file path provided: %s\n", file_path);
+  // printf("[get_image] file path provided: %s\n", file_path);
   input_file = fopen(mock_image_path,"rb");
   if (input_file == NULL) {
     fprintf(stderr, "error opening input file: %s\n", strerror(errno));

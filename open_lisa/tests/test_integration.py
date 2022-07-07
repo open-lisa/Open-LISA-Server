@@ -38,19 +38,20 @@ def test_get_instruments():
 
     sdk = Open_LISA_SDK.SDK(log_level="ERROR")
     sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
-    instruments = sdk.list_instruments()
+    instruments = sdk.get_instruments()
 
-    assert instruments[0].ID == "USB0::0x0699::0x0363::C107676::INSTR"
-    assert instruments[1].ID == "CAM_ID"
+    assert instruments[0]["physical_address"] == "USB0::0x0699::0x0363::C107676::INSTR"
+    assert instruments[1]["physical_address"] == "CAM_ID"
     sdk.disconnect()
 
 
 def test_get_instrument_commands():
     sdk = Open_LISA_SDK.SDK(log_level="ERROR")
     sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
-    instruments = sdk.list_instruments()
+    instruments = sdk.get_instruments()
     tektronix_test = instruments[0]
-    available_commands = tektronix_test.available_commands()
+    available_commands = sdk.get_instrument_commands(
+        instrument_id=tektronix_test["id"])
     commands_repository = CommandsRepository()
     commands = commands_repository.get_instrument_commands(instrument_id=1)
     assert len(available_commands) > 0
@@ -64,9 +65,14 @@ def test_get_instrument_commands():
 def test_get_image_from_mock_camera():
     sdk = Open_LISA_SDK.SDK(log_level="ERROR")
     sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
-    instruments = sdk.list_instruments()
+    instruments = sdk.get_instruments()
     mocked_camera = instruments[1]
-    image_bytes = mocked_camera.send("get_image", "bytes")
+    command_result = sdk.send_command(
+        instrument_id=mocked_camera["id"],
+        command_invocation="get_image",
+        response_format="BYTES"
+    )
+    image_bytes = command_result["value"]
 
     with open(MOCK_IMAGE_PATH, "rb") as f:
         assert image_bytes == f.read()
