@@ -1,18 +1,17 @@
 
 import base64
-from datetime import timezone, datetime
+
 from open_lisa.domain.command.command_return import CommandReturnType
+from open_lisa.utils.date import get_UTC_timestamp
 
 
 class CommandExecutionResult():
-    def __init__(self, type=CommandReturnType.VOID, raw_value=None):
+    def __init__(self, timestamp_execution_begin, type=CommandReturnType.VOID, raw_value=None):
         assert isinstance(type, CommandReturnType)
 
-        # UTC timestamp
-        # Src: https://www.geeksforgeeks.org/get-utc-timestamp-in-python/#:~:text=Getting%20the%20UTC%20timestamp,convert%20our%20datetime%20to%20UTC.
-        self.timestamp = datetime.now(
-            timezone.utc).replace(tzinfo=timezone.utc).timestamp()
+        self.timestamp_execution_finish = get_UTC_timestamp()
         self.type = type
+        self.timestamp_execution_begin = timestamp_execution_begin
 
         if type == CommandReturnType.VOID:
             self.value = None
@@ -32,5 +31,6 @@ class CommandExecutionResult():
         return {
             "type": str(self.type),
             "value": self.value,
-            "timestamp": self.timestamp
+            "timestamp_execution_begin":  self.timestamp_execution_begin,
+            "timestamp_execution_finish": self.timestamp_execution_finish,
         }
