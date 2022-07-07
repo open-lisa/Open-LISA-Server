@@ -2,11 +2,13 @@ import ctypes
 import logging
 import os
 from open_lisa.domain.command.command import Command, CommandType
+from open_lisa.domain.command.command_execution_result import CommandExecutionResult
 from open_lisa.domain.command.command_parameters import CommandParameters
 from open_lisa.domain.command.command_return import CommandReturn, CommandReturnType
 from open_lisa.exceptions.command_execution_error import CommandExecutionError
 from open_lisa.exceptions.invalid_clib_command_function_name import InvalidCLibCommandFunctionNameError
 from open_lisa.exceptions.invalid_clib_command_lib_file import InvalidCLibCommandLibFileError
+from open_lisa.utils.date import get_UTC_timestamp
 
 TMP_BUFFER_FILE = "tmp_file_buffer.bin"
 
@@ -83,6 +85,7 @@ class CLibCommand(Command):
             # NOTE: functions that returns bytes should return int error codes.
             # If code is 0 the bytes were successfully saved into the file buffer
             arguments.append(ctypes.c_char_p(TMP_BUFFER_FILE.encode()))
+            command_execution_start = get_UTC_timestamp()
             error_code = self._c_function(*arguments)
             if error_code != 0:
                 logging.error("[CLibCommand][command={}] fail calling C function that returns bytes, error code is {}".format(
@@ -97,9 +100,13 @@ class CLibCommand(Command):
                 # Delete file
                 os.remove(TMP_BUFFER_FILE)
 
-                return bytes(data)
+                raw_result_value = bytes(data)
+                return CommandExecutionResult(timestamp_execution_start=command_execution_start, type=self.command_return.type, raw_value=raw_result_value)
         else:
+            command_execution_start = get_UTC_timestamp()
             result = self._c_function(*arguments)
             # CommandReturnType.STRING does not exist in C, for that reason char* in C
             # is mapped to bytes() in Python and should be decoded
-            return result.decode() if self.command_return.type == CommandReturnType.STRING else result
+            raw_result_value = result.decode() \
+                if self.command_return.type == CommandReturnType.STRING else result
+            return CommandExecutionResult(timestamp_execution_start=command_execution_start, type=self.command_return.type, raw_value=raw_result_value)

@@ -37,7 +37,7 @@ class ServerProtocol:
             # TODO: Temporary send physical_address as id in order to be retrocompatible with SDK
             instrument_dict = instrument.to_dict()
             instrument_dict["id"] = instrument_dict["physical_address"]
-            self._message_protocol.send_msg(instrument_dict)
+            self._message_protocol.send_msg(json.dumps(instrument_dict))
         except OpenLISAException as e:
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)
@@ -78,14 +78,11 @@ class ServerProtocol:
             command_name = commands_parts[0]
             command_params = \
                 commands_parts[1:] if len(commands_parts) > 1 else []
-            result = instrument.send_command(command_name, command_params)
+            command_execution_result = instrument.send_command(
+                command_name, command_params)
             self._message_protocol.send_msg(SUCCESS_RESPONSE)
-            format = type(result).__name__
-            encode = False
-            if format == "str":
-                encode = True
-            self._message_protocol.send_msg(format)
-            self._message_protocol.send_msg(result, encode=encode)
+            self._message_protocol.send_msg(
+                json.dumps(command_execution_result.to_dict()))
         except OpenLISAException as e:
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)
