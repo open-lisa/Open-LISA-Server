@@ -4,6 +4,7 @@ import logging
 from open_lisa.api.api import OpenLISA
 from open_lisa.config.config import load_config
 from open_lisa.protocol.rs232configuration import RS232Configuration
+from open_lisa.tests.utils import reset_databases
 
 
 def parse_config_params():
@@ -61,6 +62,10 @@ def main():
 
     logging.info(
         "Configuring Open LISA Server for {} environment".format(args.env))
+    if args.env == "test":
+        logging.info(
+            "Server running in test mode... resetting databases to seed value")
+        reset_databases()
     load_config(env=args.env)
 
     rs232_config = RS232Configuration(

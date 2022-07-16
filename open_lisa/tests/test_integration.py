@@ -76,3 +76,39 @@ def test_get_image_from_mock_camera():
 
     with open(MOCK_IMAGE_PATH, "rb") as f:
         assert image_bytes == f.read()
+
+
+def test_instrument_CRUDs():
+    # NOTE: needs SDK version > 0.5.5
+    VALID_INSTRUMENT_CREATION_DICT = {
+        "brand": "some brand",
+        "model": "some model",
+        "physical_address": None,
+        "type": "CLIB",
+        "description": "some description"
+    }
+
+    VALID_UPDATED_BRAND = "some new brand"
+    VALID_INSTRUMENT_UPDATE_DICT = {
+        "brand": VALID_UPDATED_BRAND
+    }
+
+    sdk = Open_LISA_SDK.SDK(log_level="ERROR")
+    sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+    new_instrument = sdk.create_instrument(
+        new_instrument=VALID_INSTRUMENT_CREATION_DICT, response_format="PYTHON")
+    assert new_instrument["brand"] == VALID_INSTRUMENT_CREATION_DICT["brand"]
+
+    updated_instrument = sdk.update_instrument(
+        instrument_id=new_instrument["id"], updated_instrument=VALID_INSTRUMENT_UPDATE_DICT, response_format="PYTHON")
+    assert new_instrument["id"] == updated_instrument["id"]
+    assert updated_instrument["brand"] == VALID_INSTRUMENT_UPDATE_DICT["brand"]
+
+    deleted_instrument = sdk.delete_instrument(
+        instrument_id=new_instrument["id"], response_format="PYTHON")
+    assert new_instrument["id"] == deleted_instrument["id"]
+
+    with pytest.raises(Exception):
+        sdk.get_instrument(instrument_id=deleted_instrument["id"])
+
+    sdk.disconnect()

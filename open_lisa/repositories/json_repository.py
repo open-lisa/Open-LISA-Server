@@ -21,6 +21,9 @@ class JSONRepository:
     def get_all(self):
         return self._db.getAll()
 
+    def add(self, dict):
+        return self._db.add(new_data=dict)
+
     def update_by_id(self, id, dict):
         return self._db.updateById(id, dict)
 

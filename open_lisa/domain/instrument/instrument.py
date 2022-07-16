@@ -70,6 +70,7 @@ class Instrument:
             "physical_address": self.physical_address,
             "brand": self.brand,
             "model": self.model,
+            "type": str(self.type),
             "description": self.description,
             "status": self.status,
         }

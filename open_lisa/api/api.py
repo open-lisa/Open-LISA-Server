@@ -3,13 +3,12 @@ import socket
 import logging
 import traceback
 import sys
-import os
 
 from ..protocol.message_protocol_rs232 import MessageProtocolRS232
 from ..protocol.message_protocol_tcp import MessageProtocolTCP
 from ..repositories.instruments_repository import InstrumentRepository
-from ..protocol.server_protocol import COMMAND_GET_INSTRUMENT, COMMAND_GET_INSTRUMENTS, COMMAND_GET_INSTRUMENT_COMMANDS, \
-    COMMAND_SEND_COMMAND, COMMAND_VALIDATE_COMMAND, COMMAND_DISCONNECT, ServerProtocol
+from ..protocol.server_protocol import COMMAND_CREATE_INSTRUMENT, COMMAND_DELETE_INSTRUMENT, COMMAND_GET_INSTRUMENT, COMMAND_GET_INSTRUMENTS, COMMAND_GET_INSTRUMENT_COMMANDS, COMMAND_RESET_DATABASES, \
+    COMMAND_SEND_COMMAND, COMMAND_UPDATE_INSTRUMENT, COMMAND_VALIDATE_COMMAND, COMMAND_DISCONNECT, ServerProtocol
 
 MODE_SERIAL = 'SERIAL'
 MODE_TCP = 'TCP'
@@ -59,6 +58,21 @@ class OpenLISA:
                             "[OpenLISA][api][start] - getting specific instrument")
                         self._server_protocol.handle_get_instrument(
                             self._instruments_repository)
+                    elif command == COMMAND_CREATE_INSTRUMENT:
+                        logging.debug(
+                            "[OpenLISA][api][start] - creating new instrument")
+                        self._server_protocol.handle_create_instrument(
+                            self._instruments_repository)
+                    elif command == COMMAND_UPDATE_INSTRUMENT:
+                        logging.debug(
+                            "[OpenLISA][api][start] - updating instrument")
+                        self._server_protocol.handle_update_instrument(
+                            self._instruments_repository)
+                    elif command == COMMAND_DELETE_INSTRUMENT:
+                        logging.debug(
+                            "[OpenLISA][api][start] - deleting instrument")
+                        self._server_protocol.handle_delete_instrument(
+                            self._instruments_repository)
                     elif command == COMMAND_GET_INSTRUMENT_COMMANDS:
                         logging.debug(
                             "[OpenLISA][api][start] - getting instrument commands")
@@ -79,6 +93,8 @@ class OpenLISA:
                             "[OpenLISA][api][start] - client order disconnect")
                         # self._server_protocol.handle_disconnect_command()
                         break
+                    elif command == COMMAND_RESET_DATABASES:
+                        self._server_protocol.handle_reset_databases()
                     else:
                         logging.error(
                             "[OpenLISA][api][start] - unknown command '{}'".format(command))
