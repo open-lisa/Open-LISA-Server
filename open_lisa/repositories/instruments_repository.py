@@ -3,7 +3,10 @@ import logging
 import os
 import pyvisa
 from open_lisa.domain.instrument.instrument import Instrument
+from open_lisa.exceptions.instrument_creation_error import InstrumentCreationError
+from open_lisa.exceptions.instrument_deletion_error import InstrumentDeletionError
 from open_lisa.exceptions.instrument_not_found import InstrumentNotFoundError
+from open_lisa.exceptions.instrument_update_error import InstrumentUpdateError
 from open_lisa.repositories.commands_repository import CommandsRepository
 from open_lisa.repositories.json_repository import JSONRepository
 
@@ -66,7 +69,7 @@ class InstrumentRepository(JSONRepository):
 
         return match
 
-    def get_by_id(self, id):
+    def get_by_id(self, id) -> Instrument:
         id = int(id)
         instruments = self.get_all()
         match = None
@@ -80,3 +83,35 @@ class InstrumentRepository(JSONRepository):
                 "instrument not found for id {}".format(id))
 
         return match
+
+    def create_instrument(self, new_instrument) -> Instrument:
+        try:
+            new_id = self.add(new_instrument)
+        except Exception:
+            raise InstrumentCreationError(
+                "could not create instrument {}".format(new_instrument))
+        return self.get_by_id(new_id)
+
+    def update_instrument(self, id, updated_instrument) -> Instrument:
+        id = int(id)
+        instrument = self.get_by_id(id)
+        valid_keys = list(instrument.to_dict().keys())
+
+        payload_keys = list(updated_instrument.keys())
+        invalid_payload_keys = [k for k in payload_keys if k not in valid_keys]
+        if len(invalid_payload_keys) > 0:
+            raise InstrumentUpdateError(
+                "keys {} are invalid for instrument update".format(invalid_payload_keys))
+
+        self.update_by_id(id, updated_instrument)
+        return self.get_by_id(id)
+
+    def delete_instrument(self, id) -> Instrument:
+        id = int(id)
+        instrument = self.get_by_id(id)
+        try:
+            self.remove_by_id(id)
+        except Exception as e:
+            raise InstrumentDeletionError(
+                "could not delete instrument: {}".format(str(e)))
+        return instrument
