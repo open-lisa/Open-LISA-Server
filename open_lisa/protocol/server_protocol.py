@@ -156,8 +156,8 @@ class ServerProtocol:
 
     def handle_execute_bash_command(self):
         command = str(self._message_protocol.receive_msg())
-        should_send_stdout = bool(self._message_protocol.receive_msg())
-        should_send_stderr = bool(self._message_protocol.receive_msg())
+        should_send_stdout = True if self._message_protocol.receive_msg() == "True" else False
+        should_send_stderr = True if self._message_protocol.receive_msg() == "True" else False
         logging.info("[OpenLISA][ServerProtocol][execute_bash_command]"
                      " About to execute the following command sent by client: {}"
                      " Must send stdout: {}. Must send stderr: {}"
