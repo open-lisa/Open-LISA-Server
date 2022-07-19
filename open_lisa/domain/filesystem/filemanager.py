@@ -27,6 +27,11 @@ class FileManager:
     def __transform_directory_represented_as_dict_to_list(self, directory_dict={}):
         result = []
         keys = list(directory_dict.keys())
+        keys_that_are_directories = sorted(
+            filter(lambda k: type(directory_dict[k]) == dict, keys))
+        keys_that_are_files = sorted(
+            filter(lambda k: directory_dict[k] == None, keys))
+        keys = keys_that_are_directories + keys_that_are_files
         for k in keys:
             if type(directory_dict[k]) == dict:  # it is a directory
                 children = self.__transform_directory_represented_as_dict_to_list(

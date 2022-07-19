@@ -1,49 +1,54 @@
 import os
-from open_lisa.domain.filesystem.filesystem import FileManager
+from open_lisa.domain.filesystem.filemanager import FileManager
 
 
 def test_list_directory_mockdir_to_be_tested_for_list_should_return_a_list_representing_the_directory():
     # NOTE: expected_directory should have the same order that is returned, otherwise the test would fail
+    # the order is: first directories (alphabetically) and then files (alphabetically)
     expected_directory = [
         {
             "name": "1",
             "type": "directory",
             "children": [
                 {
-                    "name": "file_1.txt",
-                    "type": "file"
-                },
-                {
                     "name": "1_1",
                     "type": "directory",
                     "children": [
+                        {
+                            "name": "another_file.txt",
+                            "type": "file"
+                        },
                         {
                             "name": "file_1_1.py",
                             "type": "file"
                         }
                     ]
-                }
+                },
+                {
+                    "name": "file_1.txt",
+                    "type": "file"
+                },
             ]
-        },
-        {
-            "name": "3",
-            "type": "directory",
-            "children": []
         },
         {
             "name": "2",
             "type": "directory",
             "children": [
                 {
-                    "name": "file_2.js",
-                    "type": "file"
-                },
-                {
                     "name": "2_3",
                     "type": "directory",
                     "children": []
                 },
+                {
+                    "name": "file_2.js",
+                    "type": "file"
+                },
             ]
+        },
+        {
+            "name": "3",
+            "type": "directory",
+            "children": []
         },
     ]
 
