@@ -3,7 +3,7 @@ from open_lisa.domain.filesystem.filesystem import FileManager
 
 
 def test_list_directory_mockdir_to_be_tested_for_list_should_return_a_list_representing_the_directory():
-    # NOTE: copy the same order that is returned, otherwise the test files
+    # NOTE: expected_directory should have the same order that is returned, otherwise the test would fail
     expected_directory = [
         {
             "name": "1",
