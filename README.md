@@ -55,6 +55,13 @@ El servidor permite integrar instrumentos para los cuales el fabricante provea d
 lenguaje de programación C. Para ver más detalle, ver la sección "Integración con código C". Si éste es el caso,
 se necesita un compilador de este lenguaje de programación para Windows.
 
+## Ejecución
+
+Para ejecutar el servidor en ambiente de prueba se debe correr desde la raíz del proyecto
+```bash
+python main.py  --env test --mode TCP --tcp_port 8080 --log-level DEBUG
+```
+
 ## Registrar un nuevo instrumento
 
 Registrar un nuevo instrumento consta de dos partes:
