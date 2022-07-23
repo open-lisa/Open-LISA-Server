@@ -9,7 +9,7 @@ Para ejecutar el servidor se requieren instalar las siguientes dependencias, cad
 documento
 
 1. Python 3.9.6 for Windows
-2. Librerías Python pyvisa, pyvisa-py y pyserial
+2. Librerías Python `pyvisa`, `pyvisa-py`, `pyserial`, `python-dotenv`, `pysondb`.
 3. Controladores de cada instrumento provistos por el fabricante
 4. Compilador de C
 
