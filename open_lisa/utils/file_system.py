@@ -4,7 +4,6 @@ import sys
 
 from open_lisa.exceptions.invalid_path_exception import InvalidPathException
 
-USER_FILES_FOLDER = "sandbox"
 # Sadly, Python fails to provide the following magic number for us
 ERROR_INVALID_NAME = 123
 
@@ -22,8 +21,8 @@ def get_file_path(file_name):
 
 
 def get_sandbox_dir():
-    abs_path_this_file = os.path.dirname(os.path.abspath(__file__))
-    sandbox_dir = os.path.join(abs_path_this_file, os.pardir, os.pardir, USER_FILES_FOLDER)
+    project_root_path = os.getcwd()
+    sandbox_dir = os.path.join(project_root_path, os.getenv("USER_FILES_FOLDER"))
 
     return sandbox_dir
 
