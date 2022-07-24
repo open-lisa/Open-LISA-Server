@@ -142,7 +142,6 @@ class ServerProtocol:
             file_path = get_file_path(file_name)
             with open(file_path, "wb") as file:
                 file.write(file_bytes)
-
         except OpenLISAException as e:
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)
