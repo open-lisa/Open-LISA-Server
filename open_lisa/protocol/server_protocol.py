@@ -3,10 +3,12 @@ import logging
 import subprocess
 import os
 
+from open_lisa.exceptions.invalid_path_exception import InvalidPathException
 from open_lisa.repositories.instruments_repository import InstrumentRepository
 from open_lisa.tests.utils import reset_databases
 
 from open_lisa.exceptions.base_exception import OpenLISAException
+from open_lisa.utils.file_system import get_file_path
 
 SUCCESS_RESPONSE = "OK"
 ERROR_RESPONSE = "ERROR"
@@ -135,8 +137,15 @@ class ServerProtocol:
     def handle_send_file(self):
         file_name = str(self._message_protocol.receive_msg())
         file_bytes = self._message_protocol.receive_msg(decode=False)
-        with open(file_name, "wb") as file:
-            file.write(file_bytes)
+
+        try:
+            file_path = get_file_path(file_name)
+            with open(file_path, "wb") as file:
+                file.write(file_bytes)
+
+        except OpenLISAException as e:
+            self._message_protocol.send_msg(ERROR_RESPONSE)
+            self._message_protocol.send_msg(e.message)
 
         # TODO: Answer a bytes checksum for error checking
         self._message_protocol.send_msg(SUCCESS_RESPONSE)
@@ -148,7 +157,7 @@ class ServerProtocol:
                 self._message_protocol.send_msg(SUCCESS_RESPONSE)
                 data = file.read()
                 self._message_protocol.send_msg(data, encode=False)
-        except FileNotFoundError as e:
+        except FileNotFoundError:
             logging.error(
                 "[OpenLISA][ServerProtocol][handle_get_file] Requested file does not exist: {}".format(file_name))
             self._message_protocol.send_msg(ERROR_RESPONSE)
