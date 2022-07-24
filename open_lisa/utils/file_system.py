@@ -4,7 +4,6 @@ import sys
 
 from open_lisa.exceptions.invalid_path_exception import InvalidPathException
 
-# TODO: GET RELATIVE PATH FROM THIS FILE
 USER_FILES_FOLDER = "sandbox"
 # Sadly, Python fails to provide the following magic number for us
 ERROR_INVALID_NAME = 123
