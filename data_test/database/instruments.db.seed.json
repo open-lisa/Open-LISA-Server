@@ -7,6 +7,14 @@
       "model": "tds1002b",
       "type": "SCPI",
       "description": "Osciloscopio principal"
+    },
+    {
+      "id": 2,
+      "physical_address": "CAM_ID",
+      "brand": "pixelfly",
+      "model": "qe",
+      "type": "CLIB",
+      "description": "Cámara de alta velocidad"
     }
   ]
 }
