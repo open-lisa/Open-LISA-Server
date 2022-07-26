@@ -3,12 +3,11 @@ import logging
 import subprocess
 import os
 
-from open_lisa.exceptions.invalid_path_exception import InvalidPathException
+from open_lisa.domain.filesystem.filemanager import FileManager
 from open_lisa.repositories.instruments_repository import InstrumentRepository
 from open_lisa.tests.utils import reset_databases
 
 from open_lisa.exceptions.base_exception import OpenLISAException
-from open_lisa.utils.file_system import get_file_path
 
 SUCCESS_RESPONSE = "OK"
 ERROR_RESPONSE = "ERROR"
@@ -139,7 +138,9 @@ class ServerProtocol:
         file_bytes = self._message_protocol.receive_msg(decode=False)
 
         try:
-            file_path = get_file_path(file_name)
+            file_path = FileManager.get_file_path(file_name)
+            logging.info("[OpenLISA][ServerProtocol][handle_send_file] Saving file in {}".format(file_path))
+            print("saving file in {}".format(file_path))
             with open(file_path, "wb") as file:
                 file.write(file_bytes)
         except OpenLISAException as e:
