@@ -9,7 +9,7 @@ Para ejecutar el servidor se requieren instalar las siguientes dependencias, cad
 documento
 
 1. Python 3.9.6 for Windows
-2. Librerías Python pyvisa, pyvisa-py y pyserial
+2. Librerías Python `pyvisa`, `pyvisa-py`, `pyserial`, `python-dotenv`, `pysondb`.
 3. Controladores de cada instrumento provistos por el fabricante
 4. Compilador de C
 
@@ -54,6 +54,13 @@ todos los modelos de instrumentos soportados, y un README con el link para desca
 El servidor permite integrar instrumentos para los cuales el fabricante provea drivers que sean integrables en el
 lenguaje de programación C. Para ver más detalle, ver la sección "Integración con código C". Si éste es el caso,
 se necesita un compilador de este lenguaje de programación para Windows.
+
+## Ejecución
+
+Para ejecutar el servidor en ambiente de prueba se debe correr desde la raíz del proyecto
+```bash
+python main.py  --env test --mode TCP --tcp_port 8080 --log-level DEBUG
+```
 
 ## Registrar un nuevo instrumento
 
