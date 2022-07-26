@@ -140,7 +140,6 @@ class ServerProtocol:
         try:
             file_path = FileManager.get_file_path(file_name)
             logging.info("[OpenLISA][ServerProtocol][handle_send_file] Saving file in {}".format(file_path))
-            print("saving file in {}".format(file_path))
             with open(file_path, "wb") as file:
                 file.write(file_bytes)
         except OpenLISAException as e:
