@@ -18,9 +18,6 @@ MOCK_LIB_NAME = "mock_lib.{}".format(C_LIB_EXTENSION)
 MOCK_LIB_ABSOLUTE_PATH = "{}/mock_libs/{}".format(
     os.path.dirname(__file__), MOCK_LIB_NAME)
 
-if sys.platform.startswith('win'):
-    MOCK_LIB_NAME.replace(".dll", "_86.dll")
-
 SUM_PARAMETERS = CommandParameters()
 SUM_PARAMETERS.add(CommandParameter(type=CommandParameterType.INT, position=1))
 SUM_PARAMETERS.add(CommandParameter(type=CommandParameterType.INT, position=2))
