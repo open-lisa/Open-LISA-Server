@@ -12,10 +12,14 @@ def reset_databases():
     if sys.platform.startswith('win'):
         try:
             with open(os.path.join(os.getcwd(), "data_test/database/commands.db.json")) as file:
-                commands = json.load(file)
-                for command in commands:
+                db = json.load(file)
+                for command in db["data"]:
                     if "lib_file_name" in command:
-                        command["lib_file_name"] = command["lib_file_name"].replace(".dll", "_86.dll")
+                        command["lib_file_name"] = command["lib_file_name"].replace(".dll", "_x86.dll")
+
+            with open(os.path.join(os.getcwd(), "data_test/database/commands.db.json"), "wt") as file:
+                file.write(json.dumps(db, indent=4))
+
         except Exception as e:
             print(e)
 
