@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <errno.h>
 #include <string.h>
 #include "pixelflyqe.h"
 
@@ -21,14 +20,14 @@ int get_image(char * file_path) {
   // printf("[get_image] file path provided: %s\n", file_path);
   input_file = fopen(mock_image_path,"rb");
   if (input_file == NULL) {
-    fprintf(stderr, "error opening input file: %s\n", strerror(errno));
+    fprintf(stderr, "error opening input file\n");
     return -1;
   }
 
   output_file = fopen(file_path,"w+b");
   if (output_file == NULL) {
     fclose(input_file);
-    fprintf(stderr, "error opening output file: %s\n", strerror(errno));
+    fprintf(stderr, "error opening output file\n");
     return -1;
   }
 
