@@ -35,21 +35,11 @@ def test_list_directory_mockdir_to_be_tested_for_list_should_return_a_list_repre
             "type": "directory",
             "children": [
                 {
-                    "name": "2_3",
-                    "type": "directory",
-                    "children": []
-                },
-                {
                     "name": "file_2.js",
                     "type": "file"
                 },
             ]
-        },
-        {
-            "name": "3",
-            "type": "directory",
-            "children": []
-        },
+        }
     ]
 
     fm = FileManager()
