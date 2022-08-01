@@ -10,6 +10,8 @@ from open_lisa.exceptions.invalid_path_exception import InvalidPathException
 # Sadly, Python fails to provide the following magic number for us
 ERROR_INVALID_NAME = 123
 
+VALID_ROOT_FOLDERS = ['sandbox', 'clibs', 'database']
+
 
 class FileManager:
     def __init__(self) -> None:
@@ -42,16 +44,14 @@ class FileManager:
             os.remove(file_path)
 
     @staticmethod
-    def get_file_path(file_name):
-        while file_name.startswith('/') or file_name.startswith('\\') or file_name.startswith('.'):
-            file_name = file_name[1:]
+    def get_file_path(user_file_path):
+        while user_file_path.startswith('/') or user_file_path.startswith('\\') or user_file_path.startswith('.'):
+            user_file_path = user_file_path[1:]
 
-        if not file_name.startswith(os.getenv("USER_FILES_FOLDER")) \
-                and not file_name.startswith(os.getenv("CLIBS_FOLDER"))\
-                and not file_name.startswith(os.getenv("DATABASE_FOLDER")):
+        if not user_file_path.startswith(tuple(VALID_ROOT_FOLDERS)):
             raise ForbiddenPathException
 
-        file_path = os.path.join(FileManager.__get_sandbox_dir(), file_name)
+        file_path = os.path.join(FileManager.__get_sandbox_dir(), user_file_path)
 
         if not FileManager.__is_path_exists_or_creatable(file_path):
             raise InvalidPathException(file_path)
