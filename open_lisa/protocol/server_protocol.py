@@ -3,6 +3,7 @@ import logging
 import subprocess
 import os
 
+from open_lisa.domain.command.command_return import CommandReturnType
 from open_lisa.domain.filesystem.filemanager import FileManager
 from open_lisa.repositories.instruments_repository import InstrumentRepository
 from open_lisa.tests.utils import reset_databases
@@ -116,16 +117,32 @@ class ServerProtocol:
             self._message_protocol.send_msg(e.message)
 
     def handle_send_command(self, instruments_repository: InstrumentRepository):
-        id = self._message_protocol.receive_msg()
-        command = self._message_protocol.receive_msg()
+        command_execution_request = self._message_protocol.receive_msg()
+
+        command_execution_request_json = json.loads(command_execution_request)
+        instrument_id = command_execution_request_json["instrument_id"]
+        command = command_execution_request_json["command"]
+        command_result_output_file = command_execution_request_json["command_result_output_file"]
+        command_output_result_path = None
+
         try:
-            instrument = instruments_repository.get_by_id(id)
+            if command_result_output_file is not None:
+                command_output_result_path = FileManager.get_file_path(command_result_output_file)
+
+            instrument = instruments_repository.get_by_id(instrument_id)
             commands_parts = command.split(' ')
             command_name = commands_parts[0]
             command_params = \
                 commands_parts[1:] if len(commands_parts) > 1 else []
             command_execution_result = instrument.send_command(
                 command_name, command_params)
+
+            if command_result_output_file is not None:
+                logging.info("[OpenLISA][ServerProtocol][handle_send_command] Saving file in {}".format(command_output_result_path))
+                file_mode = "wb" if command_execution_result.type == CommandReturnType.BYTES else "wt"
+                with open(command_output_result_path, file_mode) as file:
+                    file.write(command_execution_result)
+
             self._message_protocol.send_msg(SUCCESS_RESPONSE)
             self._message_protocol.send_msg(
                 json.dumps(command_execution_result.to_dict()))
