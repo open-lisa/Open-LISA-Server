@@ -144,8 +144,10 @@ class ServerProtocol:
                     file.write(command_execution_result)
 
             self._message_protocol.send_msg(SUCCESS_RESPONSE)
-            self._message_protocol.send_msg(
-                json.dumps(command_execution_result.to_dict()))
+
+            if command_result_output_file is None:
+                self._message_protocol.send_msg(
+                    json.dumps(command_execution_result.to_dict()))
         except OpenLISAException as e:
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)
