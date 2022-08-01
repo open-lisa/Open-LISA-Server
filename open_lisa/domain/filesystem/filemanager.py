@@ -1,8 +1,10 @@
 from functools import reduce
+import logging
 import os
 import sys
 import errno
 
+from open_lisa.exceptions.forbidden_path_exception import ForbiddenPathException
 from open_lisa.exceptions.invalid_path_exception import InvalidPathException
 
 # Sadly, Python fails to provide the following magic number for us
@@ -32,9 +34,22 @@ class FileManager:
         return directory_as_list
 
     @staticmethod
+    def save_command_result(file_path):
+        file_path = FileManager.get_file_path(file_path)
+        file_exists = os.path.exists(file_path)
+        if file_exists:
+            logging.info("[OpenLISA][ServerProtocol][handle_delete_file] Deleting file in {}".format(file_path))
+            os.remove(file_path)
+
+    @staticmethod
     def get_file_path(file_name):
         while file_name.startswith('/') or file_name.startswith('\\') or file_name.startswith('.'):
             file_name = file_name[1:]
+
+        if not file_name.startswith(os.getenv("USER_FILES_FOLDER")) \
+                and not file_name.startswith(os.getenv("CLIBS_FOLDER"))\
+                and not file_name.startswith(os.getenv("DATABASE_FOLDER")):
+            raise ForbiddenPathException
 
         file_path = os.path.join(FileManager.__get_sandbox_dir(), file_name)
 
@@ -51,6 +66,20 @@ class FileManager:
         sandbox_dir = os.path.join(project_root_path, os.getenv("USER_FILES_FOLDER"))
 
         return sandbox_dir
+
+    @staticmethod
+    def __get_clibs_dir():
+        project_root_path = os.getcwd()
+        clibs_dir = os.path.join(project_root_path, os.getenv("CLIBS_FOLDER"))
+
+        return clibs_dir
+
+    @staticmethod
+    def __get_database_dir():
+        project_root_path = os.getcwd()
+        database_dir = os.path.join(project_root_path, os.getenv("DATABASE_FOLDER"))
+
+        return database_dir
 
     @staticmethod
     def __is_path_creatable(pathname: str) -> bool:
