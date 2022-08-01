@@ -121,7 +121,7 @@ class ServerProtocol:
 
         command_execution_request_json = json.loads(command_execution_request)
         instrument_id = command_execution_request_json["instrument_id"]
-        command = command_execution_request_json["command"]
+        command = command_execution_request_json["command_invocation"]
         command_result_output_file = command_execution_request_json["command_result_output_file"]
         command_output_result_path = None
 
