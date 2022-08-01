@@ -24,6 +24,7 @@ COMMAND_DISCONNECT = "DISCONNECT"
 COMMAND_SEND_FILE = "SEND_FILE"
 COMMAND_GET_FILE = "GET_FILE"
 COMMAND_EXECUTE_BASH = "EXECUTE_BASH"
+COMMAND_DELETE_FILE = "DELETE_FILE"
 
 # Only available when running in test mode
 COMMAND_RESET_DATABASES = "RESET_DATABASES"
@@ -147,6 +148,20 @@ class ServerProtocol:
             self._message_protocol.send_msg(e.message)
 
         # TODO: Answer a bytes checksum for error checking
+        self._message_protocol.send_msg(SUCCESS_RESPONSE)
+
+    def handle_delete_file(self):
+        file_name = str(self._message_protocol.receive_msg())
+        try:
+            file_path = FileManager.get_file_path(file_name)
+            file_exists = os.path.exists(file_path)
+            if file_exists:
+                logging.info("[OpenLISA][ServerProtocol][handle_delete_file] Deleting file in {}".format(file_path))
+                os.remove(file_path)
+        except OpenLISAException as e:
+            self._message_protocol.send_msg(ERROR_RESPONSE)
+            self._message_protocol.send_msg(e.message)
+
         self._message_protocol.send_msg(SUCCESS_RESPONSE)
 
     def handle_get_file(self):
