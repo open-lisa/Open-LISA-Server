@@ -1,18 +1,32 @@
 from functools import reduce
+import logging
 import os
 import sys
 import errno
+from pathlib import Path
 
+from open_lisa.exceptions.forbidden_path_exception import ForbiddenPathException
 from open_lisa.exceptions.invalid_path_exception import InvalidPathException
 
 # Sadly, Python fails to provide the following magic number for us
 ERROR_INVALID_NAME = 123
 
+ROOT_FOLDER_SANDBOX = 'sandbox'
+ROOT_FOLDER_CLIBS = 'clibs'
+ROOT_FOLDER_DATABASE = 'database'
+VALID_ROOT_FOLDERS = [ROOT_FOLDER_SANDBOX, ROOT_FOLDER_CLIBS, ROOT_FOLDER_DATABASE]
+
 
 class FileManager:
-    def __init__(self) -> None:
+    def __init__(self, sandbox_folder_path=os.getenv("USER_FILES_FOLDER"), clibs_folder_path=os.getenv("CLIBS_FOLDER"),
+                 database_folder_path=os.getenv("DATABASE_FOLDER")) -> None:
         # NOTE: this class could have CRUDs logic for OpenLISA files (pos process, clibs, etc)
-        pass
+        project_root_path = os.getcwd()
+        self._folders_path = {
+            ROOT_FOLDER_SANDBOX: os.path.join(project_root_path, sandbox_folder_path),
+            ROOT_FOLDER_CLIBS: os.path.join(project_root_path, clibs_folder_path),
+            ROOT_FOLDER_DATABASE: os.path.join(project_root_path, database_folder_path)
+        }
 
     def list_directory_recursively(self, directory):
         # Src of as_dict calculation https://code.activestate.com/recipes/577879-create-a-nested-dictionary-from-oswalk/
@@ -31,29 +45,31 @@ class FileManager:
             as_dict[base_key])
         return directory_as_list
 
-    @staticmethod
-    def get_file_path(file_name):
-        while file_name.startswith('/') or file_name.startswith('\\') or file_name.startswith('.'):
-            file_name = file_name[1:]
+    def delete_file(self, file_path):
+        file_path = self.get_file_path(file_path)
+        file_exists = os.path.exists(file_path)
+        if file_exists:
+            logging.info("[OpenLISA][FileManager][delete_file] Deleting file in {}".format(file_path))
+            os.remove(file_path)
 
-        file_path = os.path.join(FileManager.__get_sandbox_dir(), file_name)
+    def get_file_path(self, user_file_path):
+        path_parts = Path(user_file_path).parts
+        root_folder = path_parts[0]
 
-        if not FileManager.__is_path_exists_or_creatable(file_path):
+        if root_folder not in VALID_ROOT_FOLDERS:
+            raise ForbiddenPathException(VALID_ROOT_FOLDERS, user_file_path)
+
+        user_file_path_without_root_folder = path_parts[1:]
+        file_path = os.path.join(self._folders_path[root_folder], *user_file_path_without_root_folder)
+
+        if not self.__is_path_exists_or_creatable(file_path):
             raise InvalidPathException(file_path)
 
         return file_path
 
     # Reference: https://stackoverflow.com/questions/9532499/check-whether-a-path-is-valid-in-python-without-creating-a-file-at-the-paths-ta
 
-    @staticmethod
-    def __get_sandbox_dir():
-        project_root_path = os.getcwd()
-        sandbox_dir = os.path.join(project_root_path, os.getenv("USER_FILES_FOLDER"))
-
-        return sandbox_dir
-
-    @staticmethod
-    def __is_path_creatable(pathname: str) -> bool:
+    def __is_path_creatable(self, pathname: str) -> bool:
         """
         `True` if the current user has sufficient permissions to create the passed
         pathname; `False` otherwise.
@@ -61,8 +77,7 @@ class FileManager:
         dirname = os.path.dirname(pathname) or os.getcwd()
         return os.access(dirname, os.W_OK)
 
-    @staticmethod
-    def __is_pathname_valid(pathname: str) -> bool:
+    def __is_pathname_valid(self, pathname: str) -> bool:
         """
         `True` if the passed pathname is a valid pathname for the current OS;
         `False` otherwise.
@@ -94,8 +109,7 @@ class FileManager:
         else:
             return True
 
-    @staticmethod
-    def __is_path_exists_or_creatable(pathname: str) -> bool:
+    def __is_path_exists_or_creatable(self, pathname: str) -> bool:
         """
         `True` if the passed pathname is a valid pathname for the current OS _and_
         either currently exists or is hypothetically creatable; `False` otherwise.
@@ -103,8 +117,8 @@ class FileManager:
         This function is guaranteed to _never_ raise exceptions.
         """
         try:
-            return FileManager.__is_pathname_valid(pathname) and (
-                    os.path.exists(pathname) or FileManager.__is_path_creatable(pathname))
+            return self.__is_pathname_valid(pathname) and (
+                    os.path.exists(pathname) or self.__is_path_creatable(pathname))
         except OSError:
             return False
 

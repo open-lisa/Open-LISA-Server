@@ -24,6 +24,7 @@ COMMAND_DISCONNECT = "DISCONNECT"
 COMMAND_SEND_FILE = "SEND_FILE"
 COMMAND_GET_FILE = "GET_FILE"
 COMMAND_EXECUTE_BASH = "EXECUTE_BASH"
+COMMAND_DELETE_FILE = "DELETE_FILE"
 
 # Only available when running in test mode
 COMMAND_RESET_DATABASES = "RESET_DATABASES"
@@ -32,6 +33,9 @@ COMMAND_RESET_DATABASES = "RESET_DATABASES"
 class ServerProtocol:
     def __init__(self, message_protocol):
         self._message_protocol = message_protocol
+        self._file_manager = FileManager(sandbox_folder_path=os.getenv("USER_FILES_FOLDER"),
+                                         clibs_folder_path=os.getenv("CLIBS_FOLDER"),
+                                         database_folder_path=os.getenv("DATABASE_FOLDER"))
 
     def get_command(self):
         return self._message_protocol.receive_msg()
@@ -138,7 +142,7 @@ class ServerProtocol:
         file_bytes = self._message_protocol.receive_msg(decode=False)
 
         try:
-            file_path = FileManager.get_file_path(file_name)
+            file_path = self._file_manager.get_file_path(file_name)
             logging.info("[OpenLISA][ServerProtocol][handle_send_file] Saving file in {}".format(file_path))
             with open(file_path, "wb") as file:
                 file.write(file_bytes)
@@ -147,6 +151,16 @@ class ServerProtocol:
             self._message_protocol.send_msg(e.message)
 
         # TODO: Answer a bytes checksum for error checking
+        self._message_protocol.send_msg(SUCCESS_RESPONSE)
+
+    def handle_delete_file(self):
+        file_name = str(self._message_protocol.receive_msg())
+        try:
+            self._file_manager.delete_file(file_name)
+        except OpenLISAException as e:
+            self._message_protocol.send_msg(ERROR_RESPONSE)
+            self._message_protocol.send_msg(e.message)
+
         self._message_protocol.send_msg(SUCCESS_RESPONSE)
 
     def handle_get_file(self):
@@ -171,7 +185,8 @@ class ServerProtocol:
                      " Must send stdout: {}. Must send stderr: {}"
                      .format(command, should_send_stdout, should_send_stderr))
 
-        execution_command_process = subprocess.Popen(command, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+        execution_command_process = subprocess.Popen(command, shell=True, stderr=subprocess.PIPE,
+                                                     stdout=subprocess.PIPE)
         stdout, stderr = execution_command_process.communicate()
         return_code = str(execution_command_process.wait())
         logging.info("[OpenLISA][ServerProtocol][execute_bash_command]"
