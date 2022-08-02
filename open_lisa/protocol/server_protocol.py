@@ -139,7 +139,7 @@ class ServerProtocol:
         file_bytes = self._message_protocol.receive_msg(decode=False)
 
         try:
-            file_path = FileManager.get_file_path(file_name)
+            file_path = FileManager().get_file_path(file_name)
             logging.info("[OpenLISA][ServerProtocol][handle_send_file] Saving file in {}".format(file_path))
             with open(file_path, "wb") as file:
                 file.write(file_bytes)
@@ -153,7 +153,7 @@ class ServerProtocol:
     def handle_delete_file(self):
         file_name = str(self._message_protocol.receive_msg())
         try:
-            FileManager.save_command_result(file_name)
+            FileManager().save_command_result(file_name)
         except OpenLISAException as e:
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)
