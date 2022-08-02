@@ -22,7 +22,6 @@ class FileManager:
                  database_folder_path=os.getenv("DATABASE_FOLDER")) -> None:
         # NOTE: this class could have CRUDs logic for OpenLISA files (pos process, clibs, etc)
         project_root_path = os.getcwd()
-        print(sandbox_folder_path)
         self._folders_path = {
             ROOT_FOLDER_SANDBOX: os.path.join(project_root_path, sandbox_folder_path),
             ROOT_FOLDER_CLIBS: os.path.join(project_root_path, clibs_folder_path),
@@ -46,21 +45,22 @@ class FileManager:
             as_dict[base_key])
         return directory_as_list
 
-    def save_command_result(self, file_path):
+    def delete_file(self, file_path):
         file_path = self.get_file_path(file_path)
         file_exists = os.path.exists(file_path)
         if file_exists:
-            logging.info("[OpenLISA][ServerProtocol][handle_delete_file] Deleting file in {}".format(file_path))
+            logging.info("[OpenLISA][FileManager][delete_file] Deleting file in {}".format(file_path))
             os.remove(file_path)
 
     def get_file_path(self, user_file_path):
-        root_folder = Path(user_file_path).parts[0]
+        path_parts = Path(user_file_path).parts
+        root_folder = path_parts[0]
 
         if root_folder not in VALID_ROOT_FOLDERS:
             raise ForbiddenPathException(VALID_ROOT_FOLDERS, user_file_path)
 
-        user_file_path_without_root_folder = user_file_path.replace(root_folder, '')
-        file_path = os.path.join(self._folders_path[root_folder], user_file_path_without_root_folder)
+        user_file_path_without_root_folder = path_parts[1:]
+        file_path = os.path.join(self._folders_path[root_folder], *user_file_path_without_root_folder)
 
         if not self.__is_path_exists_or_creatable(file_path):
             raise InvalidPathException(file_path)
