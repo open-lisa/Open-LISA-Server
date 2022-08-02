@@ -182,6 +182,7 @@ class ServerProtocol:
 
         self._message_protocol.send_msg(SUCCESS_RESPONSE)
 
+    # TODO: Usar FileManager para obtener el path absoluto del file name a obtener, y lograr las mismas validaciones que send_file()
     def handle_get_file(self):
         file_name = str(self._message_protocol.receive_msg())
         try:
