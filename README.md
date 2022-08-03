@@ -10,8 +10,9 @@ documento
 
 1. Python 3.9.6 for Windows
 2. Librerías Python `pyvisa`, `pyvisa-py`, `pyserial`, `python-dotenv`, `pysondb`.
-3. Controladores de cada instrumento provistos por el fabricante
-4. Compilador de C
+3. Librerías para correr tests: `pytest`, `pytest-cov`.
+4. Controladores de cada instrumento provistos por el fabricante
+5. Compilador de C
 
 ### 1. Python
 
@@ -58,6 +59,7 @@ se necesita un compilador de este lenguaje de programación para Windows.
 ## Ejecución
 
 Para ejecutar el servidor en ambiente de prueba se debe correr desde la raíz del proyecto
+
 ```bash
 python main.py  --env test --mode TCP --tcp_port 8080 --log-level DEBUG
 ```
@@ -226,17 +228,17 @@ Para obtener la siguiente ayuda de ejecución:
 
 ```bash
 usage: Optional app description [-h] --mode {SERIAL,TCP} [--rs_232_port RS_232_PORT] [--tcp_port TCP_PORT] [--rs_232_baudrate RS_232_BAUDRATE] [--rs_232_timeout RS_232_TIMEOUT]
-                                                                                                                                                                                
-optional arguments:                                                                                                                                                             
-  -h, --help            show this help message and exit                                                                                                                         
-  --mode {SERIAL,TCP}   SERIAL or TCP                                                                                                                                           
-  --rs_232_port RS_232_PORT                                                                                                                                                     
-                        RS232 connection port, i.e. COM3                                                                                                                        
-  --tcp_port TCP_PORT   TCP Listening port, i.e. 8080                                                                                                                           
-  --rs_232_baudrate RS_232_BAUDRATE                                                                                                                                             
-                        Baudrate of RS232 connection, i.e. 19200                                                                                                                
-  --rs_232_timeout RS_232_TIMEOUT                                                                                                                                               
-                        Timeout in seconds for RS232 connection reads  
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --mode {SERIAL,TCP}   SERIAL or TCP
+  --rs_232_port RS_232_PORT
+                        RS232 connection port, i.e. COM3
+  --tcp_port TCP_PORT   TCP Listening port, i.e. 8080
+  --rs_232_baudrate RS_232_BAUDRATE
+                        Baudrate of RS232 connection, i.e. 19200
+  --rs_232_timeout RS_232_TIMEOUT
+                        Timeout in seconds for RS232 connection reads
 ```
 
 Una vez ejecutado, el servidor escuchará nuevas conexiones en el puerto TCP o COM Serial indicado
@@ -264,6 +266,5 @@ En el caso del ejemplo esta dirección es 192.168.1.109
 2. Desplegar "Puertos (COM y LPT)"
 
 ![serial_2](https://user-images.githubusercontent.com/12588243/170374010-2774d99e-df08-436b-ae0c-a4d3205c426e.PNG)
-
 
 En el ejemplo de la foto anterior, el puerto COM utilizado por el servidor será "COM4"
