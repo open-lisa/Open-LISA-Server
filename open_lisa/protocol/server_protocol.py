@@ -3,6 +3,7 @@ import logging
 import subprocess
 import os
 
+from open_lisa.domain.command.command_return import CommandReturnType
 from open_lisa.domain.filesystem.filemanager import FileManager
 from open_lisa.repositories.instruments_repository import InstrumentRepository
 from open_lisa.tests.utils import reset_databases
@@ -120,33 +121,44 @@ class ServerProtocol:
             self._message_protocol.send_msg(e.message)
 
     def handle_send_command(self, instruments_repository: InstrumentRepository):
-        id = self._message_protocol.receive_msg()
-        command = self._message_protocol.receive_msg()
+        command_execution_request = self._message_protocol.receive_msg()
+
+        command_execution_request_json = json.loads(command_execution_request)
+        instrument_id = command_execution_request_json["instrument_id"]
+        command = command_execution_request_json["command_invocation"]
+        command_result_output_file = command_execution_request_json["command_result_output_file"]
+
         try:
-            instrument = instruments_repository.get_by_id(id)
+            instrument = instruments_repository.get_by_id(instrument_id)
             commands_parts = command.split(' ')
             command_name = commands_parts[0]
             command_params = \
                 commands_parts[1:] if len(commands_parts) > 1 else []
             command_execution_result = instrument.send_command(
                 command_name, command_params)
+
+            if command_result_output_file is not None:
+                file_mode = "wb" if command_execution_result.type == CommandReturnType.BYTES else "wt"
+                self._file_manager.write_file(command_result_output_file, file_mode, command_execution_result)
+
             self._message_protocol.send_msg(SUCCESS_RESPONSE)
-            self._message_protocol.send_msg(
-                json.dumps(command_execution_result.to_dict()))
+
+            if command_result_output_file is None:
+                self._message_protocol.send_msg(
+                    json.dumps(command_execution_result.to_dict()))
         except OpenLISAException as e:
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)
 
     def handle_send_file(self):
-        file_name = str(self._message_protocol.receive_msg())
+        file_path = str(self._message_protocol.receive_msg())
         file_bytes = self._message_protocol.receive_msg(decode=False)
 
         try:
-            file_path = self._file_manager.get_file_path(file_name)
             logging.info("[OpenLISA][ServerProtocol][handle_send_file] Saving file in {}".format(file_path))
-            with open(file_path, "wb") as file:
-                file.write(file_bytes)
+            self._file_manager.write_file(file_path, "wb", file_bytes)
         except OpenLISAException as e:
+            logging.error("[OpenLISA][ServerProtocol][handle_send_file] Cannot save file {}".format(e.message))
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)
 
@@ -154,9 +166,9 @@ class ServerProtocol:
         self._message_protocol.send_msg(SUCCESS_RESPONSE)
 
     def handle_delete_file(self):
-        file_name = str(self._message_protocol.receive_msg())
+        file_path = str(self._message_protocol.receive_msg())
         try:
-            self._file_manager.delete_file(file_name)
+            self._file_manager.delete_file(file_path)
         except OpenLISAException as e:
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)
@@ -164,17 +176,20 @@ class ServerProtocol:
         self._message_protocol.send_msg(SUCCESS_RESPONSE)
 
     def handle_get_file(self):
-        file_name = str(self._message_protocol.receive_msg())
+        file_path = str(self._message_protocol.receive_msg())
         try:
-            with open(file_name, "rb") as file:
-                self._message_protocol.send_msg(SUCCESS_RESPONSE)
-                data = file.read()
-                self._message_protocol.send_msg(data, encode=False)
+            data = self._file_manager.get_file_data(file_path, "rb")
+            self._message_protocol.send_msg(SUCCESS_RESPONSE)
+            self._message_protocol.send_msg(data, encode=False)
         except FileNotFoundError:
             logging.error(
-                "[OpenLISA][ServerProtocol][handle_get_file] Requested file does not exist: {}".format(file_name))
+                "[OpenLISA][ServerProtocol][handle_get_file] Requested file does not exist: {}".format(file_path))
             self._message_protocol.send_msg(ERROR_RESPONSE)
-            self._message_protocol.send_msg("File not found: {}".format(file_name))
+            self._message_protocol.send_msg("File not found: {}".format(file_path))
+        except OpenLISAException as e:
+            logging.error("[OpenLISA][ServerProtocol][handle_get_file] Cannot get file {}".format(e.message))
+            self._message_protocol.send_msg(ERROR_RESPONSE)
+            self._message_protocol.send_msg(e.message)
 
     def handle_execute_bash_command(self):
         command = str(self._message_protocol.receive_msg())
