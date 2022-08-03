@@ -46,13 +46,23 @@ class FileManager:
         return directory_as_list
 
     def delete_file(self, file_path):
-        file_path = self.get_file_path(file_path)
+        file_path = self.__get_file_path(file_path)
         file_exists = os.path.exists(file_path)
         if file_exists:
             logging.info("[OpenLISA][FileManager][delete_file] Deleting file in {}".format(file_path))
             os.remove(file_path)
 
-    def get_file_path(self, user_file_path):
+    def write_file(self, file_path, file_mode, data):
+        file_path = self.__get_file_path(file_path)
+        with open(file_path, file_mode) as file:
+            file.write(data)
+
+    def get_file_data(self, file_path, file_mode):
+        file_path = self.__get_file_path(file_path)
+        with open(file_path, file_mode) as file:
+            return file.read()
+
+    def __get_file_path(self, user_file_path):
         path_parts = Path(user_file_path).parts
         root_folder = path_parts[0]
 
