@@ -5,7 +5,8 @@ def main():
     sdk = Open_LISA_SDK.SDK(log_level="DEBUG")
     sdk.connect_through_TCP("localhost", 8080)
 
-    sdk.get_file("image_output.bmp", "image_local_from_remote.bmp")
+    sdk.send_file("./image_input.bmp", "sandbox/image_input.bmp")
+    sdk.send_file("./processing_example.m", "sandbox/processing_example.m")
 
     sdk.disconnect()
 

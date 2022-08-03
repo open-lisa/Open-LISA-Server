@@ -158,6 +158,7 @@ class ServerProtocol:
             logging.info("[OpenLISA][ServerProtocol][handle_send_file] Saving file in {}".format(file_path))
             self._file_manager.write_file(file_path, "wb", file_bytes)
         except OpenLISAException as e:
+            logging.error("[OpenLISA][ServerProtocol][handle_send_file] Cannot save file {}".format(e.message))
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)
 
@@ -185,6 +186,10 @@ class ServerProtocol:
                 "[OpenLISA][ServerProtocol][handle_get_file] Requested file does not exist: {}".format(file_path))
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg("File not found: {}".format(file_path))
+        except OpenLISAException as e:
+            logging.error("[OpenLISA][ServerProtocol][handle_get_file] Cannot get file {}".format(e.message))
+            self._message_protocol.send_msg(ERROR_RESPONSE)
+            self._message_protocol.send_msg(e.message)
 
     def handle_execute_bash_command(self):
         command = str(self._message_protocol.receive_msg())
