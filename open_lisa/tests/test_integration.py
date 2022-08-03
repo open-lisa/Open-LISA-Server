@@ -1,5 +1,5 @@
-import pytest
 import os
+import pytest
 import Open_LISA_SDK
 from open_lisa.api.api import OpenLISA
 from open_lisa.config.config import load_config
@@ -8,10 +8,18 @@ from open_lisa.repositories.commands_repository import CommandsRepository
 from time import sleep
 from threading import Thread
 
+
+# Update this comment when necessary
+# NOTE: tested with version 0.7.2 of Open_LISA_SDK
+
 MOCK_RS232_CONFIG = RS232Configuration(port="COM4")
 LOCALHOST = "127.0.0.1"
 SERVER_PORT = 8080
 MOCK_IMAGE_PATH = "data_test/clibs/mock_img.jpg"
+
+CURR_TEST_FILE_BYTES = None
+with open(__file__, "rb") as f:
+    CURR_TEST_FILE_BYTES = f.read()
 
 
 def start_server():
@@ -32,6 +40,11 @@ def on_each():
     yield  # run test
     # after yield emulates "after each test"
     thread.join()
+
+def connect_sdk() -> Open_LISA_SDK.SDK:
+    sdk = Open_LISA_SDK.SDK(log_level="ERROR")
+    sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+    return sdk
 
 
 def test_get_instruments():
@@ -77,6 +90,8 @@ def test_get_image_from_mock_camera():
     with open(MOCK_IMAGE_PATH, "rb") as f:
         assert image_bytes == f.read()
 
+    sdk.disconnect()
+
 
 def test_instrument_CRUDs():
     # NOTE: needs SDK version > 0.5.5
@@ -112,3 +127,24 @@ def test_instrument_CRUDs():
         sdk.get_instrument(instrument_id=deleted_instrument["id"])
 
     sdk.disconnect()
+
+def test_filesystem_manage():
+    sdk = connect_sdk()
+    root_folder = "sandbox"
+    remote_file_sub_path = "/remote_test_integration.py"
+    remote_file_path = root_folder + remote_file_sub_path
+
+    sdk.send_file(__file__, remote_file_path)
+
+    local_file_path = "./tmp.py"
+    sdk.get_file(remote_file_path, local_file_path)
+
+    with open(local_file_path, "rb") as f:
+        assert f.read() == CURR_TEST_FILE_BYTES
+
+    os.remove(local_file_path)
+
+    sdk.delete_file(remote_file_path)
+
+    sdk.disconnect()
+
