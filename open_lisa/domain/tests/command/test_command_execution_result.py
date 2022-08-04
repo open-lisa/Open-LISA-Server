@@ -57,3 +57,31 @@ def test_command_execution_result_with_bytes_type():
             type=CommandReturnType.BYTES, raw_value=image_bytes)
         assert result.value == base64.b64encode(image_bytes).decode()
         assert image_bytes == base64.b64decode(result.value)
+
+def test_get_value_for_file_save():
+    now = get_UTC_timestamp()
+    void_result = CommandExecutionResult(
+        timestamp_execution_start=now, type=CommandReturnType.VOID)
+    assert void_result.get_value_for_file_save() == ""
+
+    string_result = CommandExecutionResult(
+        timestamp_execution_start=1,
+        type=CommandReturnType.STRING, raw_value="any")
+    assert string_result.get_value_for_file_save() == "any"
+
+    int_result = CommandExecutionResult(
+        timestamp_execution_start=1,
+        type=CommandReturnType.INT, raw_value="4")
+    assert int_result.get_value_for_file_save() == "4"
+
+    float_result = CommandExecutionResult(
+        timestamp_execution_start=1,
+        type=CommandReturnType.FLOAT, raw_value="4.2")
+    assert float_result.get_value_for_file_save() == "4.2"
+
+    with open(MOCK_IMAGE_PATH, "rb") as f:
+        image_bytes = f.read()
+        bytes_result = CommandExecutionResult(
+            timestamp_execution_start=1,
+            type=CommandReturnType.BYTES, raw_value=image_bytes)
+        assert bytes_result.get_value_for_file_save() == image_bytes

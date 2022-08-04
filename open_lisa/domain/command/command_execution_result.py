@@ -27,6 +27,19 @@ class CommandExecutionResult():
             # Ref: https://stackoverflow.com/questions/27837346/how-to-include-pictures-bytes-to-a-json-with-python-encoding-issue
             self.value = base64.b64encode(raw_value).decode()
 
+    def get_value_for_file_save(self):
+        if self.type == CommandReturnType.VOID:
+            return ""
+        elif self.type == CommandReturnType.STRING:
+            return str(self.value)
+        elif self.type == CommandReturnType.INT:
+            return str(self.value)
+        elif self.type == CommandReturnType.FLOAT:
+            return str(self.value)
+        elif self.type == CommandReturnType.BYTES:
+            # decode and return raw bytes
+            return base64.b64decode(self.value)
+
     def to_dict(self):
         return {
             "type": str(self.type),
