@@ -139,7 +139,7 @@ class ServerProtocol:
 
             if command_result_output_file is not None:
                 file_mode = "wb" if command_execution_result.type == CommandReturnType.BYTES else "wt"
-                self._file_manager.write_file(command_result_output_file, file_mode, command_execution_result)
+                self._file_manager.write_file(command_result_output_file, file_mode, command_execution_result.get_value_for_file_save())
 
             self._message_protocol.send_msg(SUCCESS_RESPONSE)
 

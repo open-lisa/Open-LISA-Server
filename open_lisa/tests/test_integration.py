@@ -92,6 +92,36 @@ def test_get_image_from_mock_camera():
 
     sdk.disconnect()
 
+def test_get_image_from_mock_camera_and_save_in_server():
+    sdk = Open_LISA_SDK.SDK(log_level="ERROR")
+    sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+    instruments = sdk.get_instruments()
+    mocked_camera = instruments[1]
+    remote_file_name = "remote.jpg"
+    remote_file_path = "sandbox/" + remote_file_name
+    command_result = sdk.send_command(
+        instrument_id=mocked_camera["id"],
+        command_invocation="get_image",
+        response_format="BYTES",
+        command_result_output_file=remote_file_path
+    )
+
+    assert command_result == None
+
+    local_file_path = "./tmp.jpg"
+    sdk.get_file(remote_file_path, local_file_path)
+
+    with open(local_file_path, "rb") as f:
+        get_file_returned = f.read()
+
+    with open(MOCK_IMAGE_PATH, "rb") as f:
+        assert get_file_returned == f.read()
+
+    # clean up
+    os.remove(local_file_path)
+    sdk.delete_file(remote_file_path)
+    sdk.disconnect()
+
 
 def test_instrument_CRUDs():
     # NOTE: needs SDK version > 0.5.5

@@ -1,4 +1,5 @@
 from enum import Enum
+from open_lisa.domain.command.command_execution_result import CommandExecutionResult
 
 from open_lisa.domain.instrument.constants import INSTRUMENT_STATUS_AVAILABLE, INSTRUMENT_STATUS_UNAVAILABLE
 from open_lisa.exceptions.command_not_found_error import CommandNotFoundError
@@ -78,7 +79,7 @@ class Instrument:
     def __str__(self):
         return self.to_dict()
 
-    def send_command(self, command_name, command_parameters_values=[]):
+    def send_command(self, command_name, command_parameters_values=[]) -> CommandExecutionResult:
         if not self.status == INSTRUMENT_STATUS_AVAILABLE:
             raise InstrumentUnavailableError(
                 "instrument {} {} not available for sending command".format(self.brand, self.model))
