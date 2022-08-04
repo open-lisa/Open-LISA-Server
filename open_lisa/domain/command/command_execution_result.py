@@ -28,15 +28,15 @@ class CommandExecutionResult():
             self.value = base64.b64encode(raw_value).decode()
 
     def get_value_for_file_save(self):
-        if type == CommandReturnType.VOID:
+        if self.type == CommandReturnType.VOID:
             return ""
-        elif type == CommandReturnType.STRING:
+        elif self.type == CommandReturnType.STRING:
             return str(self.value)
-        elif type == CommandReturnType.INT:
+        elif self.type == CommandReturnType.INT:
             return str(self.value)
-        elif type == CommandReturnType.FLOAT:
+        elif self.type == CommandReturnType.FLOAT:
             return str(self.value)
-        elif type == CommandReturnType.BYTES:
+        elif self.type == CommandReturnType.BYTES:
             # decode and return raw bytes
             return base64.b64decode(self.value)
 
