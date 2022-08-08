@@ -1,11 +1,15 @@
-from distutils.dir_util import copy_tree
+from distutils.dir_util import copy_tree, remove_tree
 import json
 import sys
 import os
-import shutil
 
 
 def reset_databases():
+    # delete current directories state
+    remove_tree("data_test/database")
+    remove_tree("data_test/clibs")
+    remove_tree("data_test/sandbox")
+
     # Copy the seed folders to the folders that Open LISA manages
     copy_tree(os.path.join(os.getcwd(), "data_test/database_seed"),
               os.path.join(os.getcwd(), "data_test/database"))
