@@ -14,7 +14,8 @@ ERROR_INVALID_NAME = 123
 ROOT_FOLDER_SANDBOX = 'sandbox'
 ROOT_FOLDER_CLIBS = 'clibs'
 ROOT_FOLDER_DATABASE = 'database'
-VALID_ROOT_FOLDERS = [ROOT_FOLDER_SANDBOX, ROOT_FOLDER_CLIBS, ROOT_FOLDER_DATABASE]
+VALID_ROOT_FOLDERS = [ROOT_FOLDER_SANDBOX,
+                      ROOT_FOLDER_CLIBS, ROOT_FOLDER_DATABASE]
 
 
 class FileManager:
@@ -25,8 +26,15 @@ class FileManager:
         self._folders_path = {
             ROOT_FOLDER_SANDBOX: os.path.join(project_root_path, sandbox_folder_path),
             ROOT_FOLDER_CLIBS: os.path.join(project_root_path, clibs_folder_path),
-            ROOT_FOLDER_DATABASE: os.path.join(project_root_path, database_folder_path)
+            ROOT_FOLDER_DATABASE: os.path.join(
+                project_root_path, database_folder_path)
         }
+
+    def get_server_folder_structure(self, folder):
+        if folder not in VALID_ROOT_FOLDERS:
+            raise ForbiddenPathException(VALID_ROOT_FOLDERS, folder)
+        server_folder_full_path = self._folders_path[folder]
+        return self.list_directory_recursively(server_folder_full_path)
 
     def list_directory_recursively(self, directory):
         # Src of as_dict calculation https://code.activestate.com/recipes/577879-create-a-nested-dictionary-from-oswalk/
@@ -49,7 +57,8 @@ class FileManager:
         file_path = self.__get_file_path(file_path)
         file_exists = os.path.exists(file_path)
         if file_exists:
-            logging.info("[OpenLISA][FileManager][delete_file] Deleting file in {}".format(file_path))
+            logging.info(
+                "[OpenLISA][FileManager][delete_file] Deleting file in {}".format(file_path))
             os.remove(file_path)
 
     def write_file(self, file_path, file_mode, data):
@@ -70,7 +79,8 @@ class FileManager:
             raise ForbiddenPathException(VALID_ROOT_FOLDERS, user_file_path)
 
         user_file_path_without_root_folder = path_parts[1:]
-        file_path = os.path.join(self._folders_path[root_folder], *user_file_path_without_root_folder)
+        file_path = os.path.join(
+            self._folders_path[root_folder], *user_file_path_without_root_folder)
 
         if not self.__is_path_exists_or_creatable(file_path):
             raise InvalidPathException(file_path)
@@ -100,7 +110,8 @@ class FileManager:
 
             root_dirname = os.environ.get('HOMEDRIVE', 'C:') \
                 if sys.platform == 'win32' else os.path.sep
-            assert os.path.isdir(root_dirname)  # ...Murphy and her ironclad Law
+            # ...Murphy and her ironclad Law
+            assert os.path.isdir(root_dirname)
 
             root_dirname = root_dirname.rstrip(os.path.sep) + os.path.sep
 
@@ -128,7 +139,7 @@ class FileManager:
         """
         try:
             return self.__is_pathname_valid(pathname) and (
-                    os.path.exists(pathname) or self.__is_path_creatable(pathname))
+                os.path.exists(pathname) or self.__is_path_creatable(pathname))
         except OSError:
             return False
 
