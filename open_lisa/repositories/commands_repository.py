@@ -18,7 +18,7 @@ class CommandsRepository(JSONRepository):
         super().__init__(commands_db_path)
         self._clibs_path = clibs_path
 
-    def add(self, command: Command, instrument_id=None):
+    def add(self, command, instrument_id=None):
         if isinstance(command, Command):
             return self._db.add(command.to_dict(instrument_id))
         else:
@@ -26,10 +26,8 @@ class CommandsRepository(JSONRepository):
 
     def create_command(self, new_command, pyvisa_resource=None) -> Command:
         try:
-            print("Trying to add: {}".format(new_command))
             new_id = self.add(new_command)
         except Exception as e:
-            print("Error adding data: {}".format(e))
             raise CommandCreationError(
                 "could not create command {}".format(new_command))
         return self.get_by_id(new_id, pyvisa_resource=pyvisa_resource)

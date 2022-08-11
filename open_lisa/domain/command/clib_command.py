@@ -55,7 +55,7 @@ class CLibCommand(Command):
         return CLibCommand(
             name=command_dict["name"],
             lib_function=command_dict["command"],
-            lib_file_name=lib_base_path + command_dict["lib_file_name"],
+            lib_file_name=os.path.join(lib_base_path, command_dict["lib_file_name"]),
             parameters=CommandParameters.from_dict(command_dict["params"]),
             command_return=CommandReturn.from_dict(command_dict["return"]),
             description=command_dict["description"]

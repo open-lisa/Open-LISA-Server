@@ -180,24 +180,22 @@ def test_filesystem_manage():
     sdk.disconnect()
 
 
-def test_create_instrument_command():
+def test_create_clib_instrument_command():
     sdk = Open_LISA_SDK.SDK(log_level="ERROR")
     sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
 
+    # TODO: La base de datos toma como "esquema" el primer objeto que encuentre en 'data'...
+    # Si el primer objeto es de tipo SCPI y no tiene el campo 'lib_file_name' entonces
+    # la inserción del siguiente comando CLIB fallará por violación de esquema
+
     VALID_INSTRUMENT_COMMAND_DICT = {
             "name": "activate_smoke",
-            "command": "ACTIVATE SMOKE {}",
+            "command": "get_image",
             "instrument_id": 1,
             "type": "CLIB",
+            "lib_file_name": "libpixelflyqe_x86",
             "description": "Generate smoke for indicated period of time in seconds",
-            "params": [
-                {
-                    "position": 1,
-                    "type": "INT",
-                    "example": "5",
-                    "description": "Duration of smoke generation in seconds"
-                }
-            ],
+            "params": [],
             "return": {
                 "type": "VOID",
                 "description": ""
@@ -206,9 +204,6 @@ def test_create_instrument_command():
 
     new_instrument_command = sdk.create_instrument_command(
         new_command=VALID_INSTRUMENT_COMMAND_DICT, response_format="PYTHON")
-
-    print("Comando creado:")
-    print(new_instrument_command)
 
     assert new_instrument_command == VALID_INSTRUMENT_COMMAND_DICT
 

@@ -226,13 +226,9 @@ class ServerProtocol:
 
     def handle_create_instrument_command(self, commands_repository: CommandsRepository,
                                          instruments_repository: InstrumentRepository):
-        instrument_id = self._message_protocol.receive_msg()
+        instrument_id = int(self._message_protocol.receive_msg())
         command_type = self._message_protocol.receive_msg()
         command_payload = json.loads(self._message_protocol.receive_msg())
-
-        print("Instrument id received from client: {}".format(instrument_id))
-        print("Command type: {}".format(command_type))
-        print("Raw command: {}".format(command_payload))
 
         pyvisa_resource = None
         if lower(command_type) == lower(CommandType.SCPI.name):
@@ -242,7 +238,7 @@ class ServerProtocol:
             new_command = commands_repository.create_command(command_payload, pyvisa_resource)
             self._message_protocol.send_msg(SUCCESS_RESPONSE)
             self._message_protocol.send_msg(
-                json.dumps(new_command.to_dict()))
+                json.dumps(new_command.to_dict(instrument_id)))
         except OpenLISAException as e:
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)
