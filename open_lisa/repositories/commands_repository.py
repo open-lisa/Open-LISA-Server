@@ -33,30 +33,22 @@ class CommandsRepository(JSONRepository):
     def get_by_id(self, id, pyvisa_resource=None, lib_base_path=None) -> Command:
         id = int(id)
         command_json = super().get_by_id(id)
-        command_type = str(command_json["type"]).lower()
 
-        command = None
-        if command_type == CommandType.SCPI.name.lower():
-            command = SCPICommand.from_dict(command_json, pyvisa_resource)
-        elif command_type == CommandType.CLIB.name.lower():
-            command = CLibCommand.from_dict(command_json,
-                                            os.getenv("CLIBS_FOLDER") if lib_base_path is None else lib_base_path)
-
-        return command
+        return self.__deserialize_command(command_json, pyvisa_resource)
 
     def get_instrument_commands(self, instrument_id, pyvisa_resource=None):
         command_dicts = self.get_by_key_value("instrument_id", instrument_id)
         return [
-            self.__deserialize_commands(cd, pyvisa_resource) for cd in command_dicts
+            self.__deserialize_command(cd, pyvisa_resource) for cd in command_dicts
         ]
 
-    def __deserialize_commands(self, command_dict, pyvisa_resource):
-        if command_dict["type"] == str(CommandType.SCPI):
+    def __deserialize_command(self, command_dict, pyvisa_resource):
+        if str(command_dict["type"]).lower() == str(CommandType.SCPI).lower():
             return SCPICommand.from_dict(
                 command_dict=command_dict,
                 pyvisa_resource=pyvisa_resource
             )
-        if command_dict["type"] == str(CommandType.CLIB):
+        if str(command_dict["type"]).lower() == str(CommandType.CLIB).lower():
             return CLibCommand.from_dict(
                 command_dict=command_dict,
                 lib_base_path=self._clibs_path,
