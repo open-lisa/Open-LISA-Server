@@ -1,7 +1,11 @@
 import os
+
+from numpy.core.defchararray import lower
+
 from open_lisa.domain.command.clib_command import CLibCommand
 from open_lisa.domain.command.command import Command, CommandType
 from open_lisa.domain.command.scpi_command import SCPICommand
+from open_lisa.exceptions.command_creation_error import CommandCreationError
 from open_lisa.repositories.json_repository import JSONRepository
 
 
@@ -14,9 +18,35 @@ class CommandsRepository(JSONRepository):
         super().__init__(commands_db_path)
         self._clibs_path = clibs_path
 
-    def add(self, command: Command, instrument_id):
+    def add(self, command: Command, instrument_id=None):
         if isinstance(command, Command):
             return self._db.add(command.to_dict(instrument_id))
+        else:
+            return self._db.add(command)
+
+    def create_command(self, new_command, pyvisa_resource=None) -> Command:
+        try:
+            print("Trying to add: {}".format(new_command))
+            new_id = self.add(new_command)
+        except Exception as e:
+            print("Error adding data: {}".format(e))
+            raise CommandCreationError(
+                "could not create command {}".format(new_command))
+        return self.get_by_id(new_id, pyvisa_resource=pyvisa_resource)
+
+    def get_by_id(self, id, pyvisa_resource=None, lib_base_path=None) -> Command:
+        id = int(id)
+        command_json = super().get_by_id(id)
+        command_type = lower(command_json["type"])
+
+        command = None
+        if command_type == lower(CommandType.SCPI.value):
+            command = SCPICommand.from_dict(command_json, pyvisa_resource)
+        elif command_type == lower(CommandType.CLIB.value):
+            command = CLibCommand.from_dict(command_json,
+                                            os.getenv("CLIBS_FOLDER") if lib_base_path is None else lib_base_path)
+
+        return command
 
     def get_instrument_commands(self, instrument_id, pyvisa_resource=None):
         command_dicts = self.get_by_key_value("instrument_id", instrument_id)

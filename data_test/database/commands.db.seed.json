@@ -1,6 +1,7 @@
 {
   "data": [
     {
+      "id": 1,
       "name": "clear_status",
       "command": "*CLS",
       "instrument_id": 1,
@@ -13,6 +14,7 @@
       }
     },
     {
+      "id": 2,
       "name": "reset_settings",
       "command": "*RST",
       "instrument_id": 1,
@@ -25,6 +27,7 @@
       }
     },
     {
+      "id": 3,
       "name": "get_identification",
       "command": "*IDN?",
       "instrument_id": 1,
@@ -37,6 +40,7 @@
       }
     },
     {
+      "id": 4,
       "name": "set_channel_volts_scale_ch1",
       "command": "CH1:VOLts {}",
       "instrument_id": 1,
@@ -56,6 +60,7 @@
       }
     },
     {
+      "id": 5,
       "name": "set_channel_volts_scale_ch2",
       "command": "CH2:VOLts {}",
       "instrument_id": 1,
@@ -75,6 +80,7 @@
       }
     },
     {
+      "id": 6,
       "name": "set_channel_probe_ch1_1x",
       "command": "CH1:PRObe 1",
       "instrument_id": 1,
@@ -87,6 +93,7 @@
       }
     },
     {
+      "id": 7,
       "name": "set_channel_probe_ch1_10x",
       "command": "CH1:PRObe 10",
       "instrument_id": 1,
@@ -99,6 +106,7 @@
       }
     },
     {
+      "id": 8,
       "name": "set_channel_probe_ch1_20x",
       "command": "CH1:PRObe 20",
       "instrument_id": 1,
@@ -111,6 +119,7 @@
       }
     },
     {
+      "id": 9,
       "name": "set_channel_probe_ch1_50x",
       "command": "CH1:PRObe 50",
       "instrument_id": 1,
@@ -123,6 +132,7 @@
       }
     },
     {
+      "id": 10,
       "name": "set_channel_probe_ch1_100x",
       "command": "CH1:PRObe 100",
       "instrument_id": 1,
@@ -135,6 +145,7 @@
       }
     },
     {
+      "id": 11,
       "name": "set_channel_probe_ch1_500x",
       "command": "CH1:PRObe 500",
       "instrument_id": 1,
@@ -147,6 +158,7 @@
       }
     },
     {
+      "id": 12,
       "name": "set_channel_probe_ch1_1000x",
       "command": "CH1:PRObe 1000",
       "instrument_id": 1,
@@ -171,6 +183,7 @@
       }
     },
     {
+      "id": 13,
       "name": "set_channel_probe_ch2_10x",
       "command": "CH2:PRObe 10",
       "instrument_id": 1,
@@ -183,6 +196,7 @@
       }
     },
     {
+      "id": 14,
       "name": "set_channel_probe_ch2_20x",
       "command": "CH2:PRObe 20",
       "instrument_id": 1,
@@ -195,6 +209,7 @@
       }
     },
     {
+      "id": 15,
       "name": "set_channel_probe_ch2_50x",
       "command": "CH2:PRObe 50",
       "instrument_id": 1,
@@ -207,6 +222,7 @@
       }
     },
     {
+      "id": 16,
       "name": "set_channel_probe_ch2_100x",
       "command": "CH2:PRObe 100",
       "instrument_id": 1,
@@ -219,6 +235,7 @@
       }
     },
     {
+      "id": 17,
       "name": "set_channel_probe_ch2_500x",
       "command": "CH2:PRObe 500",
       "instrument_id": 1,
@@ -231,6 +248,7 @@
       }
     },
     {
+      "id": 18,
       "name": "set_channel_probe_ch2_1000x",
       "command": "CH2:PRObe 1000",
       "instrument_id": 1,
@@ -243,6 +261,7 @@
       }
     },
     {
+      "id": 19,
       "name": "set_timebase_scale",
       "command": "HORizontal:MAIn:SCAle {}",
       "instrument_id": 1,
@@ -262,6 +281,7 @@
       }
     },
     {
+      "id": 20,
       "name": "set_timebase_mode_xy",
       "command": "DISplay:FORMat XY",
       "instrument_id": 1,
@@ -274,6 +294,7 @@
       }
     },
     {
+      "id": 21,
       "name": "set_timebase_mode_yt",
       "command": "DISplay:FORMat YT",
       "instrument_id": 1,
@@ -286,6 +307,7 @@
       }
     },
     {
+      "id": 22,
       "name": "set_timebase_x_channel_ch1",
       "command": "MEASUrement:IMMed:SOUrce1 CH1",
       "instrument_id": 1,
@@ -298,6 +320,7 @@
       }
     },
     {
+      "id": 23,
       "name": "set_timebase_x_channel_ch2",
       "command": "MEASUrement:IMMed:SOUrce1 CH2",
       "instrument_id": 1,
@@ -310,6 +333,7 @@
       }
     },
     {
+      "id": 24,
       "name": "set_timebase_y_channel_ch1",
       "command": "MEASUrement:IMMed:SOUrce2 CH1",
       "instrument_id": 1,
@@ -322,6 +346,7 @@
       }
     },
     {
+      "id": 25,
       "name": "set_timebase_y_channel_ch2",
       "command": "MEASUrement:IMMed:SOUrce2 CH2",
       "instrument_id": 1,
@@ -334,6 +359,7 @@
       }
     },
     {
+      "id": 26,
       "name": "get_is_in_acquisitions_state",
       "command": "*OPC?",
       "instrument_id": 1,
@@ -346,6 +372,7 @@
       }
     },
     {
+      "id": 27,
       "name": "stop_acquisitions",
       "command": "ACQuire:STATE STOP",
       "instrument_id": 1,
@@ -358,6 +385,7 @@
       }
     },
     {
+      "id": 28,
       "name": "set_acquisition_mode_sample",
       "command": "ACQuire:MODe SAMple",
       "instrument_id": 1,
@@ -370,6 +398,7 @@
       }
     },
     {
+      "id": 29,
       "name": "set_acquisition_mode_peakdetect",
       "command": "ACQuire:MODe PEAKdetect",
       "instrument_id": 1,
@@ -382,6 +411,7 @@
       }
     },
     {
+      "id": 30,
       "name": "set_acquisition_mode_average",
       "command": "ACQuire:MODe AVErage",
       "instrument_id": 1,
@@ -394,6 +424,7 @@
       }
     },
     {
+      "id": 31,
       "name": "get_acquisition_mode",
       "command": "ACQuire:MODe?",
       "instrument_id": 1,
@@ -406,6 +437,7 @@
       }
     },
     {
+      "id": 32,
       "name": "set_average_acquisition_mode_samples_amount_4",
       "command": "ACQuire:NUMAVg 4",
       "instrument_id": 1,
@@ -418,6 +450,7 @@
       }
     },
     {
+      "id": 33,
       "name": "set_average_acquisition_mode_samples_amount_16",
       "command": "ACQuire:NUMAVg 16",
       "instrument_id": 1,
@@ -430,6 +463,7 @@
       }
     },
     {
+      "id": 34,
       "name": "set_average_acquisition_mode_samples_amount_64",
       "command": "ACQuire:NUMAVg 64",
       "instrument_id": 1,
@@ -442,6 +476,7 @@
       }
     },
     {
+      "id": 35,
       "name": "set_average_acquisition_mode_samples_amount_128",
       "command": "ACQuire:NUMAVg 128",
       "instrument_id": 1,
@@ -454,6 +489,7 @@
       }
     },
     {
+      "id": 36,
       "name": "force_trigger",
       "command": "TRIGger FORCe",
       "instrument_id": 1,
@@ -466,6 +502,7 @@
       }
     },
     {
+      "id": 37,
       "name": "set_trigger_mode_auto",
       "command": "TRIGger:MAIn:MODe AUTO",
       "instrument_id": 1,
@@ -478,6 +515,7 @@
       }
     },
     {
+      "id": 38,
       "name": "set_trigger_mode_normal",
       "command": "TRIGger:MAIn:MODe NORMal",
       "instrument_id": 1,
@@ -490,6 +528,7 @@
       }
     },
     {
+      "id": 39,
       "name": "set_trigger_type_edge",
       "command": "TRIGger:MAIn:TYPe EDGE",
       "instrument_id": 1,
@@ -502,6 +541,7 @@
       }
     },
     {
+      "id": 40,
       "name": "set_trigger_type_video",
       "command": "TRIGger:MAIn:TYPe VIDeo",
       "instrument_id": 1,
@@ -514,6 +554,7 @@
       }
     },
     {
+      "id": 41,
       "name": "set_trigger_type_pulse",
       "command": "TRIGger:MAIn:TYPe PULse",
       "instrument_id": 1,
@@ -526,6 +567,7 @@
       }
     },
     {
+      "id": 42,
       "name": "get_trigger_type",
       "command": "TRIGger:MAIn:TYPe?",
       "instrument_id": 1,
@@ -538,6 +580,7 @@
       }
     },
     {
+      "id": 43,
       "name": "set_trigger_edge_type_fall",
       "command": "TRIGger:MAIn:EDGE:SLOpe FALL",
       "instrument_id": 1,
@@ -550,6 +593,7 @@
       }
     },
     {
+      "id": 44,
       "name": "set_trigger_edge_type_rise",
       "command": "TRIGger:MAIn:EDGE:SLOpe RISe",
       "instrument_id": 1,
@@ -562,6 +606,7 @@
       }
     },
     {
+      "id": 45,
       "name": "set_trigger_edge_source_ch1",
       "command": "TRIGger:MAIn:EDGE:SOUrce CH1",
       "instrument_id": 1,
@@ -574,6 +619,7 @@
       }
     },
     {
+      "id": 46,
       "name": "set_trigger_edge_source_ch2",
       "command": "TRIGger:MAIn:EDGE:SOUrce CH2",
       "instrument_id": 1,
@@ -586,6 +632,7 @@
       }
     },
     {
+      "id": 47,
       "name": "set_trigger_edge_source_ext",
       "command": "TRIGger:MAIn:EDGE:SOUrce EXT",
       "instrument_id": 1,
@@ -598,6 +645,7 @@
       }
     },
     {
+      "id": 48,
       "name": "set_trigger_edge_source_ext5",
       "command": "TRIGger:MAIn:EDGE:SOUrce EXT5",
       "instrument_id": 1,
@@ -610,6 +658,7 @@
       }
     },
     {
+      "id": 49,
       "name": "set_trigger_edge_source_acline",
       "command": "TRIGger:MAIn:EDGE:SOUrce AC LINE",
       "instrument_id": 1,
@@ -622,6 +671,7 @@
       }
     },
     {
+      "id": 50,
       "name": "set_trigger_level",
       "command": "TRIGger:MAIn:LEVel {}",
       "instrument_id": 1,
@@ -641,6 +691,7 @@
       }
     },
     {
+      "id": 51,
       "name": "get_waveform_data",
       "command": "CURVE?",
       "instrument_id": 1,
@@ -653,6 +704,7 @@
       }
     },
     {
+      "id": 52,
       "name": "set_waveform_bytes_width_1",
       "command": "DATa:WIDth 1",
       "instrument_id": 1,
@@ -665,6 +717,7 @@
       }
     },
     {
+      "id": 53,
       "name": "set_waveform_bytes_width_2",
       "command": "DATa:WIDth 2",
       "instrument_id": 1,
@@ -677,6 +730,7 @@
       }
     },
     {
+      "id": 54,
       "name": "set_waveform_encoding_ascii",
       "command": "DATa:ENCdg ASCIi",
       "instrument_id": 1,
@@ -689,6 +743,7 @@
       }
     },
     {
+      "id": 55,
       "name": "set_waveform_encoding_ribinary",
       "command": "DATa:ENCdg RIBinary",
       "instrument_id": 1,
@@ -701,6 +756,7 @@
       }
     },
     {
+      "id": 56,
       "name": "set_waveform_encoding_rpbinary",
       "command": "DATa:ENCdg RPBinary",
       "instrument_id": 1,
@@ -713,6 +769,7 @@
       }
     },
     {
+      "id": 57,
       "name": "set_waveform_encoding_sribinary",
       "command": "DATa:ENCdg SRIbinary",
       "instrument_id": 1,
@@ -725,6 +782,7 @@
       }
     },
     {
+      "id": 58,
       "name": "set_waveform_encoding_srpbinary",
       "command": "DATa:ENCdg SRPbinary",
       "instrument_id": 1,
@@ -737,6 +795,7 @@
       }
     },
     {
+      "id": 59,
       "name": "get_waveform_encoding",
       "command": "DATa:ENCdg?",
       "instrument_id": 1,
@@ -749,6 +808,7 @@
       }
     },
     {
+      "id": 60,
       "name": "set_waveform_source_ch1",
       "command": "DATa:SOUrce CH1",
       "instrument_id": 1,
@@ -761,6 +821,7 @@
       }
     },
     {
+      "id": 61,
       "name": "set_waveform_source_ch2",
       "command": "DATa:SOUrce CH2",
       "instrument_id": 1,
@@ -773,6 +834,7 @@
       }
     },
     {
+      "id": 62,
       "name": "set_waveform_source_math",
       "command": "DATa:SOUrce MATH",
       "instrument_id": 1,
@@ -785,6 +847,7 @@
       }
     },
     {
+      "id": 63,
       "name": "set_waveform_source_refa",
       "command": "DATa:SOUrce REFA",
       "instrument_id": 1,
@@ -797,6 +860,7 @@
       }
     },
     {
+      "id": 64,
       "name": "set_waveform_source_refb",
       "command": "DATa:SOUrce REFB",
       "instrument_id": 1,
@@ -809,6 +873,7 @@
       }
     },
     {
+      "id": 65,
       "name": "set_waveform_points_format_env",
       "command": "WFMPre:PT_Fmt ENV",
       "instrument_id": 1,
@@ -821,6 +886,7 @@
       }
     },
     {
+      "id": 66,
       "name": "set_waveform_points_format_y",
       "command": "WFMPre:PT_Fmt Y",
       "instrument_id": 1,
@@ -833,6 +899,7 @@
       }
     },
     {
+      "id": 67,
       "name": "get_waveform_vertical_scale_factor",
       "command": "WFMPre:YMUlt?",
       "instrument_id": 1,
@@ -845,6 +912,7 @@
       }
     },
     {
+      "id": 68,
       "name": "get_waveform_conversion_factor",
       "command": "WFMPre:YZEro?",
       "instrument_id": 1,
@@ -857,6 +925,7 @@
       }
     },
     {
+      "id": 69,
       "name": "get_waveform_vertical_offset",
       "command": "WFMPre:YOFf?",
       "instrument_id": 1,
@@ -869,6 +938,7 @@
       }
     },
     {
+      "id": 70,
       "name": "get_waveform_horizontal_sampling_interval",
       "command": "WFMPre:XINcr?",
       "instrument_id": 1,
@@ -881,6 +951,7 @@
       }
     },
     {
+      "id": 71,
       "name": "init_camera",
       "command": "init",
       "instrument_id": 2,
@@ -907,6 +978,7 @@
       }
     },
     {
+      "id": 72,
       "name": "get_image",
       "command": "get_image",
       "instrument_id": 2,
@@ -920,6 +992,7 @@
       }
     },
     {
+      "id": 73,
       "name": "close_cammera",
       "command": "close",
       "instrument_id": 2,

@@ -8,7 +8,6 @@ from open_lisa.repositories.commands_repository import CommandsRepository
 from time import sleep
 from threading import Thread
 
-
 # Update this comment when necessary
 # NOTE: tested with version 0.7.2 of Open_LISA_SDK
 
@@ -21,6 +20,7 @@ CURR_TEST_FILE_BYTES = None
 with open(__file__, "rb") as f:
     CURR_TEST_FILE_BYTES = f.read()
 
+server = None
 
 def start_server():
     load_config(env="test")
@@ -32,7 +32,6 @@ def start_server():
 
 @pytest.fixture(autouse=True)
 def on_each():
-
     # before each
     thread = Thread(target=start_server)
     thread.start()
@@ -41,6 +40,7 @@ def on_each():
     # after yield emulates "after each test"
     thread.join()
 
+
 def connect_sdk() -> Open_LISA_SDK.SDK:
     sdk = Open_LISA_SDK.SDK(log_level="ERROR")
     sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
@@ -48,7 +48,6 @@ def connect_sdk() -> Open_LISA_SDK.SDK:
 
 
 def test_get_instruments():
-
     sdk = Open_LISA_SDK.SDK(log_level="ERROR")
     sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
     instruments = sdk.get_instruments()
@@ -91,6 +90,7 @@ def test_get_image_from_mock_camera():
         assert image_bytes == f.read()
 
     sdk.disconnect()
+
 
 def test_get_image_from_mock_camera_and_save_in_server():
     sdk = Open_LISA_SDK.SDK(log_level="ERROR")
@@ -158,6 +158,7 @@ def test_instrument_CRUDs():
 
     sdk.disconnect()
 
+
 def test_filesystem_manage():
     sdk = connect_sdk()
     root_folder = "sandbox"
@@ -177,4 +178,42 @@ def test_filesystem_manage():
     sdk.delete_file(remote_file_path)
 
     sdk.disconnect()
+
+
+def test_create_instrument_command():
+    sdk = Open_LISA_SDK.SDK(log_level="ERROR")
+    sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+
+    VALID_INSTRUMENT_COMMAND_DICT = {
+            "name": "activate_smoke",
+            "command": "ACTIVATE SMOKE {}",
+            "instrument_id": 1,
+            "type": "CLIB",
+            "description": "Generate smoke for indicated period of time in seconds",
+            "params": [
+                {
+                    "position": 1,
+                    "type": "INT",
+                    "example": "5",
+                    "description": "Duration of smoke generation in seconds"
+                }
+            ],
+            "return": {
+                "type": "VOID",
+                "description": ""
+            }
+        }
+
+    new_instrument_command = sdk.create_instrument_command(
+        new_command=VALID_INSTRUMENT_COMMAND_DICT, response_format="PYTHON")
+
+    print("Comando creado:")
+    print(new_instrument_command)
+
+    assert new_instrument_command == VALID_INSTRUMENT_COMMAND_DICT
+
+    sdk.disconnect()
+
+
+
 

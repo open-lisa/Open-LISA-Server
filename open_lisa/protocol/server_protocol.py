@@ -3,8 +3,12 @@ import logging
 import subprocess
 import os
 
+from numpy.core.defchararray import lower
+
+from open_lisa.domain.command.command import CommandType
 from open_lisa.domain.command.command_return import CommandReturnType
 from open_lisa.domain.filesystem.filemanager import FileManager
+from open_lisa.repositories.commands_repository import CommandsRepository
 from open_lisa.repositories.instruments_repository import InstrumentRepository
 from open_lisa.tests.utils import reset_databases
 
@@ -26,6 +30,8 @@ COMMAND_SEND_FILE = "SEND_FILE"
 COMMAND_GET_FILE = "GET_FILE"
 COMMAND_EXECUTE_BASH = "EXECUTE_BASH"
 COMMAND_DELETE_FILE = "DELETE_FILE"
+
+COMMAND_CREATE_INSTRUMENT_COMMAND = "CREATE_INSTRUMENT_COMMAND"
 
 # Only available when running in test mode
 COMMAND_RESET_DATABASES = "RESET_DATABASES"
@@ -217,6 +223,29 @@ class ServerProtocol:
 
     def handle_disconnect_command(self):
         self._message_protocol.disconnect()
+
+    def handle_create_instrument_command(self, commands_repository: CommandsRepository,
+                                         instruments_repository: InstrumentRepository):
+        instrument_id = self._message_protocol.receive_msg()
+        command_type = self._message_protocol.receive_msg()
+        command_payload = json.loads(self._message_protocol.receive_msg())
+
+        print("Instrument id received from client: {}".format(instrument_id))
+        print("Command type: {}".format(command_type))
+        print("Raw command: {}".format(command_payload))
+
+        pyvisa_resource = None
+        if lower(command_type) == lower(CommandType.SCPI.name):
+            pyvisa_resource = instruments_repository.get_by_id(instrument_id).pyvisa_resource
+
+        try:
+            new_command = commands_repository.create_command(command_payload, pyvisa_resource)
+            self._message_protocol.send_msg(SUCCESS_RESPONSE)
+            self._message_protocol.send_msg(
+                json.dumps(new_command.to_dict()))
+        except OpenLISAException as e:
+            self._message_protocol.send_msg(ERROR_RESPONSE)
+            self._message_protocol.send_msg(e.message)
 
     def handle_reset_databases(self):
         env = os.environ["ENV"]

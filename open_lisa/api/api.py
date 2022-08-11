@@ -6,7 +6,7 @@ import sys
 from ..protocol.message_protocol_rs232 import MessageProtocolRS232
 from ..protocol.message_protocol_tcp import MessageProtocolTCP
 from ..protocol.server_protocol import *
-
+from ..repositories.commands_repository import CommandsRepository
 
 MODE_SERIAL = 'SERIAL'
 MODE_TCP = 'TCP'
@@ -25,6 +25,7 @@ class OpenLISA:
         self._listening_port = listening_port
         self._server_socket = None
         self._instruments_repository = InstrumentRepository()
+        self._commands_repository = CommandsRepository()
         self._shutdown_after_next_client_connection = False  # Do something better than this
 
     def start(self):
@@ -105,6 +106,11 @@ class OpenLISA:
                             "[OpenLISA][api][start] - client order disconnect")
                         # self._server_protocol.handle_disconnect_command()
                         break
+                    elif command == COMMAND_CREATE_INSTRUMENT_COMMAND:
+                        logging.info(
+                            "[OpenLISA][api][start] - client order create instrument command")
+                        self._server_protocol.handle_create_instrument_command(
+                            self._commands_repository, self._instruments_repository)
                     elif command == COMMAND_RESET_DATABASES:
                         self._server_protocol.handle_reset_databases()
                     else:

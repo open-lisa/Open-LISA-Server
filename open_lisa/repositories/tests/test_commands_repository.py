@@ -61,11 +61,12 @@ def test_add_scpi_command_should_add_an_entry_in_json_file():
 
     entry = repo.get_by_id(command_id)
     assert entry is not None
-    assert entry["instrument_id"] == some_instrument_id
-    assert entry["name"] == some_valid_scpi_command.name
-    assert entry["command"] == some_valid_scpi_command.command
-    assert entry["description"] == some_valid_scpi_command.description
-    assert entry["type"] == str(some_valid_scpi_command.type)
+    entry_dict = entry.to_dict(some_instrument_id)
+    assert entry_dict["instrument_id"] == some_instrument_id
+    assert entry_dict["name"] == some_valid_scpi_command.name
+    assert entry_dict["command"] == some_valid_scpi_command.command
+    assert entry_dict["description"] == some_valid_scpi_command.description
+    assert entry_dict["type"] == str(some_valid_scpi_command.type)
 
 
 def test_add_scpi_command_should_do_that_get_all_returns_data():
@@ -122,7 +123,7 @@ def test_update_by_id_should_update_entry():
     )
     new_name = "new"
     repo.update_by_id(id, {"name": new_name})
-    command = repo.get_by_id(id)
+    command = repo.get_by_id(id).to_dict(some_instrument_id)
     assert command["name"] == new_name
 
 
@@ -137,7 +138,7 @@ def test_update_all_should_update_entry():
         {"name": some_valid_scpi_command.name},
         {"name": new_name}
     )
-    command = repo.get_by_id(id)
+    command = repo.get_by_id(id).to_dict(some_instrument_id)
     assert command["name"] == new_name
 
 
@@ -183,6 +184,6 @@ def test_should_only_store_c_lib_filename_without_path_for_CLibCommands():
         name="name", lib_function="sum", lib_file_name=MOCK_LIB_PATH)
     command_id = repo.add(command=clib_command,
                           instrument_id=some_instrument_id)
-    command_dict = repo.get_by_id(command_id)
+    command_dict = repo.get_by_id(command_id, lib_base_path=DEFAULT_C_LIBS_PATH).to_dict(some_instrument_id)
     assert command_dict["lib_file_name"] == MOCK_LIB_NAME
 # End CommandsRepository tests
