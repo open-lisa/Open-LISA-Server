@@ -185,8 +185,8 @@ def test_create_clib_instrument_command():
     sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
 
     # TODO: La base de datos toma como "esquema" el primer objeto que encuentre en 'data'...
-    # Si el primer objeto es de tipo SCPI y no tiene el campo 'lib_file_name' entonces
-    # la inserción del siguiente comando CLIB fallará por violación de esquema
+    # Si el primer objeto es de tipo CLIB y no tiene el campo 'lib_file_name' entonces
+    # la inserción del siguiente comando SCPI fallará por violación de esquema
 
     VALID_INSTRUMENT_COMMAND_DICT = {
             "name": "activate_smoke",
