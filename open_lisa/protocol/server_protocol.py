@@ -3,8 +3,6 @@ import logging
 import subprocess
 import os
 
-from numpy.core.defchararray import lower
-
 from open_lisa.domain.command.command import CommandType
 from open_lisa.domain.command.command_return import CommandReturnType
 from open_lisa.domain.filesystem.filemanager import FileManager
@@ -226,12 +224,12 @@ class ServerProtocol:
 
     def handle_create_instrument_command(self, commands_repository: CommandsRepository,
                                          instruments_repository: InstrumentRepository):
-        instrument_id = int(self._message_protocol.receive_msg())
-        command_type = self._message_protocol.receive_msg()
         command_payload = json.loads(self._message_protocol.receive_msg())
+        command_type = str(command_payload["type"])
+        instrument_id = int(command_payload["instrument_id"])
 
         pyvisa_resource = None
-        if lower(command_type) == lower(CommandType.SCPI.name):
+        if command_type.lower() == CommandType.SCPI.name.lower():
             pyvisa_resource = instruments_repository.get_by_id(instrument_id).pyvisa_resource
 
         try:

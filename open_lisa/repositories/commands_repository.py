@@ -1,7 +1,5 @@
 import os
 
-from numpy.core.defchararray import lower
-
 from open_lisa.domain.command.clib_command import CLibCommand
 from open_lisa.domain.command.command import Command, CommandType
 from open_lisa.domain.command.scpi_command import SCPICommand
@@ -35,12 +33,12 @@ class CommandsRepository(JSONRepository):
     def get_by_id(self, id, pyvisa_resource=None, lib_base_path=None) -> Command:
         id = int(id)
         command_json = super().get_by_id(id)
-        command_type = lower(command_json["type"])
+        command_type = str(command_json["type"]).lower()
 
         command = None
-        if command_type == lower(CommandType.SCPI.value):
+        if command_type == CommandType.SCPI.name.lower():
             command = SCPICommand.from_dict(command_json, pyvisa_resource)
-        elif command_type == lower(CommandType.CLIB.value):
+        elif command_type == CommandType.CLIB.name.lower():
             command = CLibCommand.from_dict(command_json,
                                             os.getenv("CLIBS_FOLDER") if lib_base_path is None else lib_base_path)
 
