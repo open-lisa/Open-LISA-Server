@@ -58,7 +58,28 @@
          "metadata": {
             "lib_file_name": "libpixelflyqe_x86"
          },
-         "id": 109740539763787047
+         "id": 167254517086748322
+      },
+      {
+         "name": "activate_laser",
+         "command": "ACTIVATE LASER {}",
+         "instrument_id": 1,
+         "type": "SCPI",
+         "description": "Activate laser for indicated period of time in seconds",
+         "params": [
+            {
+               "position": 1,
+               "type": "INT",
+               "example": "5",
+               "description": "Number of seconds for the laser be activated"
+            }
+         ],
+         "return": {
+            "type": "VOID",
+            "description": ""
+         },
+         "metadata": null,
+         "id": 783467392456659127
       }
    ]
 }

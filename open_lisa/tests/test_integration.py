@@ -184,10 +184,6 @@ def test_create_clib_instrument_command():
     sdk = Open_LISA_SDK.SDK(log_level="ERROR")
     sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
 
-    # TODO: La base de datos toma como "esquema" el primer objeto que encuentre en 'data'...
-    # Si el primer objeto es de tipo CLIB y no tiene el campo 'lib_file_name' entonces
-    # la inserción del siguiente comando SCPI fallará por violación de esquema
-
     VALID_INSTRUMENT_COMMAND_DICT = {
             "name": "activate_smoke",
             "command": "get_image",
@@ -212,5 +208,39 @@ def test_create_clib_instrument_command():
     sdk.disconnect()
 
 
+def test_create_scpi_instrument_command():
+    sdk = Open_LISA_SDK.SDK(log_level="ERROR")
+    sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+
+    VALID_INSTRUMENT_COMMAND_DICT = {
+            "name": "activate_laser",
+            "command": "ACTIVATE LASER {}",
+            "instrument_id": 1,
+            "type": "SCPI",
+            "description": "Activate laser for indicated period of time in seconds",
+            "params": [
+                {
+                    "position": 1,
+                    "type": "INT",
+                    "example": "5",
+                    "description": "Number of seconds for the laser be activated"
+                }
+            ],
+            "return": {
+                "type": "VOID",
+                "description": ""
+            },
+            "metadata": None
+        }
+
+    new_instrument_command = sdk.create_instrument_command(
+        new_command=VALID_INSTRUMENT_COMMAND_DICT, response_format="PYTHON")
+
+    new_instrument_command["params"] = sorted(new_instrument_command["params"])
+    VALID_INSTRUMENT_COMMAND_DICT["params"] = sorted(VALID_INSTRUMENT_COMMAND_DICT["params"])
+
+    assert new_instrument_command == VALID_INSTRUMENT_COMMAND_DICT
+
+    sdk.disconnect()
 
 
