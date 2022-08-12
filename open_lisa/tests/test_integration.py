@@ -193,12 +193,14 @@ def test_create_clib_instrument_command():
             "command": "get_image",
             "instrument_id": 1,
             "type": "CLIB",
-            "lib_file_name": "libpixelflyqe_x86",
             "description": "Generate smoke for indicated period of time in seconds",
             "params": [],
             "return": {
                 "type": "VOID",
                 "description": ""
+            },
+            "metadata": {
+                "lib_file_name": "libpixelflyqe_x86"
             }
         }
 

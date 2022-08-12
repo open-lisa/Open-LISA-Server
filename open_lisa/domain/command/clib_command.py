@@ -55,7 +55,7 @@ class CLibCommand(Command):
         return CLibCommand(
             name=command_dict["name"],
             lib_function=command_dict["command"],
-            lib_file_name=os.path.join(lib_base_path, command_dict["lib_file_name"]),
+            lib_file_name=os.path.join(lib_base_path, command_dict["metadata"]["lib_file_name"]),
             parameters=CommandParameters.from_dict(command_dict["params"]),
             command_return=CommandReturn.from_dict(command_dict["return"]),
             description=command_dict["description"]
@@ -67,11 +67,13 @@ class CLibCommand(Command):
             "name": self.name,
             "command": self.lib_function,
             "type": str(self.type),
-            # only return filename
-            "lib_file_name": os.path.basename(self.lib_file_name),
             "description": self.description,
             "params": self.parameters.to_dict(),
-            "return": self.command_return.to_dict()
+            "return": self.command_return.to_dict(),
+            "metadata": {
+                # only return filename
+                "lib_file_name": os.path.basename(self.lib_file_name)
+            }
         }
 
     def execute(self, params_values=[]):

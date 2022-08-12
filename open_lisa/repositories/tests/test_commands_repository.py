@@ -185,5 +185,5 @@ def test_should_only_store_c_lib_filename_without_path_for_CLibCommands():
     command_id = repo.add(command=clib_command,
                           instrument_id=some_instrument_id)
     command_dict = repo.get_by_id(command_id, lib_base_path=DEFAULT_C_LIBS_PATH).to_dict(some_instrument_id)
-    assert command_dict["lib_file_name"] == MOCK_LIB_NAME
+    assert command_dict["metadata"]["lib_file_name"] == MOCK_LIB_NAME
 # End CommandsRepository tests

@@ -65,7 +65,7 @@ def test_clib_command_to_dict_should_return_only_the_lib_file_name_without_path(
         lib_file_name=MOCK_LIB_ABSOLUTE_PATH
     )
     d = some_clib_command.to_dict(instrument_id=1)
-    assert d["lib_file_name"] == MOCK_LIB_NAME
+    assert d["metadata"]["lib_file_name"] == MOCK_LIB_NAME
 
 
 def test_execute_should_call_the_sum_function_from_the_c_lib():

@@ -7,11 +7,13 @@
       "instrument_id": 2,
       "type": "CLIB",
       "description": "Provide a full description of what this command intends to do",
-      "lib_file_name": "libpixelflyqe.dll",
       "params": [],
       "return": {
         "type": "BYTES",
         "description": "Provide an explanation of return values for documentation purposes"
+      },
+      "metadata": {
+         "lib_file_name": "libpixelflyqe.dll"
       }
     },
     {
@@ -25,7 +27,8 @@
       "return": {
         "description": "",
         "type": "VOID"
-      }
+      },
+      "metadata": null
     },
     {
       "id": 3,
@@ -38,7 +41,8 @@
       "return": {
         "description": "",
         "type": "VOID"
-      }
+      },
+      "metadata": null
     }
   ]
 }

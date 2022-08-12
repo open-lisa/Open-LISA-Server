@@ -14,8 +14,9 @@ def reset_databases():
             with open(os.path.join(os.getcwd(), "data_test/database/commands.db.json")) as file:
                 db = json.load(file)
                 for command in db["data"]:
-                    if "lib_file_name" in command:
-                        command["lib_file_name"] = command["lib_file_name"].replace(".dll", "_x86.dll")
+                    if command["metadata"]:
+                        if "lib_file_name" in command["metadata"]:
+                            command["metadata"]["lib_file_name"] = command["metadata"]["lib_file_name"].replace(".dll", "_x86.dll")
 
             with open(os.path.join(os.getcwd(), "data_test/database/commands.db.json"), "wt") as file:
                 file.write(json.dumps(db, indent=4))

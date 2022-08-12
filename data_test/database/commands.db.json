@@ -7,11 +7,13 @@
          "instrument_id": 2,
          "type": "CLIB",
          "description": "Provide a full description of what this command intends to do",
-         "lib_file_name": "libpixelflyqe_x86.dll",
          "params": [],
          "return": {
             "type": "BYTES",
             "description": "Provide an explanation of return values for documentation purposes"
+         },
+         "metadata": {
+            "lib_file_name": "libpixelflyqe_x86.dll"
          }
       },
       {
@@ -25,7 +27,8 @@
          "return": {
             "description": "",
             "type": "VOID"
-         }
+         },
+         "metadata": null
       },
       {
          "id": 3,
@@ -38,21 +41,24 @@
          "return": {
             "description": "",
             "type": "VOID"
-         }
+         },
+         "metadata": null
       },
       {
          "name": "activate_smoke",
          "command": "get_image",
          "instrument_id": 1,
          "type": "CLIB",
-         "lib_file_name": "libpixelflyqe_x86",
          "description": "Generate smoke for indicated period of time in seconds",
          "params": [],
          "return": {
             "type": "VOID",
             "description": ""
          },
-         "id": 188580502494469768
+         "metadata": {
+            "lib_file_name": "libpixelflyqe_x86"
+         },
+         "id": 109740539763787047
       }
    ]
 }
