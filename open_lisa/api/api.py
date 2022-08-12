@@ -97,6 +97,10 @@ class OpenLISA:
                         logging.debug(
                             "[OpenLISA][api][start] - deleting file")
                         self._server_protocol.handle_delete_file()
+                    elif command == COMMAND_GET_DIRECTORY_STRUCTURE:
+                        logging.debug(
+                            "[OpenLISA][api][start] - getting directory structure")
+                        self._server_protocol.handle_get_directory_structure()
                     elif command == COMMAND_EXECUTE_BASH:
                         logging.debug(
                             "[OpenLISA][api][start] - executing bash command sending by client")

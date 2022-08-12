@@ -2,10 +2,17 @@ import base64
 import pytest
 from open_lisa.domain.command.command_execution_result import CommandExecutionResult
 from open_lisa.domain.command.command_return import CommandReturnType
+from open_lisa.tests.utils import reset_databases
 from open_lisa.utils.date import get_UTC_timestamp
 
 MOCK_IMAGE_PATH = "data_test/clibs/mock_img.jpg"
 
+@pytest.fixture(autouse=True)
+def on_each():
+    # before each
+    reset_databases()
+    yield  # run test
+    # after each
 
 def test_command_execution_result_should_be_init_with_CommandReturnType():
     with pytest.raises(Exception):

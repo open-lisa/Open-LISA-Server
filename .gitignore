@@ -155,3 +155,4 @@ yarn-debug.log*
 yarn-error.log*
 
 data_test/database/commands.db.json
+*.json.lock

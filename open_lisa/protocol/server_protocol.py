@@ -28,6 +28,7 @@ COMMAND_SEND_FILE = "SEND_FILE"
 COMMAND_GET_FILE = "GET_FILE"
 COMMAND_EXECUTE_BASH = "EXECUTE_BASH"
 COMMAND_DELETE_FILE = "DELETE_FILE"
+COMMAND_GET_DIRECTORY_STRUCTURE = "GET_DIRECTORY_STRUCTURE"
 
 COMMAND_CREATE_INSTRUMENT_COMMAND = "CREATE_INSTRUMENT_COMMAND"
 
@@ -39,7 +40,8 @@ class ServerProtocol:
     def __init__(self, message_protocol):
         self._message_protocol = message_protocol
         self._file_manager = FileManager(sandbox_folder_path=os.getenv("USER_FILES_FOLDER"),
-                                         clibs_folder_path=os.getenv("CLIBS_FOLDER"),
+                                         clibs_folder_path=os.getenv(
+                                             "CLIBS_FOLDER"),
                                          database_folder_path=os.getenv("DATABASE_FOLDER"))
 
     def get_command(self):
@@ -143,7 +145,8 @@ class ServerProtocol:
 
             if command_result_output_file is not None:
                 file_mode = "wb" if command_execution_result.type == CommandReturnType.BYTES else "wt"
-                self._file_manager.write_file(command_result_output_file, file_mode, command_execution_result.get_value_for_file_save())
+                self._file_manager.write_file(
+                    command_result_output_file, file_mode, command_execution_result.get_value_for_file_save())
 
             self._message_protocol.send_msg(SUCCESS_RESPONSE)
 
@@ -159,10 +162,12 @@ class ServerProtocol:
         file_bytes = self._message_protocol.receive_msg(decode=False)
 
         try:
-            logging.info("[OpenLISA][ServerProtocol][handle_send_file] Saving file in {}".format(file_path))
+            logging.info(
+                "[OpenLISA][ServerProtocol][handle_send_file] Saving file in {}".format(file_path))
             self._file_manager.write_file(file_path, "wb", file_bytes)
         except OpenLISAException as e:
-            logging.error("[OpenLISA][ServerProtocol][handle_send_file] Cannot save file {}".format(e.message))
+            logging.error(
+                "[OpenLISA][ServerProtocol][handle_send_file] Cannot save file {}".format(e.message))
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)
 
@@ -189,9 +194,24 @@ class ServerProtocol:
             logging.error(
                 "[OpenLISA][ServerProtocol][handle_get_file] Requested file does not exist: {}".format(file_path))
             self._message_protocol.send_msg(ERROR_RESPONSE)
-            self._message_protocol.send_msg("File not found: {}".format(file_path))
+            self._message_protocol.send_msg(
+                "File not found: {}".format(file_path))
         except OpenLISAException as e:
-            logging.error("[OpenLISA][ServerProtocol][handle_get_file] Cannot get file {}".format(e.message))
+            logging.error(
+                "[OpenLISA][ServerProtocol][handle_get_file] Cannot get file {}".format(e.message))
+            self._message_protocol.send_msg(ERROR_RESPONSE)
+            self._message_protocol.send_msg(e.message)
+
+    def handle_get_directory_structure(self):
+        directory = str(self._message_protocol.receive_msg())
+        try:
+            directory_structure = self._file_manager.get_server_folder_structure(
+                directory)
+            self._message_protocol.send_msg(SUCCESS_RESPONSE)
+            self._message_protocol.send_msg(json.dumps(directory_structure))
+        except OpenLISAException as e:
+            logging.error(
+                "[OpenLISA][ServerProtocol][handle_get_directory_structure] Cannot get directory {}".format(e.message))
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)
 
@@ -214,10 +234,12 @@ class ServerProtocol:
         self._message_protocol.send_msg(return_code)
         if should_send_stdout:
             self._message_protocol.send_msg(stdout.decode())
-            logging.info("[OpenLISA][ServerProtocol][execute_bash_command][stdout] {}".format(stdout.decode()))
+            logging.info("[OpenLISA][ServerProtocol][execute_bash_command][stdout] {}".format(
+                stdout.decode()))
         if should_send_stderr:
             self._message_protocol.send_msg(stderr.decode())
-            logging.info("[OpenLISA][ServerProtocol][execute_bash_command][stderr] {}".format(stderr.decode()))
+            logging.info("[OpenLISA][ServerProtocol][execute_bash_command][stderr] {}".format(
+                stderr.decode()))
 
     def handle_disconnect_command(self):
         self._message_protocol.disconnect()
