@@ -58,7 +58,7 @@
          "metadata": {
             "lib_file_name": "libpixelflyqe_x86"
          },
-         "id": 167254517086748322
+         "id": 259786858360233116
       },
       {
          "name": "activate_laser",
@@ -70,7 +70,6 @@
             {
                "position": 1,
                "type": "INT",
-               "example": "5",
                "description": "Number of seconds for the laser be activated"
             }
          ],
@@ -79,7 +78,7 @@
             "description": ""
          },
          "metadata": null,
-         "id": 783467392456659127
+         "id": 198651934760812849
       }
    ]
 }

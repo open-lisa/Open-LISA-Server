@@ -222,7 +222,6 @@ def test_create_scpi_instrument_command():
                 {
                     "position": 1,
                     "type": "INT",
-                    "example": "5",
                     "description": "Number of seconds for the laser be activated"
                 }
             ],
