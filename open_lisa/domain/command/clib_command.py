@@ -1,6 +1,8 @@
 import ctypes
 import logging
 import os
+from pathlib import Path
+
 from open_lisa.domain.command.command import Command, CommandType
 from open_lisa.domain.command.command_execution_result import CommandExecutionResult
 from open_lisa.domain.command.command_parameters import CommandParameters
@@ -62,6 +64,8 @@ class CLibCommand(Command):
         )
 
     def to_dict(self, instrument_id):
+        lib_file_path_parts = list(Path(self.lib_file_name).parts)
+        lib_file_relative_path = lib_file_path_parts[lib_file_path_parts.index('clibs')+1:]
         return {
             "instrument_id": instrument_id,
             "name": self.name,
@@ -72,7 +76,7 @@ class CLibCommand(Command):
             "return": self.command_return.to_dict(),
             "metadata": {
                 # only return filename
-                "lib_file_name": os.path.basename(self.lib_file_name)
+                "lib_file_name": Path(*lib_file_relative_path).__str__()
             }
         }
 
