@@ -1,4 +1,5 @@
 import os
+import sys
 import pytest
 import Open_LISA_SDK
 from open_lisa.api.api import OpenLISA
@@ -9,7 +10,7 @@ from time import sleep
 from threading import Thread
 
 # Update this comment when necessary
-# NOTE: tested with version 0.7.2 of Open_LISA_SDK
+# NOTE: tested with version 0.7.7 of Open_LISA_SDK
 
 MOCK_RS232_CONFIG = RS232Configuration(port="COM4")
 LOCALHOST = "127.0.0.1"
@@ -21,6 +22,7 @@ with open(__file__, "rb") as f:
     CURR_TEST_FILE_BYTES = f.read()
 
 server = None
+
 
 def start_server():
     load_config(env="test")
@@ -183,22 +185,24 @@ def test_filesystem_manage():
 def test_create_clib_instrument_command():
     sdk = Open_LISA_SDK.SDK(log_level="ERROR")
     sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
-
+    lib_file_name = "libpixelflyqe.dll"
+    if sys.platform.startswith('win'):
+        lib_file_name = lib_file_name.replace(".dll", "_x86.dll")
     VALID_INSTRUMENT_COMMAND_DICT = {
-            "name": "activate_smoke",
-            "command": "get_image",
-            "instrument_id": 1,
-            "type": "CLIB",
-            "description": "Generate smoke for indicated period of time in seconds",
-            "params": [],
-            "return": {
+        "name": "activate_smoke",
+        "command": "get_image",
+        "instrument_id": 1,
+        "type": "CLIB",
+        "description": "Generate smoke for indicated period of time in seconds",
+        "params": [],
+        "return": {
                 "type": "VOID",
                 "description": ""
-            },
-            "metadata": {
-                "lib_file_name": "libpixelflyqe_x86"
-            }
+        },
+        "metadata": {
+            "lib_file_name": lib_file_name
         }
+    }
 
     new_instrument_command = sdk.create_instrument_command(
         new_command=VALID_INSTRUMENT_COMMAND_DICT, response_format="PYTHON")
@@ -213,33 +217,32 @@ def test_create_scpi_instrument_command():
     sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
 
     VALID_INSTRUMENT_COMMAND_DICT = {
-            "name": "activate_laser",
-            "command": "ACTIVATE LASER {}",
-            "instrument_id": 1,
-            "type": "SCPI",
-            "description": "Activate laser for indicated period of time in seconds",
-            "params": [
+        "name": "activate_laser",
+        "command": "ACTIVATE LASER {}",
+        "instrument_id": 1,
+        "type": "SCPI",
+        "description": "Activate laser for indicated period of time in seconds",
+        "params": [
                 {
                     "position": 1,
                     "type": "INT",
                     "description": "Number of seconds for the laser be activated"
                 }
-            ],
-            "return": {
-                "type": "VOID",
-                "description": ""
-            },
-            "metadata": None
-        }
+        ],
+        "return": {
+            "type": "VOID",
+            "description": ""
+        },
+        "metadata": None
+    }
 
     new_instrument_command = sdk.create_instrument_command(
         new_command=VALID_INSTRUMENT_COMMAND_DICT, response_format="PYTHON")
 
     new_instrument_command["params"] = sorted(new_instrument_command["params"])
-    VALID_INSTRUMENT_COMMAND_DICT["params"] = sorted(VALID_INSTRUMENT_COMMAND_DICT["params"])
+    VALID_INSTRUMENT_COMMAND_DICT["params"] = sorted(
+        VALID_INSTRUMENT_COMMAND_DICT["params"])
 
     assert new_instrument_command == VALID_INSTRUMENT_COMMAND_DICT
 
     sdk.disconnect()
-
-

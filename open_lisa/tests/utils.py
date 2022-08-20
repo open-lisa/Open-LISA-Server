@@ -8,21 +8,21 @@ def reset_databases():
     # delete current directories state
     if os.path.exists("data_test/database"):
         shutil.rmtree("data_test/database")
-    if os.path.exists("data_test/clibs"):
-        shutil.rmtree("data_test/clibs", ignore_errors=True)
     if os.path.exists("data_test/sandbox"):
         shutil.rmtree("data_test/sandbox")
-
 
     # Copy the seed folders to the folders that Open LISA manages
     shutil.copytree(os.path.join(os.getcwd(), "data_test/database_seed"),
                     os.path.join(os.getcwd(), "data_test/database"))
 
-    shutil.copytree(os.path.join(os.getcwd(), "data_test/clibs_seed"),
-                    os.path.join(os.getcwd(), "data_test/clibs"), dirs_exist_ok=True)
+    # NOTE: no regenerate clibs because in windows the DLL resources sometimes are blocked
+    # if os.path.exists("data_test/clibs"):
+    #     shutil.rmtree("data_test/clibs", ignore_errors=True)
+    # shutil.copytree(os.path.join(os.getcwd(), "data_test/clibs_seed"),
+    #                 os.path.join(os.getcwd(), "data_test/clibs"), dirs_exist_ok=True)
 
     shutil.copytree(os.path.join(os.getcwd(), "data_test/sandbox_seed"),
-                        os.path.join(os.getcwd(), "data_test/sandbox"))
+                    os.path.join(os.getcwd(), "data_test/sandbox"))
 
     if sys.platform.startswith('win'):
         try:
