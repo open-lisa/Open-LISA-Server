@@ -13,7 +13,8 @@ class CommandType(Enum):
 
 
 class Command:
-    def __init__(self, name, command, parameters, command_return, type, description) -> None:
+    def __init__(self, id, name, command, parameters, command_return, type, description) -> None:
+        self.id = id
         self.name = name
         self.command = command
         self.type = type

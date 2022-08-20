@@ -207,6 +207,7 @@ def test_create_clib_instrument_command():
     new_instrument_command = sdk.create_instrument_command(
         new_command=VALID_INSTRUMENT_COMMAND_DICT, response_format="PYTHON")
 
+    VALID_INSTRUMENT_COMMAND_DICT["id"] = new_instrument_command["id"]
     assert new_instrument_command == VALID_INSTRUMENT_COMMAND_DICT
 
     sdk.disconnect()
@@ -239,6 +240,7 @@ def test_create_scpi_instrument_command():
     new_instrument_command = sdk.create_instrument_command(
         new_command=VALID_INSTRUMENT_COMMAND_DICT, response_format="PYTHON")
 
+    VALID_INSTRUMENT_COMMAND_DICT["id"] = new_instrument_command["id"]
     new_instrument_command["params"] = sorted(new_instrument_command["params"])
     VALID_INSTRUMENT_COMMAND_DICT["params"] = sorted(
         VALID_INSTRUMENT_COMMAND_DICT["params"])
