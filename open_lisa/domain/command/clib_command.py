@@ -14,7 +14,7 @@ TMP_BUFFER_FILE = "tmp_file_buffer.bin"
 
 
 class CLibCommand(Command):
-    def __init__(self, name, lib_function, lib_file_name, parameters=CommandParameters(), command_return=CommandReturn(), description=''):
+    def __init__(self, name, lib_function, lib_file_name, id=0, parameters=CommandParameters(), command_return=CommandReturn(), description=''):
         """Creates a new SCPI command
 
         Args:
@@ -23,7 +23,7 @@ class CLibCommand(Command):
             lib_file_name (string): Lib file name should be an absolute path in order to find the library
             parameters (CommandParameters): an instance of command parameters
         """
-        super().__init__(name=name, command=lib_function,
+        super().__init__(id=id, name=name, command=lib_function,
                          parameters=parameters, command_return=command_return, type=CommandType.CLIB, description=description)
 
         self.lib_function = lib_function
@@ -53,9 +53,11 @@ class CLibCommand(Command):
     @staticmethod
     def from_dict(command_dict, lib_base_path):
         return CLibCommand(
+            id=command_dict["id"],
             name=command_dict["name"],
             lib_function=command_dict["command"],
-            lib_file_name=os.path.join(lib_base_path, command_dict["metadata"]["lib_file_name"]),
+            lib_file_name=os.path.join(
+                lib_base_path, command_dict["metadata"]["lib_file_name"]),
             parameters=CommandParameters.from_dict(command_dict["params"]),
             command_return=CommandReturn.from_dict(command_dict["return"]),
             description=command_dict["description"]
@@ -63,6 +65,7 @@ class CLibCommand(Command):
 
     def to_dict(self, instrument_id):
         return {
+            "id": self.id,
             "instrument_id": instrument_id,
             "name": self.name,
             "command": self.lib_function,

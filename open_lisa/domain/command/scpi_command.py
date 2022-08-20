@@ -9,7 +9,7 @@ SCPI_PARAMETER_VALUE_PLACEHOLDER = "{}"
 
 
 class SCPICommand(Command):
-    def __init__(self, name, pyvisa_resource, scpi_template_syntax, parameters=CommandParameters(), command_return=CommandReturn(), description=''):
+    def __init__(self, name, pyvisa_resource, scpi_template_syntax, id=0, parameters=CommandParameters(), command_return=CommandReturn(), description=''):
         """Creates a new SCPI command
 
         Args:
@@ -19,7 +19,7 @@ class SCPICommand(Command):
             parameters (CommandParameters): an instance of command parameters
             command_return (CommandReturn): an instance of command return
         """
-        super().__init__(name=name, command=scpi_template_syntax,
+        super().__init__(id=id, name=name, command=scpi_template_syntax,
                          parameters=parameters, command_return=command_return, type=CommandType.SCPI, description=description)
         self._resource = pyvisa_resource
         self._scpi_template_syntax = scpi_template_syntax
@@ -31,6 +31,7 @@ class SCPICommand(Command):
     @staticmethod
     def from_dict(command_dict, pyvisa_resource):
         return SCPICommand(
+            id=command_dict["id"],
             name=command_dict["name"],
             pyvisa_resource=pyvisa_resource,
             scpi_template_syntax=command_dict["command"],
@@ -41,6 +42,7 @@ class SCPICommand(Command):
 
     def to_dict(self, instrument_id):
         return {
+            "id": self.id,
             "instrument_id": instrument_id,
             "name": self.name,
             "command": self.command,

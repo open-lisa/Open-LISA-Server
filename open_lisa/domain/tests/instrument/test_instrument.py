@@ -16,7 +16,8 @@ COMMAND_NAME = "some_command"
 class CommandMock(Command):
     def __init__(self, name) -> None:
         super().__init__(
-            name,
+            id=0,
+            name=name,
             command="some scpi template",
             parameters=CommandParameters(),
             command_return=CommandReturn(),
