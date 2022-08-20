@@ -1,6 +1,8 @@
 import ctypes
 import logging
 import os
+from pathlib import Path
+
 from open_lisa.domain.command.command import Command, CommandType
 from open_lisa.domain.command.command_execution_result import CommandExecutionResult
 from open_lisa.domain.command.command_parameters import CommandParameters
@@ -55,23 +57,27 @@ class CLibCommand(Command):
         return CLibCommand(
             name=command_dict["name"],
             lib_function=command_dict["command"],
-            lib_file_name=lib_base_path + command_dict["lib_file_name"],
+            lib_file_name=os.path.join(lib_base_path, command_dict["metadata"]["lib_file_name"]),
             parameters=CommandParameters.from_dict(command_dict["params"]),
             command_return=CommandReturn.from_dict(command_dict["return"]),
             description=command_dict["description"]
         )
 
     def to_dict(self, instrument_id):
+        lib_file_path_parts = list(Path(self.lib_file_name).parts)
+        lib_file_relative_path = lib_file_path_parts[lib_file_path_parts.index('clibs')+1:]
         return {
             "instrument_id": instrument_id,
             "name": self.name,
             "command": self.lib_function,
             "type": str(self.type),
-            # only return filename
-            "lib_file_name": os.path.basename(self.lib_file_name),
             "description": self.description,
             "params": self.parameters.to_dict(),
-            "return": self.command_return.to_dict()
+            "return": self.command_return.to_dict(),
+            "metadata": {
+                # only return filename
+                "lib_file_name": Path(*lib_file_relative_path).__str__()
+            }
         }
 
     def execute(self, params_values=[]):

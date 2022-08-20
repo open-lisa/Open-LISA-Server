@@ -1,7 +1,9 @@
 import os
+
 from open_lisa.domain.command.clib_command import CLibCommand
 from open_lisa.domain.command.command import Command, CommandType
 from open_lisa.domain.command.scpi_command import SCPICommand
+from open_lisa.exceptions.command_creation_error import CommandCreationError
 from open_lisa.repositories.json_repository import JSONRepository
 
 
@@ -14,23 +16,39 @@ class CommandsRepository(JSONRepository):
         super().__init__(commands_db_path)
         self._clibs_path = clibs_path
 
-    def add(self, command: Command, instrument_id):
+    def add(self, command, instrument_id=None):
         if isinstance(command, Command):
             return self._db.add(command.to_dict(instrument_id))
+        else:
+            return self._db.add(command)
+
+    def create_command(self, new_command, pyvisa_resource=None) -> Command:
+        try:
+            new_id = self.add(new_command)
+        except Exception as e:
+            raise CommandCreationError(
+                "could not create command {}".format(new_command))
+        return self.get_by_id(new_id, pyvisa_resource=pyvisa_resource)
+
+    def get_by_id(self, id, pyvisa_resource=None, lib_base_path=None) -> Command:
+        id = int(id)
+        command_json = super().get_by_id(id)
+
+        return self.__deserialize_command(command_json, pyvisa_resource)
 
     def get_instrument_commands(self, instrument_id, pyvisa_resource=None):
         command_dicts = self.get_by_key_value("instrument_id", instrument_id)
         return [
-            self.__deserialize_commands(cd, pyvisa_resource) for cd in command_dicts
+            self.__deserialize_command(cd, pyvisa_resource) for cd in command_dicts
         ]
 
-    def __deserialize_commands(self, command_dict, pyvisa_resource):
-        if command_dict["type"] == str(CommandType.SCPI):
+    def __deserialize_command(self, command_dict, pyvisa_resource):
+        if str(command_dict["type"]).lower() == str(CommandType.SCPI).lower():
             return SCPICommand.from_dict(
                 command_dict=command_dict,
                 pyvisa_resource=pyvisa_resource
             )
-        if command_dict["type"] == str(CommandType.CLIB):
+        if str(command_dict["type"]).lower() == str(CommandType.CLIB).lower():
             return CLibCommand.from_dict(
                 command_dict=command_dict,
                 lib_base_path=self._clibs_path,

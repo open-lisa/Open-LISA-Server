@@ -1,4 +1,4 @@
-from distutils.dir_util import copy_tree, remove_tree
+import shutil
 import json
 import sys
 import os
@@ -6,28 +6,33 @@ import os
 
 def reset_databases():
     # delete current directories state
-    remove_tree("data_test/database")
-    remove_tree("data_test/clibs")
-    remove_tree("data_test/sandbox")
+    if os.path.exists("data_test/database"):
+        shutil.rmtree("data_test/database")
+    if os.path.exists("data_test/sandbox"):
+        shutil.rmtree("data_test/sandbox")
 
     # Copy the seed folders to the folders that Open LISA manages
-    copy_tree(os.path.join(os.getcwd(), "data_test/database_seed"),
-              os.path.join(os.getcwd(), "data_test/database"))
+    shutil.copytree(os.path.join(os.getcwd(), "data_test/database_seed"),
+                    os.path.join(os.getcwd(), "data_test/database"))
 
-    copy_tree(os.path.join(os.getcwd(), "data_test/clibs_seed"),
-              os.path.join(os.getcwd(), "data_test/clibs"))
+    # NOTE: no regenerate clibs because in windows the DLL resources sometimes are blocked
+    # if os.path.exists("data_test/clibs"):
+    #     shutil.rmtree("data_test/clibs", ignore_errors=True)
+    # shutil.copytree(os.path.join(os.getcwd(), "data_test/clibs_seed"),
+    #                 os.path.join(os.getcwd(), "data_test/clibs"), dirs_exist_ok=True)
 
-    copy_tree(os.path.join(os.getcwd(), "data_test/sandbox_seed"),
-              os.path.join(os.getcwd(), "data_test/sandbox"))
+    shutil.copytree(os.path.join(os.getcwd(), "data_test/sandbox_seed"),
+                    os.path.join(os.getcwd(), "data_test/sandbox"))
 
     if sys.platform.startswith('win'):
         try:
             with open(os.path.join(os.getcwd(), "data_test/database/commands.db.json")) as file:
                 db = json.load(file)
                 for command in db["data"]:
-                    if "lib_file_name" in command:
-                        command["lib_file_name"] = command["lib_file_name"].replace(
-                            ".dll", "_x86.dll")
+                    if command["metadata"]:
+                        if "lib_file_name" in command["metadata"]:
+                            command["metadata"]["lib_file_name"] = command["metadata"]["lib_file_name"].replace(".dll",
+                                                                                                                "_x86.dll")
 
             with open(os.path.join(os.getcwd(), "data_test/database/commands.db.json"), "wt") as file:
                 file.write(json.dumps(db, indent=4))

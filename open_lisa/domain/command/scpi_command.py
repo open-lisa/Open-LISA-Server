@@ -48,6 +48,7 @@ class SCPICommand(Command):
             "description": self.description,
             "params": self.parameters.to_dict(),
             "return": self.command_return.to_dict(),
+            "metadata": None
         }
 
     def execute(self, params_values=[]):
