@@ -248,14 +248,18 @@ class ServerProtocol:
                                          instruments_repository: InstrumentRepository):
         command_payload = json.loads(self._message_protocol.receive_msg())
         command_type = str(command_payload["type"])
+        command_payload["instrument_id"] = int(
+            command_payload["instrument_id"])
         instrument_id = int(command_payload["instrument_id"])
 
         pyvisa_resource = None
         if command_type.lower() == CommandType.SCPI.name.lower():
-            pyvisa_resource = instruments_repository.get_by_id(instrument_id).pyvisa_resource
+            pyvisa_resource = instruments_repository.get_by_id(
+                instrument_id).pyvisa_resource
 
         try:
-            new_command = commands_repository.create_command(command_payload, pyvisa_resource)
+            new_command = commands_repository.create_command(
+                command_payload, instrument_id, pyvisa_resource)
             self._message_protocol.send_msg(SUCCESS_RESPONSE)
             self._message_protocol.send_msg(
                 json.dumps(new_command.to_dict(instrument_id)))

@@ -67,10 +67,11 @@ class CLibCommand(Command):
 
     def to_dict(self, instrument_id):
         lib_file_path_parts = list(Path(self.lib_file_name).parts)
-        lib_file_relative_path = lib_file_path_parts[lib_file_path_parts.index('clibs')+1:]
+        lib_file_relative_path = lib_file_path_parts[lib_file_path_parts.index(
+            'clibs')+1:]
         return {
-            "id": self.id,
-            "instrument_id": instrument_id,
+            "id": int(self.id),
+            "instrument_id": int(instrument_id),
             "name": self.name,
             "command": self.lib_function,
             "type": str(self.type),

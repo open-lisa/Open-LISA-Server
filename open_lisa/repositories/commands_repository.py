@@ -18,13 +18,13 @@ class CommandsRepository(JSONRepository):
 
     def add(self, command, instrument_id=None):
         if isinstance(command, Command):
-            return self._db.add(command.to_dict(instrument_id))
+            return self._db.add(command.to_dict(int(instrument_id)))
         else:
             return self._db.add(command)
 
-    def create_command(self, new_command, pyvisa_resource=None) -> Command:
+    def create_command(self, new_command, instrument_id, pyvisa_resource=None) -> Command:
         try:
-            new_id = self.add(new_command)
+            new_id = self.add(new_command, int(instrument_id))
         except Exception as e:
             raise CommandCreationError(
                 "could not create command {}".format(new_command))
