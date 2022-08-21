@@ -27,7 +27,7 @@ class CommandsRepository(JSONRepository):
             new_id = self.add(new_command, int(instrument_id))
         except Exception as e:
             raise CommandCreationError(
-                "could not create command {}".format(new_command))
+                "could not create command {}, reason {}".format(new_command, e))
         return self.get_by_id(new_id, pyvisa_resource=pyvisa_resource)
 
     def get_by_id(self, id, pyvisa_resource=None, lib_base_path=None) -> Command:
