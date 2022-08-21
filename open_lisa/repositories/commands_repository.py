@@ -28,7 +28,14 @@ class CommandsRepository(JSONRepository):
         except Exception as e:
             raise CommandCreationError(
                 "could not create command {}, reason {}".format(new_command, e))
-        return self.get_by_id(new_id, pyvisa_resource=pyvisa_resource)
+        try:
+            recent_created = self.get_by_id(
+                new_id, pyvisa_resource=pyvisa_resource)
+        except Exception as e:
+            self.remove_by_id(id=new_id)
+            raise CommandCreationError(
+                "command created but there was an error on initialization {}".format(e))
+        return recent_created
 
     def get_by_id(self, id, pyvisa_resource=None, lib_base_path=None) -> Command:
         id = int(id)
