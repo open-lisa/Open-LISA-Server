@@ -55,7 +55,9 @@ def test_get_instruments():
     instruments = sdk.get_instruments()
 
     assert instruments[0]["physical_address"] == "USB0::0x0699::0x0363::C107676::INSTR"
-    assert instruments[1]["physical_address"] == "CAM_ID"
+
+    # CLIB instruments has no physical address
+    assert instruments[1]["physical_address"] == None
     sdk.disconnect()
 
 
