@@ -20,6 +20,7 @@ COMMAND_GET_INSTRUMENT = "GET_INSTRUMENT"
 COMMAND_CREATE_INSTRUMENT = "CREATE_INSTRUMENT"
 COMMAND_UPDATE_INSTRUMENT = "UPDATE_INSTRUMENT"
 COMMAND_DELETE_INSTRUMENT = "DELETE_INSTRUMENT"
+COMMAND_DELETE_INSTRUMENT_COMMAND = "DELETE_INSTRUMENT_COMMAND"
 COMMAND_GET_INSTRUMENT_COMMANDS = "GET_INSTRUMENT_COMMANDS"
 COMMAND_VALIDATE_COMMAND = "VALIDATE_COMMAND"
 COMMAND_SEND_COMMAND = "SEND_COMMAND"
@@ -95,6 +96,15 @@ class ServerProtocol:
             self._message_protocol.send_msg(SUCCESS_RESPONSE)
             self._message_protocol.send_msg(
                 json.dumps(deleted_instrument.to_dict()))
+        except OpenLISAException as e:
+            self._message_protocol.send_msg(ERROR_RESPONSE)
+            self._message_protocol.send_msg(e.message)
+
+    def handle_delete_instrument_command(self, commands_repository: CommandsRepository):
+        command_id = self._message_protocol.receive_msg()
+        try:
+            commands_repository.delete_command(command_id)
+            self._message_protocol.send_msg(SUCCESS_RESPONSE)
         except OpenLISAException as e:
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)

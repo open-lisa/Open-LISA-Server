@@ -4,6 +4,7 @@ from open_lisa.domain.command.clib_command import CLibCommand
 from open_lisa.domain.command.command import Command, CommandType
 from open_lisa.domain.command.scpi_command import SCPICommand
 from open_lisa.exceptions.command_creation_error import CommandCreationError
+from open_lisa.exceptions.command_deletion_error import CommandDeletionError
 from open_lisa.repositories.json_repository import JSONRepository
 
 
@@ -48,6 +49,14 @@ class CommandsRepository(JSONRepository):
         return [
             self.__deserialize_command(cd, pyvisa_resource) for cd in command_dicts
         ]
+
+    def delete_command(self, command_id):
+        command_id = int(command_id)
+        try:
+            self.remove_by_id(command_id)
+        except Exception as e:
+            raise CommandDeletionError(
+                "could not delete command: {}".format(str(e)))
 
     def __deserialize_command(self, command_dict, pyvisa_resource):
         if str(command_dict["type"]).lower() == str(CommandType.SCPI).lower():
