@@ -250,3 +250,21 @@ def test_create_scpi_instrument_command():
     assert new_instrument_command == VALID_INSTRUMENT_COMMAND_DICT
 
     sdk.disconnect()
+
+
+def test_delete_instrument_command():
+    sdk = Open_LISA_SDK.SDK(log_level="ERROR")
+    sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+
+    TARGET_INSTRUMENT_ID = 1
+    TARGET_COMMAND_ID = 2
+
+    instrument_commands = sdk.get_instrument_commands(TARGET_INSTRUMENT_ID)
+    original_instrument_commands_size = len(instrument_commands)
+
+    sdk.delete_instrument_command(TARGET_COMMAND_ID)
+    instrument_commands = sdk.get_instrument_commands(TARGET_INSTRUMENT_ID)
+
+    assert len(instrument_commands) == original_instrument_commands_size - 1
+
+    sdk.disconnect()

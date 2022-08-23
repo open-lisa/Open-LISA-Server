@@ -186,4 +186,20 @@ def test_should_only_store_c_lib_filename_without_path_for_CLibCommands():
                           instrument_id=some_instrument_id)
     command_dict = repo.get_by_id(command_id, lib_base_path=DEFAULT_C_LIBS_PATH).to_dict(some_instrument_id)
     assert command_dict["metadata"]["lib_file_name"] == MOCK_LIB_NAME
+
+
+def test_should_remove_command_by_id_success_case():
+    repo = CommandsRepository(commands_db_path=TMP_DB_PATH)
+    clib_command = CLibCommand(
+        name="name", lib_function="sum", lib_file_name=MOCK_LIB_PATH)
+    command_id = repo.add(command=clib_command,
+                          instrument_id=some_instrument_id)
+
+    commands = repo.get_instrument_commands(instrument_id=some_instrument_id)
+    assert len(commands) == 1
+
+    repo.delete_command(command_id)
+    commands = repo.get_instrument_commands(instrument_id=some_instrument_id)
+    assert len(commands) == 0
+
 # End CommandsRepository tests
