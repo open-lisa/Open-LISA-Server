@@ -252,7 +252,7 @@ def test_create_scpi_instrument_command():
     sdk.disconnect()
 
 
-def test_create_scpi_instrument_command():
+def test_delete_instrument_command():
     sdk = Open_LISA_SDK.SDK(log_level="ERROR")
     sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
 
