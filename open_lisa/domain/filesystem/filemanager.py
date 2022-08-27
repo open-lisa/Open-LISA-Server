@@ -1,3 +1,4 @@
+import shutil
 from functools import reduce
 import logging
 import os
@@ -85,7 +86,7 @@ class FileManager:
         if path_parts[-1] in VALID_ROOT_FOLDERS:
             raise ForbiddenPathDeletionException(VALID_ROOT_FOLDERS, path_parts[0])
 
-        os.rmdir(directory_path)
+        shutil.rmtree(directory_path)
         return
 
     def __get_file_path(self, user_file_path):
