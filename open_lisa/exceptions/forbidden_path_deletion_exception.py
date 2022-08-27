@@ -4,7 +4,7 @@ import os
 
 class ForbiddenPathDeletionException(OpenLISAException):
     """
-    Raised when trying to manipulate an invalid path in file system
+    Raised when trying to delete an forbidden directory in server file system
     """
 
     def __init__(self, protected_directories, given_directory):
