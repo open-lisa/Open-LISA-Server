@@ -80,12 +80,11 @@ class FileManager:
         return
 
     def delete_directory(self, path):
-        directory_path = self.__get_file_path(path)
-        path_parts = Path(directory_path).parts
-
-        if path_parts[-1] in VALID_ROOT_FOLDERS:
+        path_parts = Path(path).parts
+        if len(path_parts) == 1 and path_parts[0] in VALID_ROOT_FOLDERS:
             raise ForbiddenPathDeletionException(VALID_ROOT_FOLDERS, path_parts[0])
 
+        directory_path = self.__get_file_path(path)
         shutil.rmtree(directory_path)
         return
 
