@@ -287,7 +287,7 @@ class ServerProtocol:
             self._message_protocol.send_msg(SUCCESS_RESPONSE)
         except OpenLISAException as e:
             logging.error(
-                "[OpenLISA][ServerProtocol][handle_get_directory_structure] Cannot get directory {}".format(e.message))
+                "[OpenLISA][ServerProtocol][handle_create_directory] Cannot create directory {}".format(e.message))
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)
 
@@ -298,7 +298,7 @@ class ServerProtocol:
             self._message_protocol.send_msg(SUCCESS_RESPONSE)
         except OpenLISAException as e:
             logging.error(
-                "[OpenLISA][ServerProtocol][handle_get_directory_structure] Cannot get directory {}".format(e.message))
+                "[OpenLISA][ServerProtocol][handle_delete_directory] Cannot delete directory {}".format(e.message))
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)
 
