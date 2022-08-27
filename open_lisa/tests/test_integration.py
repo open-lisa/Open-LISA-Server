@@ -2,6 +2,8 @@ import os
 import sys
 import pytest
 import Open_LISA_SDK
+from Open_LISA_SDK import OpenLISAException
+
 from open_lisa.api.api import OpenLISA
 from open_lisa.config.config import load_config
 from open_lisa.protocol.rs232configuration import RS232Configuration
@@ -14,7 +16,7 @@ from threading import Thread
 
 MOCK_RS232_CONFIG = RS232Configuration(port="COM4")
 LOCALHOST = "127.0.0.1"
-SERVER_PORT = 8080
+SERVER_PORT = 8081
 MOCK_IMAGE_PATH = "data_test/clibs/mock_img.jpg"
 
 CURR_TEST_FILE_BYTES = None
@@ -26,7 +28,7 @@ server = None
 
 def start_server():
     load_config(env="test")
-    server = OpenLISA(mode="TCP", listening_port=8080,
+    server = OpenLISA(mode="TCP", listening_port=SERVER_PORT,
                       rs232_config=MOCK_RS232_CONFIG)
     server._shutdown_after_next_client_connection = True
     server.start()
@@ -268,3 +270,31 @@ def test_delete_instrument_command():
     assert len(instrument_commands) == original_instrument_commands_size - 1
 
     sdk.disconnect()
+
+
+def test_create_directory_valid():
+    sdk = Open_LISA_SDK.SDK(log_level="ERROR")
+    sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+
+    sdk.create_directory("sandbox", "pepinardovich")
+
+    assert os.path.isdir("./data_test/sandbox/pepinardovich")
+
+    os.rmdir("./data_test/sandbox/pepinardovich")
+
+    sdk.disconnect()
+
+
+def test_create_directory_invalid():
+    sdk = Open_LISA_SDK.SDK(log_level="ERROR")
+    sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+
+    try:
+        sdk.create_directory("win32", "experience")
+    except OpenLISAException as e:
+        assert e.message.find("forbidden") != -1
+        sdk.disconnect()
+        return
+
+    sdk.disconnect()
+    assert 1 == 0

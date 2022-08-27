@@ -30,6 +30,8 @@ COMMAND_GET_FILE = "GET_FILE"
 COMMAND_EXECUTE_BASH = "EXECUTE_BASH"
 COMMAND_DELETE_FILE = "DELETE_FILE"
 COMMAND_GET_DIRECTORY_STRUCTURE = "GET_DIRECTORY_STRUCTURE"
+COMMAND_CREATE_DIRECTORY = "CREATE_DIRECTORY"
+COMMAND_DELETE_DIRECTORY = "DELETE_DIRECTORY"
 
 COMMAND_CREATE_INSTRUMENT_COMMAND = "CREATE_INSTRUMENT_COMMAND"
 
@@ -274,6 +276,18 @@ class ServerProtocol:
             self._message_protocol.send_msg(
                 json.dumps(new_command.to_dict(instrument_id)))
         except OpenLISAException as e:
+            self._message_protocol.send_msg(ERROR_RESPONSE)
+            self._message_protocol.send_msg(e.message)
+
+    def handle_create_directory(self):
+        path = str(self._message_protocol.receive_msg())
+        directory = str(self._message_protocol.receive_msg())
+        try:
+            self._file_manager.create_directory(path, directory)
+            self._message_protocol.send_msg(SUCCESS_RESPONSE)
+        except OpenLISAException as e:
+            logging.error(
+                "[OpenLISA][ServerProtocol][handle_get_directory_structure] Cannot get directory {}".format(e.message))
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)
 
