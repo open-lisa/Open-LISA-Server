@@ -5,6 +5,7 @@ import sys
 import errno
 from pathlib import Path
 
+from open_lisa.exceptions.forbidden_path_deletion_exception import ForbiddenPathDeletionException
 from open_lisa.exceptions.forbidden_path_exception import ForbiddenPathException
 from open_lisa.exceptions.invalid_path_exception import InvalidPathException
 
@@ -75,6 +76,16 @@ class FileManager:
         directory_in_path = os.path.join(path, directory)
         directory_path = self.__get_file_path(directory_in_path)
         os.mkdir(directory_path)
+        return
+
+    def delete_directory(self, path):
+        directory_path = self.__get_file_path(path)
+        path_parts = Path(directory_path).parts
+
+        if path_parts[-1] in VALID_ROOT_FOLDERS:
+            raise ForbiddenPathDeletionException(VALID_ROOT_FOLDERS, path_parts[0])
+
+        os.rmdir(directory_path)
         return
 
     def __get_file_path(self, user_file_path):

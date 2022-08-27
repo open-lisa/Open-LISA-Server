@@ -291,6 +291,17 @@ class ServerProtocol:
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)
 
+    def handle_delete_directory(self):
+        path = str(self._message_protocol.receive_msg())
+        try:
+            self._file_manager.delete_directory(path)
+            self._message_protocol.send_msg(SUCCESS_RESPONSE)
+        except OpenLISAException as e:
+            logging.error(
+                "[OpenLISA][ServerProtocol][handle_get_directory_structure] Cannot get directory {}".format(e.message))
+            self._message_protocol.send_msg(ERROR_RESPONSE)
+            self._message_protocol.send_msg(e.message)
+
     def handle_reset_databases(self):
         env = os.environ["ENV"]
         if env == "test":

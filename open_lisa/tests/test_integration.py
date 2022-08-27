@@ -298,3 +298,33 @@ def test_create_directory_invalid():
 
     sdk.disconnect()
     assert 1 == 0
+
+
+def test_delete_directory_valid():
+    sdk = Open_LISA_SDK.SDK(log_level="ERROR")
+    sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+
+    sdk.create_directory("sandbox", "pepinardovich")
+
+    assert os.path.isdir("./data_test/sandbox/pepinardovich")
+
+    sdk.delete_directory("sandbox/pepinardovich")
+
+    assert not os.path.isdir("./data_test/sandbox/pepinardovich")
+
+    sdk.disconnect()
+
+
+def test_delete_directory_invalid():
+    sdk = Open_LISA_SDK.SDK(log_level="ERROR")
+    sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+
+    try:
+        sdk.delete_directory("sandbox")
+    except OpenLISAException as e:
+        assert e.message.find("forbidden deletion") != -1
+        sdk.disconnect()
+        return
+
+    sdk.disconnect()
+    assert 1 == 0

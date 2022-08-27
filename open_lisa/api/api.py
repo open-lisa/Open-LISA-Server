@@ -124,6 +124,10 @@ class OpenLISA:
                         logging.info(
                             "[OpenLISA][api][start] - client order create directory")
                         self._server_protocol.handle_create_directory()
+                    elif command == COMMAND_DELETE_DIRECTORY:
+                        logging.info(
+                            "[OpenLISA][api][start] - client order delete directory")
+                        self._server_protocol.handle_delete_directory()
                     elif command == COMMAND_RESET_DATABASES:
                         self._server_protocol.handle_reset_databases()
                     else:
