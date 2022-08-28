@@ -1,3 +1,4 @@
+import shutil
 from functools import reduce
 import logging
 import os
@@ -5,6 +6,7 @@ import sys
 import errno
 from pathlib import Path
 
+from open_lisa.exceptions.forbidden_path_deletion_exception import ForbiddenPathDeletionException
 from open_lisa.exceptions.forbidden_path_exception import ForbiddenPathException
 from open_lisa.exceptions.invalid_path_exception import InvalidPathException
 
@@ -70,6 +72,21 @@ class FileManager:
         file_path = self.__get_file_path(file_path)
         with open(file_path, file_mode) as file:
             return file.read()
+
+    def create_directory(self, path, directory):
+        directory_in_path = os.path.join(path, directory)
+        directory_path = self.__get_file_path(directory_in_path)
+        os.mkdir(directory_path)
+        return
+
+    def delete_directory(self, path):
+        path_parts = Path(path).parts
+        if len(path_parts) == 1 and path_parts[0] in VALID_ROOT_FOLDERS:
+            raise ForbiddenPathDeletionException(VALID_ROOT_FOLDERS, path_parts[0])
+
+        directory_path = self.__get_file_path(path)
+        shutil.rmtree(directory_path)
+        return
 
     def __get_file_path(self, user_file_path):
         path_parts = Path(user_file_path).parts
