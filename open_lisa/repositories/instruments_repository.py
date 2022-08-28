@@ -46,6 +46,33 @@ class InstrumentRepository(JSONRepository):
 
         return instruments
 
+    def get_available_physical_addresses(self):
+        instrument_dicts = super().get_all()
+
+        # Gets only the physical addresses of the registered instruments
+        registered_physical_addresses = map(
+            lambda instrument: instrument["physical_address"], instrument_dicts)
+        rm = pyvisa.ResourceManager()
+
+        # fetch physical addresses and ResourceInfo from pyvisa
+        # -> Dict[str, ResourceInfo]
+        pyvisa_resources_with_info = rm.list_resources_info()
+        pyvisa_physical_addresses = pyvisa_resources_with_info.keys()
+
+        not_registered_physical_addresses = filter(
+            lambda physical_address: physical_address not in registered_physical_addresses, pyvisa_physical_addresses
+        )
+        return list(map(lambda not_registered_physical_address: {
+            # NOTE: Here could be added more information that is provided by pyvisa
+            # check the docs https://pyvisa.readthedocs.io/en/latest/api/resourcemanager.html#pyvisa.highlevel.ResourceInfo
+            "physical_address": not_registered_physical_address,
+            "interface_type": str(pyvisa_resources_with_info[not_registered_physical_address].interface_type),
+            "interface_board_number": str(pyvisa_resources_with_info[not_registered_physical_address].interface_board_number),
+            "resource_class": str(pyvisa_resources_with_info[not_registered_physical_address].resource_class),
+            "resource_name": str(pyvisa_resources_with_info[not_registered_physical_address].resource_name),
+            "alias": str(pyvisa_resources_with_info[not_registered_physical_address].alias)
+        }, not_registered_physical_addresses))
+
     def get_all_as_json(self):
         instruments = self.get_all()
         formatted_instruments = []
