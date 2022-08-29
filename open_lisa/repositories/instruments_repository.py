@@ -46,7 +46,7 @@ class InstrumentRepository(JSONRepository):
 
         return instruments
 
-    def get_available_physical_addresses(self):
+    def get_pyvisa_available_physical_addresses(self):
         instrument_dicts = super().get_all()
 
         # Gets only the physical addresses of the registered instruments

@@ -57,7 +57,7 @@ class ServerProtocol:
 
     def handle_get_detected_physical_addresses(self, instruments_repository: InstrumentRepository):
         try:
-            available_physicall_addresses = instruments_repository.get_available_physical_addresses()
+            available_physicall_addresses = instruments_repository.get_pyvisa_available_physical_addresses()
             self._message_protocol.send_msg(SUCCESS_RESPONSE)
             self._message_protocol.send_msg(
                 json.dumps(available_physicall_addresses))
