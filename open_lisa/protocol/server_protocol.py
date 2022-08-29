@@ -237,7 +237,7 @@ class ServerProtocol:
                      .format(command, should_send_stdout, should_send_stderr))
 
         execution_command_process = subprocess.Popen(command, shell=True, stderr=subprocess.PIPE,
-                                                     stdout=subprocess.PIPE)
+                                                     stdout=subprocess.PIPE, cwd=os.getenv("USER_FILES_FOLDER"))
         stdout, stderr = execution_command_process.communicate()
         return_code = str(execution_command_process.wait())
         logging.info("[OpenLISA][ServerProtocol][execute_bash_command]"
