@@ -55,6 +55,11 @@ class OpenLISA:
                             "[OpenLISA][api][start] - getting specific instrument")
                         self._server_protocol.handle_get_instrument(
                             self._instruments_repository)
+                    elif command == COMMAND_GET_DETECTED_PHYSICAL_ADDRESSES:
+                        logging.debug(
+                            "[OpenLISA][api][start] - getting detected physical addresses")
+                        self._server_protocol.handle_get_detected_physical_addresses(
+                            self._instruments_repository)
                     elif command == COMMAND_CREATE_INSTRUMENT:
                         logging.debug(
                             "[OpenLISA][api][start] - creating new instrument")

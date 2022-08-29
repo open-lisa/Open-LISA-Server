@@ -17,6 +17,7 @@ ERROR_RESPONSE = "ERROR"
 
 COMMAND_GET_INSTRUMENTS = "GET_INSTRUMENTS"
 COMMAND_GET_INSTRUMENT = "GET_INSTRUMENT"
+COMMAND_GET_DETECTED_PHYSICAL_ADDRESSES = "GET_DETECTED_PHYSICAL_ADDRESSES"
 COMMAND_CREATE_INSTRUMENT = "CREATE_INSTRUMENT"
 COMMAND_UPDATE_INSTRUMENT = "UPDATE_INSTRUMENT"
 COMMAND_DELETE_INSTRUMENT = "DELETE_INSTRUMENT"
@@ -53,6 +54,16 @@ class ServerProtocol:
     def handle_get_instruments(self, instruments_repository: InstrumentRepository):
         jsons_string = instruments_repository.get_all_as_json()
         self._message_protocol.send_msg(jsons_string)
+
+    def handle_get_detected_physical_addresses(self, instruments_repository: InstrumentRepository):
+        try:
+            available_physicall_addresses = instruments_repository.get_pyvisa_available_physical_addresses()
+            self._message_protocol.send_msg(SUCCESS_RESPONSE)
+            self._message_protocol.send_msg(
+                json.dumps(available_physicall_addresses))
+        except OpenLISAException as e:
+            self._message_protocol.send_msg(ERROR_RESPONSE)
+            self._message_protocol.send_msg(e.message)
 
     def handle_get_instrument(self, instruments_repository: InstrumentRepository):
         id = self._message_protocol.receive_msg()
