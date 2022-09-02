@@ -138,6 +138,10 @@ class InstrumentRepository(JSONRepository):
         instrument = self.get_by_id(id)
         try:
             self.remove_by_id(id)
+            # Delete all instrument commands
+            commands_dicts = self._commands_repository.get_by_key_value(key="instrument_id", value=id)
+            for command_dict in commands_dicts:
+                self._commands_repository.delete_command(command_dict['id'])
         except Exception as e:
             raise InstrumentDeletionError(
                 "could not delete instrument: {}".format(str(e)))
