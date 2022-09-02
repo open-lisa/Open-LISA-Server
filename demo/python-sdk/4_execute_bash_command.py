@@ -1,6 +1,7 @@
 import Open_LISA_SDK
+import time
 
-MATLAB_SCRIPT = "'C:\\Users\\FIUBA\\PycharmProjects\\Open-LISA-Server\\data_test\\user\\sandbox\\processing_example.m'"
+MATLAB_SCRIPT = "'processing_example.m'"
 MATLAB_COMMAND = "matlab -nodisplay -nosplash -nodesktop -r \"run {}; exit;\"".format(MATLAB_SCRIPT)
 
 
@@ -15,6 +16,11 @@ def main():
     print(return_code)
     print(stdout)
     print(stderr)
+
+    # this sleep is needed because the matlab command is executed instantly, and Popen cant wait until the
+    # script finish (limitation of matlab)
+    # https://www.mathworks.com/matlabcentral/answers/8031-calling-matlab-from-python-and-have-python-wait-for-matlab-to-finish
+    time.sleep(10)
 
     sdk.get_file("sandbox/image_output.bmp", "image_output_from_remote.bmp")
 
