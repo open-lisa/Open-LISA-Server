@@ -328,3 +328,24 @@ def test_delete_directory_invalid():
 
     sdk.disconnect()
     assert 1 == 0
+
+
+def test_delete_instrument_must_delete_instrument_commands():
+    sdk = Open_LISA_SDK.SDK(log_level="ERROR")
+    sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+
+    TARGET_INSTRUMENT = 1
+    instrument_commands = sdk.get_instrument_commands(TARGET_INSTRUMENT)
+    assert instrument_commands is not None
+    assert len(instrument_commands) > 0
+
+    sdk.delete_instrument(TARGET_INSTRUMENT)
+    try:
+        instrument_commands = sdk.get_instrument_commands(TARGET_INSTRUMENT)
+    except OpenLISAException as e:
+        assert e.message.find("instrument not found for id 1") != 1
+        sdk.disconnect()
+        return
+
+    sdk.disconnect()
+    assert 1 == 0
