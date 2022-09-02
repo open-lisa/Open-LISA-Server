@@ -35,7 +35,7 @@ class CommandsRepository(JSONRepository):
         except Exception as e:
             self.remove_by_id(id=new_id)
             raise CommandCreationError(
-                "command created but there was an error on initialization {}".format(e))
+                "command could not be created, there was an error on initialization {}".format(e))
         return recent_created
 
     def get_by_id(self, id, pyvisa_resource=None, lib_base_path=None) -> Command:
