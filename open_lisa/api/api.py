@@ -32,7 +32,11 @@ class OpenLISA:
         while True:
             logging.info("Waiting for client connection...")
             if self._mode == MODE_SERIAL:
-                self._server_protocol = self._rs232_wait_connection()
+                try:
+                    self._server_protocol = self._rs232_wait_connection()
+                except Exception as e:
+                    logging.error("Error in RS232 connection protocol: {}".format(e))
+                    continue
             elif self._mode == MODE_TCP:
                 self._server_protocol = self._tcp_wait_connection()
             else:
