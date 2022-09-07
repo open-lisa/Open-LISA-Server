@@ -2,7 +2,7 @@ import os
 import sys
 import pytest
 import Open_LISA_SDK
-from Open_LISA_SDK import OpenLISAException
+
 
 from open_lisa.api.api import OpenLISA
 from open_lisa.config.config import load_config
@@ -291,7 +291,7 @@ def test_create_directory_invalid():
 
     try:
         sdk.create_directory("win32", "experience")
-    except OpenLISAException as e:
+    except Exception as e:
         assert e.message.find("forbidden") != -1
         sdk.disconnect()
         return
@@ -321,7 +321,7 @@ def test_delete_directory_invalid():
 
     try:
         sdk.delete_directory("sandbox")
-    except OpenLISAException as e:
+    except Exception as e:
         assert e.message.find("forbidden deletion") != -1
         sdk.disconnect()
         return
@@ -342,7 +342,7 @@ def test_delete_instrument_must_delete_instrument_commands():
     sdk.delete_instrument(TARGET_INSTRUMENT)
     try:
         instrument_commands = sdk.get_instrument_commands(TARGET_INSTRUMENT)
-    except OpenLISAException as e:
+    except Exception as e:
         assert e.message.find("instrument not found for id 1") != 1
         sdk.disconnect()
         return
