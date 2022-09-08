@@ -13,23 +13,3 @@ def pytest_configure(config):
     test_env_file = "{}/open_lisa/config/test.env".format(
         os.path.dirname(__file__))
     load_dotenv(test_env_file)
-
-
-def pytest_sessionstart(session):
-    """
-    Called after the Session object has been created and
-    before performing collection and entering the run test loop.
-    """
-
-
-def pytest_sessionfinish(session, exitstatus):
-    """
-    Called after whole test run finished, right before
-    returning the exit status to the system.
-    """
-
-
-def pytest_unconfigure(config):
-    """
-    called before test process is exited.
-    """

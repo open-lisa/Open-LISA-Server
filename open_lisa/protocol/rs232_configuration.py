@@ -2,7 +2,7 @@ DEFAULT_BAUDRATE = 921600
 DEFAULT_TIMEOUT = None
 
 
-class RS232Configuration:
+class RS232_Configuration:
 
     def __init__(self, port, baudrate=DEFAULT_BAUDRATE, timeout=DEFAULT_TIMEOUT):
         self.port = port

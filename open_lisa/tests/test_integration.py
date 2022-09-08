@@ -6,7 +6,7 @@ import Open_LISA_SDK
 
 from open_lisa.api.api import OpenLISA
 from open_lisa.config.config import load_config
-from open_lisa.protocol.rs232configuration import RS232Configuration
+from open_lisa.protocol.rs232_configuration import RS232_Configuration
 from open_lisa.repositories.commands_repository import CommandsRepository
 from time import sleep
 from threading import Thread
@@ -14,7 +14,7 @@ from threading import Thread
 # Update this comment when necessary
 # NOTE: tested with version 0.7.7 of Open_LISA_SDK
 
-MOCK_RS232_CONFIG = RS232Configuration(port="COM4")
+MOCK_RS232_CONFIG = RS232_Configuration(port="COM4")
 LOCALHOST = "127.0.0.1"
 SERVER_PORT = 8081
 MOCK_IMAGE_PATH = "data_test/clibs/mock_img.jpg"

@@ -1,6 +1,0 @@
- 
-To get started, type one of these: helpwin, helpdesk, or demo.
-For product information, visit www.mathworks.com.
- 
-Original image size: [765 1024]
-Resized image size: [64 86]

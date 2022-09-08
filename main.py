@@ -3,7 +3,7 @@ import argparse
 import logging
 from open_lisa.api.api import OpenLISA
 from open_lisa.config.config import load_config
-from open_lisa.protocol.rs232configuration import RS232Configuration
+from open_lisa.protocol.rs232_configuration import RS232_Configuration
 from open_lisa.tests.utils import reset_databases
 
 
@@ -68,7 +68,7 @@ def main():
         reset_databases()
     load_config(env=args.env)
 
-    rs232_config = RS232Configuration(
+    rs232_config = RS232_Configuration(
         args.rs_232_port, args.rs_232_baudrate, args.rs_232_timeout)
 
     open_lisa = OpenLISA(
