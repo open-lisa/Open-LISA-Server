@@ -17,7 +17,7 @@ This program provides services that can be integrated with SDK in node clients
 Unit and integration tests can be executed by the following command, relative to root of this project:
 
 ```bash
-$ sh ./run_tests.sh
+sh ./run_tests.sh
 ```
 
 at the end of the process, test coverage and other metrics will be reported.
@@ -27,7 +27,7 @@ at the end of the process, test coverage and other metrics will be reported.
 Server can be executed by the following command:
 
 ```bash
-$ python ./main.py
+python ./main.py
 ```
 
 If you run it like the example above, you will get the message asking for correct invocation:
@@ -80,13 +80,13 @@ compiles a custom C program with the primitives that going to control the instru
 ### Unix / OSX
 
 ```
-gcc -c -Wall -Werror -fpic <.c file>
+$ gcc -c -Wall -Werror -fpic <.c file>
 ```
 
 Will generate .o file.
 
 ```
-gcc -shared -o <.so output file> <.o file>
+$ gcc -shared -o <.so output file> <.o file>
 ```
 
 This will generate a .so file, a unix / osx equivalent to .dll in Windows.
@@ -94,13 +94,13 @@ This will generate a .so file, a unix / osx equivalent to .dll in Windows.
 ### Windows
 
 ```
-gcc -c -Wall -fpic <.c file>
+$ gcc -c -Wall -fpic <.c file>
 ```
 
 Will generate .o file.
 
 ```
-gcc -shared -o <.dll output file> <.o file>
+$ gcc -shared -o <.dll output file> <.o file>
 ```
 
 This will generate a .dll file.
