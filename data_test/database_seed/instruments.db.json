@@ -13,12 +13,5 @@
     "model": "qe",
     "type": "CLIB",
     "description": "Cámara de alta velocidad"
-  }, {
-    "id": 3,
-    "physical_address": null,
-    "brand": "CLib Ex S.A.",
-    "model": "mock instrument",
-    "type": "CLIB",
-    "description": "Mock instrument for testing purposes"
   }]
 }

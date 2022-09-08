@@ -43,33 +43,6 @@
         "type": "VOID"
       },
       "metadata": null
-    },
-    {
-      "id": 4,
-      "name": "multipy_in_c_lib",
-      "command": "multiply",
-      "instrument_id": 3,
-      "type": "CLIB",
-      "description": "multiplies two numbers",
-      "params": [
-        {
-          "position": 1,
-          "type": "FLOAT",
-          "description": "a"
-        },
-        {
-          "position": 2,
-          "type": "FLOAT",
-          "description": "b"
-        }
-      ],
-      "return": {
-        "type": "FLOAT",
-        "description": "a*b"
-      },
-      "metadata": {
-          "lib_file_name": "mock_lib.so"
-      }
     }
   ]
 }
