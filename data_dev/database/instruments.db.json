@@ -1,3 +1,1 @@
-{
-  "data": []
-}
+{"data": [{"brand": "OSC Tektronix", "model": "MODEL-1234", "type": "SCPI", "physical_address": "ASRL/dev/cu.Bluetooth-Incoming-Port::INSTR", "description": "Provide a handful description", "id": 460660201517446912}]}

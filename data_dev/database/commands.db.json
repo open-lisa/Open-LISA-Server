@@ -1,3 +1,1 @@
-{
-  "data": []
-}
+{"data": [{"name": "set_channel_volts", "command": "SET{} VOLTs", "description": "Set channel voltage", "params": [{"type": "INT", "description": "Specifies the channel", "position": 1}], "return": {"type": "VOID", "description": ""}, "type": "SCPI", "metadata": null, "instrument_id": 460660201517446912, "id": 324024345587519499}]}
