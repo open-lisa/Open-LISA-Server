@@ -16,7 +16,9 @@ This program provides services that can be integrated with SDK in node clients
 
 Unit and integration tests can be executed by the following command, relative to root of this project:
 
-`$ sh ./run_tests.sh`
+```bash
+$ sh ./run_tests.sh
+```
 
 at the end of the process, test coverage and other metrics will be reported.
 
@@ -24,11 +26,13 @@ at the end of the process, test coverage and other metrics will be reported.
 
 Server can be executed by the following command:
 
-`$ python ./main.py`
+```bash
+$ python ./main.py
+```
 
 If you run it like the example above, you will get the message asking for correct invocation:
 
-```bash
+```
 usage: Optional app description [-h] --mode {SERIAL,TCP} [--rs_232_port RS_232_PORT] [--tcp_port TCP_PORT] [--rs_232_baudrate RS_232_BAUDRATE] [--rs_232_timeout RS_232_TIMEOUT]
 
 optional arguments:
@@ -75,13 +79,13 @@ compiles a custom C program with the primitives that going to control the instru
 
 ### Unix / OSX
 
-```bash
+```
 gcc -c -Wall -Werror -fpic <.c file>
 ```
 
 Will generate .o file.
 
-```bash
+```
 gcc -shared -o <.so output file> <.o file>
 ```
 
@@ -89,13 +93,13 @@ This will generate a .so file, a unix / osx equivalent to .dll in Windows.
 
 ### Windows
 
-```bash
+```
 gcc -c -Wall -fpic <.c file>
 ```
 
 Will generate .o file.
 
-```bash
+```
 gcc -shared -o <.dll output file> <.o file>
 ```
 
