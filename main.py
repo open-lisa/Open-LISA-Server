@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import logging
+import os
 from open_lisa.api.api import OpenLISA
 from open_lisa.config.config import load_config
 from open_lisa.protocol.rs232_configuration import RS232_Configuration
@@ -59,6 +60,10 @@ def initialize_log(level):
 def main():
     args = parse_config_params()
     initialize_log(args.log_level)
+
+    current_file_abs_path = os.path.abspath(__file__)
+    current_dir_name = os.path.dirname(current_file_abs_path)
+    os.chdir(current_dir_name)
 
     logging.info(
         "Configuring Open LISA Server for {} environment".format(args.env))
