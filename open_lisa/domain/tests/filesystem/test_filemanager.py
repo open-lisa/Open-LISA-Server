@@ -1,6 +1,4 @@
 import random
-from open_lisa.exceptions.forbidden_path_exception import ForbiddenPathException
-import pytest
 import os
 from open_lisa.domain.filesystem.filemanager import VALID_ROOT_FOLDERS, FileManager
 
