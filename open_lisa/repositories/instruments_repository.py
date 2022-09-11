@@ -118,6 +118,7 @@ class InstrumentRepository(JSONRepository):
         return match
 
     def create_instrument(self, new_instrument) -> Instrument:
+        new_id = None
         try:
             new_id = self.add(new_instrument)
             return self.get_by_id(new_id)
