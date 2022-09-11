@@ -12,12 +12,6 @@ class MessageProtocolRS232(MessageProtocol):
         if not self._connection.isOpen():
             self._connection.open()
 
-        MAX_UNSIGNED_INT = 4_294_967_295
-        try:
-            self._connection.set_buffer_size(rx_size=MAX_UNSIGNED_INT, tx_size=MAX_UNSIGNED_INT)
-        except:
-            logging.info("Current OS does not support set_buffer_size")
-
     def disconnect(self):
         self._connection.close()
 

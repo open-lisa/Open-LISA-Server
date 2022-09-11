@@ -14,7 +14,7 @@ from threading import Thread
 # Update this comment when necessary
 # NOTE: tested with version 0.7.7 of Open_LISA_SDK
 
-MOCK_RS232_CONFIG = RS232_Configuration(port="COM4")
+MOCK_RS232_CONFIG = RS232_Configuration(port="COM4", baudrate=921600, timeout=0)
 LOCALHOST = "127.0.0.1"
 SERVER_PORT = 8081
 MOCK_IMAGE_PATH = "data_test/clibs/mock_img.jpg"
@@ -24,13 +24,15 @@ with open(__file__, "rb") as f:
     CURR_TEST_FILE_BYTES = f.read()
 
 server = None
+mode = "TCP"
 
 
 def start_server():
     load_config(env="test")
-    server = OpenLISA(mode="TCP", listening_port=SERVER_PORT,
+    server = OpenLISA(mode=mode, listening_port=SERVER_PORT,
                       rs232_config=MOCK_RS232_CONFIG)
     server._shutdown_after_next_client_connection = True
+    print("Server connection with {}: {}".format(mode, server))
     server.start()
 
 
@@ -47,13 +49,17 @@ def on_each():
 
 def connect_sdk() -> Open_LISA_SDK.SDK:
     sdk = Open_LISA_SDK.SDK(log_level="ERROR")
-    sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+    if mode == "TCP":
+        sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+    else:
+        sdk.connect_through_RS232(port="COM6", baudrate=921600)
+
+    print("SDK connection with {}: {}".format(mode, sdk))
+
     return sdk
 
-
 def test_get_instruments():
-    sdk = Open_LISA_SDK.SDK(log_level="ERROR")
-    sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+    sdk = connect_sdk()
     instruments = sdk.get_instruments()
 
     assert instruments[0]["physical_address"] == "USB0::0x0699::0x0363::C107676::INSTR"
@@ -64,8 +70,7 @@ def test_get_instruments():
 
 
 def test_get_instrument_commands():
-    sdk = Open_LISA_SDK.SDK(log_level="ERROR")
-    sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+    sdk = connect_sdk()
     instruments = sdk.get_instruments()
     tektronix_test = instruments[0]
     available_commands = sdk.get_instrument_commands(
@@ -81,8 +86,7 @@ def test_get_instrument_commands():
 
 
 def test_get_image_from_mock_camera():
-    sdk = Open_LISA_SDK.SDK(log_level="ERROR")
-    sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+    sdk = connect_sdk()
     instruments = sdk.get_instruments()
     mocked_camera = instruments[1]
     command_result = sdk.send_command(
@@ -99,8 +103,7 @@ def test_get_image_from_mock_camera():
 
 
 def test_get_image_from_mock_camera_and_save_in_server():
-    sdk = Open_LISA_SDK.SDK(log_level="ERROR")
-    sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+    sdk = connect_sdk()
     instruments = sdk.get_instruments()
     mocked_camera = instruments[1]
     remote_file_name = "remote.jpg"
@@ -144,8 +147,7 @@ def test_instrument_CRUDs():
         "brand": VALID_UPDATED_BRAND
     }
 
-    sdk = Open_LISA_SDK.SDK(log_level="ERROR")
-    sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+    sdk = connect_sdk()
     new_instrument = sdk.create_instrument(
         new_instrument=VALID_INSTRUMENT_CREATION_DICT, response_format="PYTHON")
     assert new_instrument["brand"] == VALID_INSTRUMENT_CREATION_DICT["brand"]
@@ -187,8 +189,7 @@ def test_filesystem_manage():
 
 
 def test_create_clib_instrument_command():
-    sdk = Open_LISA_SDK.SDK(log_level="ERROR")
-    sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+    sdk = connect_sdk()
     lib_file_name = "libpixelflyqe.dll"
     if sys.platform.startswith('win'):
         lib_file_name = lib_file_name.replace(".dll", "_x86.dll")
@@ -218,8 +219,7 @@ def test_create_clib_instrument_command():
 
 
 def test_create_scpi_instrument_command():
-    sdk = Open_LISA_SDK.SDK(log_level="ERROR")
-    sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+    sdk = connect_sdk()
 
     VALID_INSTRUMENT_COMMAND_DICT = {
         "name": "activate_laser",
@@ -255,8 +255,7 @@ def test_create_scpi_instrument_command():
 
 
 def test_delete_instrument_command():
-    sdk = Open_LISA_SDK.SDK(log_level="ERROR")
-    sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+    sdk = connect_sdk()
 
     TARGET_INSTRUMENT_ID = 1
     TARGET_COMMAND_ID = 2
@@ -273,8 +272,7 @@ def test_delete_instrument_command():
 
 
 def test_create_directory_valid():
-    sdk = Open_LISA_SDK.SDK(log_level="ERROR")
-    sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+    sdk = connect_sdk()
 
     sdk.create_directory("sandbox", "pepinardovich")
 
@@ -286,8 +284,7 @@ def test_create_directory_valid():
 
 
 def test_create_directory_invalid():
-    sdk = Open_LISA_SDK.SDK(log_level="ERROR")
-    sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+    sdk = connect_sdk()
 
     try:
         sdk.create_directory("win32", "experience")
@@ -301,8 +298,7 @@ def test_create_directory_invalid():
 
 
 def test_delete_directory_valid():
-    sdk = Open_LISA_SDK.SDK(log_level="ERROR")
-    sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+    sdk = connect_sdk()
 
     sdk.create_directory("sandbox", "pepinardovich")
 
@@ -316,8 +312,7 @@ def test_delete_directory_valid():
 
 
 def test_delete_directory_invalid():
-    sdk = Open_LISA_SDK.SDK(log_level="ERROR")
-    sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+    sdk = connect_sdk()
 
     try:
         sdk.delete_directory("sandbox")
@@ -331,8 +326,7 @@ def test_delete_directory_invalid():
 
 
 def test_delete_instrument_must_delete_instrument_commands():
-    sdk = Open_LISA_SDK.SDK(log_level="ERROR")
-    sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
+    sdk = connect_sdk()
 
     TARGET_INSTRUMENT = 1
     instrument_commands = sdk.get_instrument_commands(TARGET_INSTRUMENT)
