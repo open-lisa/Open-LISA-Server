@@ -1,3 +1,4 @@
+import logging
 import struct
 from .message_protocol import MessageProtocol
 
@@ -12,7 +13,10 @@ class MessageProtocolRS232(MessageProtocol):
             self._connection.open()
 
         MAX_UNSIGNED_INT = 4_294_967_295
-        self._connection.set_buffer_size(rx_size=MAX_UNSIGNED_INT, tx_size=MAX_UNSIGNED_INT)
+        try:
+            self._connection.set_buffer_size(rx_size=MAX_UNSIGNED_INT, tx_size=MAX_UNSIGNED_INT)
+        except:
+            logging.info("Current OS does not support set_buffer_size")
 
     def disconnect(self):
         self._connection.close()
