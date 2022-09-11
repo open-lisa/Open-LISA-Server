@@ -25,6 +25,11 @@ class FileManager:
                  database_folder_path=os.getenv("DATABASE_FOLDER")) -> None:
         # NOTE: this class could have CRUDs logic for OpenLISA files (pos process, clibs, etc)
         project_root_path = os.getcwd()
+
+        sandbox_folder_path = sandbox_folder_path.replace("/", os.sep)
+        clibs_folder_path = clibs_folder_path.replace("/", os.sep)
+        database_folder_path = database_folder_path.replace("/", os.sep)
+
         self._folders_path = {
             ROOT_FOLDER_SANDBOX: os.path.join(project_root_path, sandbox_folder_path),
             ROOT_FOLDER_CLIBS: os.path.join(project_root_path, clibs_folder_path),
@@ -42,20 +47,14 @@ class FileManager:
         # Src of as_dict calculation https://code.activestate.com/recipes/577879-create-a-nested-dictionary-from-oswalk/
         as_dict = {}
         rootdir = directory.rstrip(os.sep)
-        print("rootdir", rootdir)
         start = rootdir.rfind(os.sep) + 1
-        print("start", start)
         for path, _, files in os.walk(rootdir):
             folders = path[start:].split(os.sep)
-            print("🚀 ~ file: filemanager.py ~ line 50 ~ folders", folders)
             subdir = dict.fromkeys(files)
-            print("🚀 ~ file: filemanager.py ~ line 52 ~ subdir", subdir)
             parent = reduce(dict.get, folders[:-1], as_dict)
-            print("🚀 ~ file: filemanager.py ~ line 54 ~ parent", parent)
             parent[folders[-1]] = subdir
 
         # transform as_dict to list (best for frontend rendering)
-        print("🚀 ~ file: filemanager.py ~ line 59 ~ as_dict", as_dict)
         base_key = list(as_dict.keys())[0]
         directory_as_list = self.__transform_directory_represented_as_dict_to_list(
             as_dict[base_key])
