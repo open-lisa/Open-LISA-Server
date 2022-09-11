@@ -1,3 +1,24 @@
 {
-  "data": []
+   "data": [
+      {
+         "name": "set_voltage",
+         "command": "VOLTage{}",
+         "description": "Sets continuous voltage",
+         "params": [
+            {
+               "type": "FLOAT",
+               "description": "voltage to set",
+               "position": 1
+            }
+         ],
+         "return": {
+            "type": "FLOAT",
+            "description": "voltage set"
+         },
+         "type": "SCPI",
+         "metadata": null,
+         "instrument_id": 781440309349652609,
+         "id": 979742040728015227
+      }
+   ]
 }

@@ -1,3 +1,20 @@
 {
-  "data": []
+   "data": [
+      {
+         "brand": "fuente",
+         "model": "fuente",
+         "type": "SCPI",
+         "physical_address": "ASRL1::INSTR",
+         "description": "",
+         "id": 781440309349652609
+      },
+      {
+         "brand": "osc",
+         "model": "osc",
+         "type": "SCPI",
+         "physical_address": "ASRL6::INSTR",
+         "description": "",
+         "id": 306082875302361397
+      }
+   ]
 }

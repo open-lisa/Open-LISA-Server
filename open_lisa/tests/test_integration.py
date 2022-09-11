@@ -32,7 +32,6 @@ def start_server():
     server = OpenLISA(mode=mode, listening_port=SERVER_PORT,
                       rs232_config=MOCK_RS232_CONFIG)
     server._shutdown_after_next_client_connection = True
-    print("Server connection with {}: {}".format(mode, server))
     server.start()
 
 
@@ -53,8 +52,6 @@ def connect_sdk() -> Open_LISA_SDK.SDK:
         sdk.connect_through_TCP(host=LOCALHOST, port=SERVER_PORT)
     else:
         sdk.connect_through_RS232(port="COM6", baudrate=921600)
-
-    print("SDK connection with {}: {}".format(mode, sdk))
 
     return sdk
 
