@@ -3,6 +3,7 @@ import logging
 import os
 import pyvisa
 from open_lisa.domain.instrument.instrument import Instrument
+from open_lisa.exceptions.base_exception import OpenLISAException
 from open_lisa.exceptions.instrument_creation_error import InstrumentCreationError
 from open_lisa.exceptions.instrument_deletion_error import InstrumentDeletionError
 from open_lisa.exceptions.instrument_not_found import InstrumentNotFoundError
@@ -34,6 +35,11 @@ class InstrumentRepository(JSONRepository):
                     # Registered instruments should never be detected as BUSY
                     logging.error(
                         "[OpenLISA][InstrumentRepository][get_all] Error opening pyvisa resource: {} for instrument {}".format(ex, instrument_dict))
+                except Exception as ex:
+                    logging.error(
+                        "[OpenLISA][InstrumentRepository][get_all] Error opening pyvisa resource: {} for instrument {}".format(ex, instrument_dict))
+                    raise OpenLISAException(
+                        "could not open pyvisa resource: {}".format(physical_address))
 
             instrument_commands = self._commands_repository.get_instrument_commands(
                 instrument_id=instrument_id, pyvisa_resource=pyvisa_resource)
@@ -114,10 +120,12 @@ class InstrumentRepository(JSONRepository):
     def create_instrument(self, new_instrument) -> Instrument:
         try:
             new_id = self.add(new_instrument)
+            return self.get_by_id(new_id)
         except Exception:
+            if new_id:
+                self.delete_instrument(id=new_id)
             raise InstrumentCreationError(
                 "could not create instrument {}".format(new_instrument))
-        return self.get_by_id(new_id)
 
     def update_instrument(self, id, updated_instrument) -> Instrument:
         id = int(id)
@@ -139,7 +147,8 @@ class InstrumentRepository(JSONRepository):
         try:
             self.remove_by_id(id)
             # Delete all instrument commands
-            commands_dicts = self._commands_repository.get_by_key_value(key="instrument_id", value=id)
+            commands_dicts = self._commands_repository.get_by_key_value(
+                key="instrument_id", value=id)
             for command_dict in commands_dicts:
                 self._commands_repository.delete_command(command_dict['id'])
         except Exception as e:
