@@ -46,10 +46,15 @@ class OpenLISA:
 
             while True:
                 try:
+                    logging.info("[OpenLISA][api][start] - waiting for client command")
                     command = self._server_protocol.get_command()
                     logging.info(
                         "[OpenLISA][api][start] - command received: " + command)
-                    if command == COMMAND_GET_INSTRUMENTS:
+                    if command == COMMAND_HEALTH_CHECK:
+                        logging.debug(
+                            "[OpenLISA][api][start] - client ask for health check")
+                        self._server_protocol.handle_health_check()
+                    elif command == COMMAND_GET_INSTRUMENTS:
                         logging.debug(
                             "[OpenLISA][api][start] - getting instruments")
                         self._server_protocol.handle_get_instruments(
@@ -166,21 +171,6 @@ class OpenLISA:
     def _rs232_wait_connection(self):
         if not self._rs232_connection:
             self._rs232_create_connection()
-
-        while True:
-            logging.info("Waiting for RS232 client question...")
-            client_question = self._rs232_connection.read(4)
-            logging.info("Question received from client: {}".format(
-                client_question.decode()))
-            if RS232_EXPECTED_CLIENT_QUESTION == client_question.decode():
-                logging.info(
-                    "Question match with expected. Starting RS232 connection...")
-                self._rs232_connection.write(
-                    RS232_ANSWER_TO_CLIENT_QUESTION.encode('utf-8'))
-                break
-            else:
-                logging.info(
-                    "Question does not match the expected, still waiting for a client...")
 
         return ServerProtocol(MessageProtocolRS232(self._rs232_connection))
 

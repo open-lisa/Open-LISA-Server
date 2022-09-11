@@ -15,6 +15,7 @@ from open_lisa.exceptions.base_exception import OpenLISAException
 SUCCESS_RESPONSE = "OK"
 ERROR_RESPONSE = "ERROR"
 
+COMMAND_HEALTH_CHECK = "HEALTH_CHECK"
 COMMAND_GET_INSTRUMENTS = "GET_INSTRUMENTS"
 COMMAND_GET_INSTRUMENT = "GET_INSTRUMENT"
 COMMAND_GET_DETECTED_PHYSICAL_ADDRESSES = "GET_DETECTED_PHYSICAL_ADDRESSES"
@@ -50,6 +51,9 @@ class ServerProtocol:
 
     def get_command(self):
         return self._message_protocol.receive_msg()
+
+    def handle_health_check(self):
+        self._message_protocol.send_msg(SUCCESS_RESPONSE)
 
     def handle_get_instruments(self, instruments_repository: InstrumentRepository):
         jsons_string = instruments_repository.get_all_as_json()
