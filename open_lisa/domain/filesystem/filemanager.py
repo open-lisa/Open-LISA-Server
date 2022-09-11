@@ -42,14 +42,20 @@ class FileManager:
         # Src of as_dict calculation https://code.activestate.com/recipes/577879-create-a-nested-dictionary-from-oswalk/
         as_dict = {}
         rootdir = directory.rstrip(os.sep)
+        print("rootdir", rootdir)
         start = rootdir.rfind(os.sep) + 1
+        print("start", start)
         for path, _, files in os.walk(rootdir):
             folders = path[start:].split(os.sep)
+            print("🚀 ~ file: filemanager.py ~ line 50 ~ folders", folders)
             subdir = dict.fromkeys(files)
+            print("🚀 ~ file: filemanager.py ~ line 52 ~ subdir", subdir)
             parent = reduce(dict.get, folders[:-1], as_dict)
+            print("🚀 ~ file: filemanager.py ~ line 54 ~ parent", parent)
             parent[folders[-1]] = subdir
 
         # transform as_dict to list (best for frontend rendering)
+        print("🚀 ~ file: filemanager.py ~ line 59 ~ as_dict", as_dict)
         base_key = list(as_dict.keys())[0]
         directory_as_list = self.__transform_directory_represented_as_dict_to_list(
             as_dict[base_key])
@@ -82,7 +88,8 @@ class FileManager:
     def delete_directory(self, path):
         path_parts = Path(path).parts
         if len(path_parts) == 1 and path_parts[0] in VALID_ROOT_FOLDERS:
-            raise ForbiddenPathDeletionException(VALID_ROOT_FOLDERS, path_parts[0])
+            raise ForbiddenPathDeletionException(
+                VALID_ROOT_FOLDERS, path_parts[0])
 
         directory_path = self.__get_file_path(path)
         shutil.rmtree(directory_path)
