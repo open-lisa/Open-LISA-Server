@@ -103,7 +103,7 @@ class InstrumentRepository(JSONRepository):
         return match
 
     def get_by_id(self, id) -> Instrument:
-        id = int(id)
+        id = str(id)
         instruments = self.get_all()
         match = None
         for ins in instruments:
