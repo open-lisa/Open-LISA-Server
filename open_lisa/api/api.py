@@ -160,14 +160,6 @@ class OpenLISA:
             if self._shutdown_after_next_client_connection:
                 break
 
-    def _list_instruments(self):
-        logging.debug(
-            "* * * * * * * * * * Instruments List * * * * * * * * * *")
-        for instrument in self._instruments_repository.get_all():
-            logging.debug(instrument)
-        logging.debug(
-            "* * * * * * * * * * * * * * * * * * * * * * * * * * * * *")
-
     def _rs232_wait_connection(self):
         if not self._rs232_connection:
             self._rs232_create_connection()
