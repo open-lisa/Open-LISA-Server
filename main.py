@@ -21,17 +21,17 @@ def parse_config_params():
                         help='Environment value determines Open LISA configuration file', choices=['dev', 'test', 'production'], default='dev')
     parser.add_argument('--mode', required=True,
                         help='SERIAL or TCP', choices=['SERIAL', 'TCP'])
-    parser.add_argument(
-        '--rs_232_port', help='RS232 connection port, i.e. COM3')
-    parser.add_argument('--tcp_port', type=int,
-                        help='TCP Listening port, i.e. 8080')
-    parser.add_argument('--rs_232_baudrate', type=int,
-                        help='Baudrate of RS232 connection, i.e. 19200')
-    parser.add_argument('--rs_232_timeout', type=int,
-                        help='Timeout in seconds for RS232 connection reads')
     parser.add_argument('--log-level', required=True,
-                        help='Environment value determines Open LISA configuration file',
+                        help='Sets the log level of the application',
                         choices=['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG'], default='INFO')
+    parser.add_argument('--tcp-port', type=int,
+                        help='TCP Listening port, i.e. 8080')
+    parser.add_argument(
+        '--rs-232-port', help='RS232 connection port, i.e. COM3')
+    parser.add_argument('--rs-232-baudrate', type=int,
+                        help='Baudrate of RS232 connection, i.e. 19200')
+    parser.add_argument('--rs-232-timeout', type=int,
+                        help='Timeout in seconds for RS232 connection reads')
 
     args = parser.parse_args()
     if args.mode == "SERIAL" and args.rs_232_port is None:
