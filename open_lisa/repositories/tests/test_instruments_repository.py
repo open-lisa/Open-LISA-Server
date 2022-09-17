@@ -10,8 +10,8 @@ from open_lisa.tests.utils import reset_databases
 
 SOME_VALID_PHYSICAL_ADDRESS = "USB0::0x0699::0x0363::C107676::INSTR"
 SOME_INVALID_PHYSICAL_ADDRESS = "USB0::0x0699::0x0363::C107676::UNEXISTING"
-SOME_VALID_ID = 1
-SOME_INVALID_ID = 999
+SOME_VALID_ID = "1"
+SOME_INVALID_ID = "999"
 
 VALID_NEW_BRAND = "New brand"
 INVAID_INSTRUMENT_KEY = "unexisting_key"
@@ -58,8 +58,8 @@ def test_get_all_should_return_a_list_of_Instrument_instances():
     repo = InstrumentRepository()
     instruments = repo.get_all()
 
-    assert instruments[0].id == 1
-    assert instruments[1].id == 2
+    assert instruments[0].id == "1"
+    assert instruments[1].id == "2"
 
 
 def test_get_by_physical_address_should_return_an_Instrument_if_there_is_a_match():
