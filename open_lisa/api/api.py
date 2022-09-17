@@ -155,6 +155,7 @@ class OpenLISA:
                     logging.error(
                         "[OpenLISA][api][start][FATAL_ERROR]: {}".format(ex))
                     traceback.print_exc()
+                    # TODO: Call a new method on server protocol "notify_unexpected_error" sending an error code and message
                     break
 
             if self._shutdown_after_next_client_connection:
