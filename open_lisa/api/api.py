@@ -35,7 +35,8 @@ class OpenLISA:
                 try:
                     self._server_protocol = self._rs232_wait_connection()
                 except Exception as e:
-                    logging.error("Error in RS232 connection protocol: {}".format(e))
+                    logging.error(
+                        "Error in RS232 connection protocol: {}".format(e))
                     continue
             elif self._mode == MODE_TCP:
                 self._server_protocol = self._tcp_wait_connection()
@@ -46,7 +47,8 @@ class OpenLISA:
 
             while True:
                 try:
-                    logging.info("[OpenLISA][api][start] - waiting for client command")
+                    logging.info(
+                        "[OpenLISA][api][start] - waiting for client command")
                     command = self._server_protocol.get_command()
                     logging.info(
                         "[OpenLISA][api][start] - command received: " + command)
@@ -149,13 +151,15 @@ class OpenLISA:
                             "[OpenLISA][api][start] - unknown command '{}'".format(command))
                 except ConnectionResetError as ex:
                     logging.info(
-                        "[OpenLISA][api][start] - client socket disconnect {}".format(ex))
+                        "[OpenLISA][api][start] - client disconnected {}".format(ex))
                     break
                 except Exception as ex:
                     logging.error(
                         "[OpenLISA][api][start][FATAL_ERROR]: {}".format(ex))
                     traceback.print_exc()
-                    break
+                    if self._server_protocol:
+                        self._server_protocol.notify_server_fatal_error_to_client(
+                            msg=str(ex))
 
             if self._shutdown_after_next_client_connection:
                 break
