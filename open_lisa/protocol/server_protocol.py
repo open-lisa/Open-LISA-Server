@@ -52,7 +52,7 @@ class ServerProtocol:
     def get_command(self):
         return self._message_protocol.receive_msg()
 
-    def notify_server_fatal_error_to_client(self, msg):
+    def notify_unexpected_server_error_to_client(self, msg):
         self._message_protocol.send_msg(ERROR_RESPONSE)
         self._message_protocol.send_msg(msg)
 

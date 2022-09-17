@@ -155,10 +155,10 @@ class OpenLISA:
                     break
                 except Exception as ex:
                     logging.error(
-                        "[OpenLISA][api][start][FATAL_ERROR]: {}".format(ex))
+                        "[OpenLISA][api][start][UNEXPECTED_ERROR]: {}".format(ex))
                     traceback.print_exc()
                     if self._server_protocol:
-                        self._server_protocol.notify_server_fatal_error_to_client(
+                        self._server_protocol.notify_unexpected_server_error_to_client(
                             msg=str(ex))
 
             if self._shutdown_after_next_client_connection:
