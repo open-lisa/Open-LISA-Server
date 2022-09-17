@@ -1,24 +1,260 @@
 {
    "data": [
       {
-         "name": "set_voltage",
-         "command": "VOLTage{}",
-         "description": "Sets continuous voltage",
+         "name": "idn",
+         "command": "*IDN?",
+         "description": "Identificación de instrumento",
+         "params": [],
+         "return": {
+            "type": "STRING",
+            "description": "ID"
+         },
+         "type": "SCPI",
+         "metadata": null,
+         "instrument_id": 241205155940709045,
+         "id": 246572195948180678
+      },
+      {
+         "name": "rst",
+         "command": "*RST",
+         "description": "Reset",
+         "params": [],
+         "return": {
+            "type": "VOID",
+            "description": ""
+         },
+         "type": "SCPI",
+         "metadata": null,
+         "instrument_id": 241205155940709045,
+         "id": 355606930053061237
+      },
+      {
+         "name": "display_ch",
+         "command": ":CH{}:DISP ON",
+         "description": "Prender Canal",
          "params": [
             {
-               "type": "FLOAT",
-               "description": "voltage to set",
+               "type": "INT",
+               "description": "numero de canal (1 o 2)",
                "position": 1
             }
          ],
          "return": {
-            "type": "FLOAT",
-            "description": "voltage set"
+            "type": "VOID",
+            "description": ""
          },
          "type": "SCPI",
          "metadata": null,
-         "instrument_id": 781440309349652609,
-         "id": 979742040728015227
+         "instrument_id": 241205155940709045,
+         "id": 721941029924876190
+      },
+      {
+         "name": "set_trigger_type_single",
+         "command": ":TRIG:TYP SINGLE",
+         "description": "Setea a tipo SINGLE",
+         "params": [],
+         "return": {
+            "type": "VOID",
+            "description": ""
+         },
+         "type": "SCPI",
+         "metadata": null,
+         "instrument_id": 241205155940709045,
+         "id": 853268169350869415
+      },
+      {
+         "name": "set_trigger_single_mode",
+         "command": ":TRIG:SINGLE:MODE {}",
+         "description": "Setea el modo del trigger",
+         "params": [
+            {
+               "type": "STRING",
+               "description": "MODO: {'SAMPLE'|'AVG'}",
+               "position": 1
+            }
+         ],
+         "return": {
+            "type": "VOID",
+            "description": ""
+         },
+         "type": "SCPI",
+         "metadata": null,
+         "instrument_id": 241205155940709045,
+         "id": 250385246202836886
+      },
+      {
+         "name": "run",
+         "command": ":RUN",
+         "description": "RUN",
+         "params": [],
+         "return": {
+            "type": "VOID",
+            "description": ""
+         },
+         "type": "SCPI",
+         "metadata": null,
+         "instrument_id": 241205155940709045,
+         "id": 246548734730481070
+      },
+      {
+         "name": "stop",
+         "command": ":STOP",
+         "description": "",
+         "params": [],
+         "return": {
+            "type": "VOID",
+            "description": ""
+         },
+         "type": "SCPI",
+         "metadata": null,
+         "instrument_id": 241205155940709045,
+         "id": 289106677056107448
+      },
+      {
+         "name": "display_off_ch",
+         "command": ":CH{}:DISP OFF",
+         "description": "",
+         "params": [
+            {
+               "type": "INT",
+               "description": "",
+               "position": 1
+            }
+         ],
+         "return": {
+            "type": "VOID",
+            "description": ""
+         },
+         "type": "SCPI",
+         "metadata": null,
+         "instrument_id": 241205155940709045,
+         "id": 126256317174205054
+      },
+      {
+         "name": "set_ready_ch",
+         "command": ":WAV:BEG CH{}",
+         "description": "",
+         "params": [
+            {
+               "type": "INT",
+               "description": "",
+               "position": 1
+            }
+         ],
+         "return": {
+            "type": "VOID",
+            "description": ""
+         },
+         "type": "SCPI",
+         "metadata": null,
+         "instrument_id": 241205155940709045,
+         "id": 954860129267829925
+      },
+      {
+         "name": "get_preamble",
+         "command": ":WAV:PRE?",
+         "description": "",
+         "params": [],
+         "return": {
+            "type": "BYTES",
+            "description": ""
+         },
+         "type": "SCPI",
+         "metadata": null,
+         "instrument_id": 241205155940709045,
+         "id": 414976006829449097
+      },
+      {
+         "name": "set_range",
+         "command": ":WAV:RANG {},{}",
+         "description": "Max 200K pts por lectura\n50k",
+         "params": [
+            {
+               "type": "INT",
+               "description": "start range",
+               "position": 1
+            },
+            {
+               "type": "INT",
+               "description": "end range",
+               "position": 2
+            }
+         ],
+         "return": {
+            "type": "VOID",
+            "description": ""
+         },
+         "type": "SCPI",
+         "metadata": null,
+         "instrument_id": 241205155940709045,
+         "id": 162800384405769884
+      },
+      {
+         "name": "get_data",
+         "command": ":WAV:FETC?",
+         "description": "",
+         "params": [],
+         "return": {
+            "type": "BYTES",
+            "description": ""
+         },
+         "type": "SCPI",
+         "metadata": null,
+         "instrument_id": 241205155940709045,
+         "id": 110840285564003899
+      },
+      {
+         "name": "init",
+         "command": "PDC_Init",
+         "description": "Inicia las librerias de Photron",
+         "params": [],
+         "return": {
+            "type": "INT",
+            "description": "Resultado de ejecucion"
+         },
+         "type": "CLIB",
+         "metadata": {
+            "lib_file_name": "PDCLIB.dll"
+         },
+         "instrument_id": 330355862202759620,
+         "id": 333265566998956399
+      },
+      {
+         "name": "detect_camera",
+         "command": "PDC_DetectDevice",
+         "description": "Con return void",
+         "params": [
+            {
+               "type": "INT",
+               "description": "",
+               "position": 1
+            },
+            {
+               "type": "INT",
+               "description": "",
+               "position": 2
+            },
+            {
+               "type": "INT",
+               "description": "",
+               "position": 3
+            },
+            {
+               "type": "INT",
+               "description": "",
+               "position": 4
+            }
+         ],
+         "return": {
+            "type": "VOID",
+            "description": ""
+         },
+         "type": "CLIB",
+         "metadata": {
+            "lib_file_name": "PDCLIB.dll"
+         },
+         "instrument_id": 330355862202759620,
+         "id": 262651729654774106
       }
    ]
 }

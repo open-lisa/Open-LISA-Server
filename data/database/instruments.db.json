@@ -1,20 +1,20 @@
 {
    "data": [
       {
-         "brand": "fuente",
-         "model": "fuente",
+         "brand": "OWON",
+         "model": "VDS6000",
          "type": "SCPI",
-         "physical_address": "ASRL1::INSTR",
-         "description": "",
-         "id": 781440309349652609
+         "physical_address": "USB0::0x5345::0x1235::2018208::INSTR",
+         "description": "Osciloscopio USB\n2chs\n100GHz\n1GS/s\n10Mpts/chs\n",
+         "id": 241205155940709045
       },
       {
-         "brand": "osc",
-         "model": "osc",
-         "type": "SCPI",
-         "physical_address": "ASRL6::INSTR",
-         "description": "",
-         "id": 306082875302361397
+         "brand": "PHOTRON",
+         "model": "Mini UX",
+         "type": "CLIB",
+         "physical_address": "",
+         "description": "Camara LAB",
+         "id": 330355862202759620
       }
    ]
 }
