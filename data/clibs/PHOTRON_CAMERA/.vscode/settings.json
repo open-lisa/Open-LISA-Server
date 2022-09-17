@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "pdcstr.h": "c",
+        "pdcvalue.h": "c",
+        "pdcdev.h": "c"
+    }
+}
