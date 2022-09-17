@@ -49,8 +49,9 @@ def test_instruments_repository_should_be_created_with_the_entries_of_json_file(
     jsons_string = repo.get_all_as_json()
     jsons = json.loads(jsons_string)
 
-    assert jsons[0]["id"] == 1
-    assert jsons[1]["id"] == 2
+    # when serialized, the ids are stringified
+    assert jsons[0]["id"] == "1"
+    assert jsons[1]["id"] == "2"
 
 
 def test_get_all_should_return_a_list_of_Instrument_instances():

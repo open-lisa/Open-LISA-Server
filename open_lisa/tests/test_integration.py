@@ -14,7 +14,8 @@ from threading import Thread
 # Update this comment when necessary
 # NOTE: tested with version 0.7.7 of Open_LISA_SDK
 
-MOCK_RS232_CONFIG = RS232_Configuration(port="COM4", baudrate=921600, timeout=0)
+MOCK_RS232_CONFIG = RS232_Configuration(
+    port="COM4", baudrate=921600, timeout=0)
 LOCALHOST = "127.0.0.1"
 SERVER_PORT = 8081
 MOCK_IMAGE_PATH = "data_test/clibs/mock_img.jpg"
@@ -55,6 +56,7 @@ def connect_sdk() -> Open_LISA_SDK.SDK:
 
     return sdk
 
+
 def test_get_instruments():
     sdk = connect_sdk()
     instruments = sdk.get_instruments()
@@ -63,6 +65,57 @@ def test_get_instruments():
 
     # CLIB instruments has no physical address
     assert instruments[1]["physical_address"] == None
+    sdk.disconnect()
+
+
+def test_stringified_ids():
+    sdk = connect_sdk()
+    instruments = sdk.get_instruments()
+    id_received = instruments[0]["id"]
+    assert type(id_received) == str
+
+    instrument_obtained_by_str_id = sdk.get_instrument(
+        instrument_id=id_received, response_format="PYTHON")
+    assert instrument_obtained_by_str_id["physical_address"] == "USB0::0x0699::0x0363::C107676::INSTR"
+
+    instrument_obtained_by_int_id = sdk.get_instrument(
+        instrument_id=int(id_received), response_format="PYTHON")
+    assert instrument_obtained_by_int_id["physical_address"] == "USB0::0x0699::0x0363::C107676::INSTR"
+
+    available_commands = sdk.get_instrument_commands(
+        instrument_id=int(id_received))
+
+    some_command_name = "clear_status"
+    some_command = available_commands[some_command_name]
+    id_received = some_command["id"]
+    assert type(id_received) == str
+
+    some_new_command_name = "NEW_COMMAND"
+    some_new_command = {
+        "name": some_new_command_name,
+        "command": "*CLS",
+        "instrument_id": 1,
+        "type": "SCPI",
+        "description": "",
+        "params": [],
+        "return": {
+                "description": "",
+                "type": "VOID"
+        },
+        "metadata": None
+    }
+    new_command_created = sdk.create_instrument_command(
+        new_command=some_new_command)
+    id_received = new_command_created["id"]
+    assert type(id_received) == str
+
+    sdk.delete_instrument_command(command_id=id_received)
+
+    new_command_created = sdk.create_instrument_command(
+        new_command=some_new_command)
+    id_received = new_command_created["id"]
+    sdk.delete_instrument_command(command_id=int(id_received))
+
     sdk.disconnect()
 
 
