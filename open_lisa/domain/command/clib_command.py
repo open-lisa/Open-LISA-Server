@@ -70,7 +70,7 @@ class CLibCommand(Command):
         lib_file_relative_path = lib_file_path_parts[lib_file_path_parts.index(
             'clibs')+1:]
         return {
-            "id": int(self.id),
+            "id": str(self.id),
             "instrument_id": int(instrument_id),
             "name": self.name,
             "command": self.lib_function,

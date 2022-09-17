@@ -67,7 +67,7 @@ class Instrument:
 
     def to_dict(self):
         return {
-            "id": self.id,
+            "id": str(self.id),
             "physical_address": self.physical_address,
             "brand": self.brand,
             "model": self.model,

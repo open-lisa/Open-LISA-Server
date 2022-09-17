@@ -42,7 +42,7 @@ class SCPICommand(Command):
 
     def to_dict(self, instrument_id):
         return {
-            "id": int(self.id),
+            "id": str(self.id),
             "instrument_id": int(instrument_id),
             "name": self.name,
             "command": self.command,
