@@ -55,5 +55,5 @@ int pdc_init(const char * tmp_file_buffer) {
     fwrite(&return_value, sizeof(UINT), 1, output_file);
     fwrite(&error_code, sizeof(UINT), 1, output_file);
     fclose(output_file);
-    return return_value;
+    return PDC_WRAPPER_SUCCEEDED;
 }

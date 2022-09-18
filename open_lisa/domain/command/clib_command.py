@@ -54,12 +54,14 @@ class CLibCommand(Command):
 
     @staticmethod
     def from_dict(command_dict, lib_base_path):
+        subfolder_path = command_dict["metadata"]["lib_file_name"].replace(
+            "/", os.sep)
         return CLibCommand(
             id=command_dict["id"],
             name=command_dict["name"],
             lib_function=command_dict["command"],
             lib_file_name=os.path.join(
-                lib_base_path, command_dict["metadata"]["lib_file_name"]),
+                lib_base_path, subfolder_path),
             parameters=CommandParameters.from_dict(command_dict["params"]),
             command_return=CommandReturn.from_dict(command_dict["return"]),
             description=command_dict["description"]
