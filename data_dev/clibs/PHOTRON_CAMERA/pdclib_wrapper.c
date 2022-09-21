@@ -119,7 +119,7 @@ int pdc_detect_device(UINT ip, const char * tmp_file_buffer) {
 
     pdc_detect_device_function = (PDC_DETECT_DEVICE_FUNCTION_DLL) GetProcAddress(libHandle, "PDC_DetectDevice");
     if (pdc_detect_device_function == NULL) {
-        const char * message = "GetProcAddress failed loading PDC_Init function";
+        const char * message = "GetProcAddress failed loading PDC_DetectDevice function";
         fwrite(message, sizeof(char), strlen(message), output_file);
         fclose(output_file);
         return PDC_WRAPPER_FAILED;
