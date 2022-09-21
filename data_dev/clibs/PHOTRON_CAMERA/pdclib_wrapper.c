@@ -133,11 +133,17 @@ int pdc_detect_device(UINT ip, const char * tmp_file_buffer) {
     }
 
     // We assume that only 1 device will be detected
-    if (pdc_detect_num_info.m_nDeviceNum != 1 ) {
-        const char * message = "Not detected 1 device";
+    if (pdc_detect_num_info.m_nDeviceNum == 0) {
+        const char * message = "No devices detected!";
         fwrite(message, sizeof(char), strlen(message), output_file);
         return PDC_WRAPPER_FAILED;
     }
+    if (pdc_detect_num_info.m_nDeviceNum > 1) {
+        const char * message = "More than 1 device detected!";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
     PDC_DETECT_INFO pdc_detect_info = pdc_detect_num_info.m_DetectInfo[0];
 
     UINT m_ndevice_code = pdc_detect_info.m_nDeviceCode;
