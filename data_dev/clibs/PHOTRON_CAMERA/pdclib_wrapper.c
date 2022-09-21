@@ -86,8 +86,8 @@ int pdc_init(const char * tmp_file_buffer) {
 /*
     tmp_file_buffer:
         success case (PDC_WRAPPER_SUCCEEDED):
-            4 bytes for fuction return_value
-            if return_value is sucess:
+            4 bytes for function return_value
+            if return_value is success:
                 4 bytes for m_ndevice_code
                 4 bytes for m_ntmp_device_no
                 4 bytes for m_ninterface_code
