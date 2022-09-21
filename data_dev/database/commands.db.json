@@ -1,1 +1,20 @@
-{"data": []}
+{
+   "data": [
+      {
+         "name": "init",
+         "command": "pdc_init",
+         "description": "",
+         "params": [],
+         "return": {
+            "type": "BYTES",
+            "description": ""
+         },
+         "type": "CLIB",
+         "metadata": {
+            "lib_file_name": "PDCLIB_WRAPPER_x86.dll"
+         },
+         "instrument_id": 240049237513259560,
+         "id": 160777613733217936
+      }
+   ]
+}
