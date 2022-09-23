@@ -46,6 +46,25 @@ unsigned long PDC_CloseDevice(
 */
 typedef UINT (CALLBACK* PDC_CLOSE_DEVICE_FUNCTION_DLL)(UINT, UINT*);
 
+/*
+unsigned long PDC_GetDeviceName(
+    unsigned long nDeviceNo
+    unsigned long nChildNo
+    TCHAR *pStrName
+    unsigned long *pErrorCode
+)
+*/
+typedef UINT (CALLBACK* PDC_GET_DEVICE_NAME_FUNCTION_DLL)(UINT, UINT, TCHAR*, UINT*);
+
+/*
+unsigned long PDC_GetStatus(
+    unsigned long nDeviceNo
+    unsigned long *pStatus
+    unsigned long *pErrorCode
+)
+*/
+typedef UINT (CALLBACK* PDC_GET_STATUS_FUNCTION_DLL)(UINT, UINT*, UINT*);
+
 FILE* open_tmp_file_buffer(const char * tmp_file_buffer) {
     FILE* output_file = fopen(tmp_file_buffer, "wb");
     if (output_file == NULL) {
@@ -270,4 +289,94 @@ int pdc_close_device(UINT n_device_no, const char * tmp_file_buffer) {
 
     return PDC_WRAPPER_SUCCEEDED;
 }
- 
+
+/*
+    tmp_file_buffer:
+        success case (PDC_WRAPPER_SUCCEEDED):
+            4 bytes for return_value
+            4 bytes for error_code
+            N bytes for device name
+        error case (PDC_WRAPPER_FAILED):
+            string with error message
+*/
+int pdc_get_device_name(UINT n_device_no, UINT n_child_no, const char * tmp_file_buffer) {
+    HINSTANCE libHandle;
+
+    PDC_GET_DEVICE_NAME_FUNCTION_DLL pdc_get_device_name_function;
+    UINT error_code, return_value;
+    TCHAR* p_str_name = NULL;
+
+    FILE* output_file = open_tmp_file_buffer(tmp_file_buffer);
+    if (output_file == NULL) {
+        return PDC_WRAPPER_FAILED;
+    }
+
+    libHandle = LoadLibrary("PDCLIB.dll");
+    if (libHandle == NULL) {
+        const char * message = "error loading library PDCLIB.dll";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    pdc_get_device_name_function = (PDC_GET_DEVICE_NAME_FUNCTION_DLL) GetProcAddress(libHandle, "PDC_GetDeviceName");
+    if (pdc_get_device_name_function == NULL) {
+        const char * message = "GetProcAddress failed loading PDC_GetDeviceName function";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    return_value = pdc_get_device_name_function(n_device_no, n_child_no, p_str_name, &error_code);
+
+    fwrite(&return_value, sizeof(UINT), 1, output_file);
+    fwrite(&error_code, sizeof(UINT), 1, output_file);
+    fputs(p_str_name, output_file);
+
+    return PDC_WRAPPER_SUCCEEDED;
+}
+
+/*
+    tmp_file_buffer:
+        success case (PDC_WRAPPER_SUCCEEDED):
+            4 bytes for return_value
+            4 bytes for error_code
+            4 bytes for status
+        error case (PDC_WRAPPER_FAILED):
+            string with error message
+*/
+int pdc_get_status(UINT n_device_no, const char * tmp_file_buffer) {
+    HINSTANCE libHandle;
+
+    PDC_GET_STATUS_FUNCTION_DLL pdc_get_status_function;
+    UINT status, error_code, return_value;
+
+    FILE* output_file = open_tmp_file_buffer(tmp_file_buffer);
+    if (output_file == NULL) {
+        return PDC_WRAPPER_FAILED;
+    }
+
+    libHandle = LoadLibrary("PDCLIB.dll");
+    if (libHandle == NULL) {
+        const char * message = "error loading library PDCLIB.dll";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    pdc_get_status_function = (PDC_GET_STATUS_FUNCTION_DLL) GetProcAddress(libHandle, "PDC_GetStatus");
+    if (pdc_get_status_function == NULL) {
+        const char * message = "GetProcAddress failed loading PDC_GetStatus function";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    return_value = pdc_get_status_function(n_device_no, &status, &error_code);
+
+    fwrite(&return_value, sizeof(UINT), 1, output_file);
+    fwrite(&error_code, sizeof(UINT), 1, output_file);
+    fwrite(&status, sizeof(UINT), 1, output_file);
+
+    return PDC_WRAPPER_SUCCEEDED;
+}
