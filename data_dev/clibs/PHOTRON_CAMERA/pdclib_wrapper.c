@@ -38,6 +38,14 @@ unsigned long PDC_OpenDevice(
 */
 typedef UINT (CALLBACK* PDC_OPEN_DEVICE_FUNCTION_DLL)(PDC_DETECT_INFO*, UINT*, UINT*);
 
+/*
+unsigned long PDC_CloseDevice(
+    unsigned long nDeviceNo
+    unsigned long *pErrorCode
+)
+*/
+typedef UINT (CALLBACK* PDC_CLOSE_DEVICE_FUNCTION_DLL)(UINT, UINT*);
+
 FILE* open_tmp_file_buffer(const char * tmp_file_buffer) {
     FILE* output_file = fopen(tmp_file_buffer, "wb");
     if (output_file == NULL) {
@@ -219,3 +227,47 @@ int pdc_open_device(UINT m_ndevice_code, UINT m_ntmp_device_no, UINT m_ninterfac
 
     return PDC_WRAPPER_SUCCEEDED;
 }
+
+/*
+    tmp_file_buffer:
+        success case (PDC_WRAPPER_SUCCEEDED):
+            4 bytes for return_value
+            4 bytes for error_code
+        error case (PDC_WRAPPER_FAILED):
+            string with error message
+*/
+int pdc_close_device(UINT n_device_no, const char * tmp_file_buffer) {
+    HINSTANCE libHandle;
+
+    PDC_CLOSE_DEVICE_FUNCTION_DLL pdc_close_device_function;
+    UINT error_code, return_value;
+
+    FILE* output_file = open_tmp_file_buffer(tmp_file_buffer);
+    if (output_file == NULL) {
+        return PDC_WRAPPER_FAILED;
+    }
+
+    libHandle = LoadLibrary("PDCLIB.dll");
+    if (libHandle == NULL) {
+        const char * message = "error loading library PDCLIB.dll";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    pdc_close_device_function = (PDC_CLOSE_DEVICE_FUNCTION_DLL) GetProcAddress(libHandle, "PDC_CloseDevice");
+    if (pdc_close_device_function == NULL) {
+        const char * message = "GetProcAddress failed loading PDC_CloseDevice function";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    return_value = pdc_close_device_function(n_device_no, &error_code);
+
+    fwrite(&return_value, sizeof(UINT), 1, output_file);
+    fwrite(&error_code, sizeof(UINT), 1, output_file);
+
+    return PDC_WRAPPER_SUCCEEDED;
+}
+ 
