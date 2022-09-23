@@ -214,7 +214,7 @@
          },
          "type": "CLIB",
          "metadata": {
-            "lib_file_name": "PDCLIB.dll"
+            "lib_file_name": "PHOTRON_CAMERA/PDCLIB.dll"
          },
          "instrument_id": 330355862202759620,
          "id": 333265566998956399
@@ -251,7 +251,7 @@
          },
          "type": "CLIB",
          "metadata": {
-            "lib_file_name": "PDCLIB.dll"
+            "lib_file_name": "PHOTRON_CAMERA/PDCLIB.dll"
          },
          "instrument_id": 330355862202759620,
          "id": 262651729654774106
