@@ -205,56 +205,144 @@
       },
       {
          "name": "init",
-         "command": "PDC_Init",
-         "description": "Inicia las librerias de Photron",
+         "command": "pdc_init",
+         "description": "Initialized the camera lib",
          "params": [],
          "return": {
-            "type": "INT",
-            "description": "Resultado de ejecucion"
+            "type": "BYTES",
+            "description": "8 bytes representing 2 ints"
          },
          "type": "CLIB",
          "metadata": {
-            "lib_file_name": "PHOTRON_CAMERA/PDCLIB.dll"
+            "lib_file_name": "PHOTRON_CAMERA/PDCLIB_WRAPPER_x86.dll"
          },
          "instrument_id": 330355862202759620,
-         "id": 333265566998956399
+         "id": 111169499443071209
       },
       {
-         "name": "detect_camera",
-         "command": "PDC_DetectDevice",
-         "description": "Con return void",
+         "name": "detect_device",
+         "command": "pdc_detect_device",
+         "description": "Detect the device in the specified IP",
          "params": [
             {
                "type": "INT",
-               "description": "",
+               "description": "IP trying to be detected",
+               "position": 1
+            }
+         ],
+         "return": {
+            "type": "BYTES",
+            "description": "may return 16 bytes in success case or only 4 bytes in fail case"
+         },
+         "type": "CLIB",
+         "metadata": {
+            "lib_file_name": "PHOTRON_CAMERA/PDCLIB_WRAPPER_x86.dll"
+         },
+         "instrument_id": 330355862202759620,
+         "id": 368020214520704472
+      },
+      {
+         "name": "open_device",
+         "command": "pdc_open_device",
+         "description": "opens the specified device",
+         "params": [
+            {
+               "type": "INT",
+               "description": "device code",
                "position": 1
             },
             {
                "type": "INT",
-               "description": "",
+               "description": "device number",
                "position": 2
             },
             {
                "type": "INT",
-               "description": "",
+               "description": "interface code",
                "position": 3
-            },
-            {
-               "type": "INT",
-               "description": "",
-               "position": 4
             }
          ],
          "return": {
-            "type": "VOID",
-            "description": ""
+            "type": "BYTES",
+            "description": "4 bytes for return value, if success returns 8 bytes more"
          },
          "type": "CLIB",
          "metadata": {
-            "lib_file_name": "PHOTRON_CAMERA/PDCLIB.dll"
+            "lib_file_name": "PHOTRON_CAMERA/PDCLIB_WRAPPER_x86.dll"
          },
          "instrument_id": 330355862202759620,
-         "id": 262651729654774106
+         "id": 288867280350791988
+      },
+      {
+         "name": "close_device",
+         "command": "pdc_close_device",
+         "description": "closes the device specified",
+         "params": [
+            {
+               "type": "INT",
+               "description": "device number",
+               "position": 1
+            }
+         ],
+         "return": {
+            "type": "BYTES",
+            "description": "8 bytes, return value and error code"
+         },
+         "type": "CLIB",
+         "metadata": {
+            "lib_file_name": "PHOTRON_CAMERA/PDCLIB_WRAPPER_x86.dll"
+         },
+         "instrument_id": 330355862202759620,
+         "id": 409267605712337791
+      },
+      {
+         "name": "get_device_name",
+         "command": "pdc_get_device_name",
+         "description": "",
+         "params": [
+            {
+               "type": "INT",
+               "description": "device number",
+               "position": 1
+            },
+            {
+               "type": "INT",
+               "description": "child number",
+               "position": 2
+            }
+         ],
+         "return": {
+            "type": "BYTES",
+            "description": "8 bytes for ints and rest bytes are string device name"
+         },
+         "type": "CLIB",
+         "metadata": {
+            "lib_file_name": "PHOTRON_CAMERA/PDCLIB_WRAPPER_x86.dll"
+         },
+         "instrument_id": 330355862202759620,
+         "id": 223279512542239756
+      },
+      {
+         "name": "get_status",
+         "command": "pdc_get_status",
+         "description": "gets the status of the camera",
+         "params": [
+            {
+               "type": "INT",
+               "description": "device number",
+               "position": 1
+            }
+         ],
+         "return": {
+            "type": "BYTES",
+            "description": "12 bytes: return value, error code, status. Possible status: (0=LIVE, 1=PLAYBACK, 2=RECREADY, 4=ENDLESS, 8=REC, 16=SAVE, 32=LOAD, 64=PAUSE, 128=STORAGEPLAYBACK) "
+         },
+         "type": "CLIB",
+         "metadata": {
+            "lib_file_name": "PHOTRON_CAMERA/PDCLIB_WRAPPER_x86.dll"
+         },
+         "instrument_id": 330355862202759620,
+         "id": 986281996376930669
       }
    ]
 }

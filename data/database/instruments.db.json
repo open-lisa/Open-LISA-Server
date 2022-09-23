@@ -12,7 +12,7 @@
          "brand": "PHOTRON",
          "model": "Mini UX",
          "type": "CLIB",
-         "physical_address": "",
+         "physical_address": null,
          "description": "Camara LAB",
          "id": 330355862202759620
       }

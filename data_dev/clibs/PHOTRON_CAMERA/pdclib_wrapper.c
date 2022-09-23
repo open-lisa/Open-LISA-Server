@@ -189,6 +189,7 @@ int pdc_detect_device(UINT ip, const char * tmp_file_buffer) {
     fwrite(&m_ndevice_code, sizeof(UINT), 1, output_file);
     fwrite(&m_ntmp_device_no, sizeof(UINT), 1, output_file);
     fwrite(&m_ninterface_code, sizeof(UINT), 1, output_file);
+    fclose(output_file);
 
     return PDC_WRAPPER_SUCCEEDED;
 }
@@ -243,6 +244,7 @@ int pdc_open_device(UINT m_ndevice_code, UINT m_ntmp_device_no, UINT m_ninterfac
 
     fwrite(&error_code, sizeof(UINT), 1, output_file);
     fwrite(&p_device_no, sizeof(UINT), 1, output_file);
+    fclose(output_file);
 
     return PDC_WRAPPER_SUCCEEDED;
 }
@@ -286,6 +288,7 @@ int pdc_close_device(UINT n_device_no, const char * tmp_file_buffer) {
 
     fwrite(&return_value, sizeof(UINT), 1, output_file);
     fwrite(&error_code, sizeof(UINT), 1, output_file);
+    fclose(output_file);
 
     return PDC_WRAPPER_SUCCEEDED;
 }
@@ -332,6 +335,7 @@ int pdc_get_device_name(UINT n_device_no, UINT n_child_no, const char * tmp_file
     fwrite(&return_value, sizeof(UINT), 1, output_file);
     fwrite(&error_code, sizeof(UINT), 1, output_file);
     fputs(p_str_name, output_file);
+    fclose(output_file);
 
     return PDC_WRAPPER_SUCCEEDED;
 }
@@ -377,6 +381,7 @@ int pdc_get_status(UINT n_device_no, const char * tmp_file_buffer) {
     fwrite(&return_value, sizeof(UINT), 1, output_file);
     fwrite(&error_code, sizeof(UINT), 1, output_file);
     fwrite(&status, sizeof(UINT), 1, output_file);
+    fclose(output_file);
 
     return PDC_WRAPPER_SUCCEEDED;
 }
