@@ -343,7 +343,7 @@ int pdc_get_device_name(UINT n_device_no, UINT n_child_no, const char * tmp_file
         return PDC_WRAPPER_FAILED;
     }
 
-    pdc_get_device_name_function = (PDC_GET_DEVICE_NAME_FUNCTION_DLL) GetProcAddress(libHandle, "PDC_GetDeviceName");
+    pdc_get_device_name_function = (PDC_GET_DEVICE_NAME_FUNCTION_DLL) GetProcAddress(libHandle, "PDC_GetDeviceNameW");
     if (pdc_get_device_name_function == NULL) {
         const char * message = "GetProcAddress failed loading PDC_GetDeviceName function";
         fwrite(message, sizeof(char), strlen(message), output_file);
