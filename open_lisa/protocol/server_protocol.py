@@ -34,6 +34,8 @@ COMMAND_DELETE_FILE = "DELETE_FILE"
 COMMAND_GET_DIRECTORY_STRUCTURE = "GET_DIRECTORY_STRUCTURE"
 COMMAND_CREATE_DIRECTORY = "CREATE_DIRECTORY"
 COMMAND_DELETE_DIRECTORY = "DELETE_DIRECTORY"
+COMMAND_SET_INSTRUMENT_VISA_ATTRIBUTE = "SET_INSTRUMENT_VISA_ATTRIBUTE"
+COMMAND_GET_INSTRUMENT_VISA_ATTRIBUTE = "GET_INSTRUMENT_VISA_ATTRIBUTE"
 
 COMMAND_CREATE_INSTRUMENT_COMMAND = "CREATE_INSTRUMENT_COMMAND"
 
@@ -318,6 +320,42 @@ class ServerProtocol:
         except OpenLISAException as e:
             logging.error(
                 "[OpenLISA][ServerProtocol][handle_delete_directory] Cannot delete directory {}".format(e.message))
+            self._message_protocol.send_msg(ERROR_RESPONSE)
+            self._message_protocol.send_msg(e.message)
+
+    def handle_set_instrument_visa_attribute(self, instruments_repository: InstrumentRepository):
+        try:
+            set_visa_instrument_req_json = self._message_protocol.receive_msg()
+            set_visa_instrument_req = json.loads(
+                set_visa_instrument_req_json)
+            instrument_id = set_visa_instrument_req["instrument_id"]
+            attribute = set_visa_instrument_req["attribute"]
+            state = set_visa_instrument_req["state"]
+            instrument = instruments_repository.get_by_id(instrument_id)
+            result = instrument.set_visa_attribute(
+                attribute=attribute, state=state)
+            self._message_protocol.send_msg(result)
+            self._message_protocol.send_msg(SUCCESS_RESPONSE)
+        except OpenLISAException as e:
+            logging.error(
+                "[OpenLISA][ServerProtocol][handle_set_instrument_visa_attribute] Could not set visa attribute {}".format(e.message))
+            self._message_protocol.send_msg(ERROR_RESPONSE)
+            self._message_protocol.send_msg(e.message)
+
+    def handle_get_instrument_visa_attribute(self, instruments_repository: InstrumentRepository):
+        try:
+            get_visa_instrument_req_json = self._message_protocol.receive_msg()
+            get_visa_instrument_req = json.loads(
+                get_visa_instrument_req_json)
+            instrument_id = get_visa_instrument_req["instrument_id"]
+            attribute = get_visa_instrument_req["attribute"]
+            instrument = instruments_repository.get_by_id(instrument_id)
+            result = instrument.get_visa_attribute(attribute=attribute)
+            self._message_protocol.send_msg(result)
+            self._message_protocol.send_msg(SUCCESS_RESPONSE)
+        except OpenLISAException as e:
+            logging.error(
+                "[OpenLISA][ServerProtocol][handle_get_instrument_visa_attribute] Could not get visa attribute {}".format(e.message))
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)
 
