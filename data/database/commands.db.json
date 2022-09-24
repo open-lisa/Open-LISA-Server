@@ -346,7 +346,7 @@
       },
       {
          "name": "get_exist_child_device_list",
-         "command": "pdc_exist_child_device_list",
+         "command": "pdc_get_exist_child_device_list",
          "description": "gets the list of existent child devices",
          "params": [
             {
