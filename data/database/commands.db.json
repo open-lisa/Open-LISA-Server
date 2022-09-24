@@ -343,6 +343,28 @@
          },
          "instrument_id": 330355862202759620,
          "id": 986281996376930669
+      },
+      {
+         "name": "get_exist_child_device_list",
+         "command": "pdc_exist_child_device_list",
+         "description": "gets the list of existent child devices",
+         "params": [
+            {
+               "type": "INT",
+               "description": "device number",
+               "position": 1
+            }
+         ],
+         "return": {
+            "type": "BYTES",
+            "description": "12 bytes: return value, error code, list size and the rest are the list"
+         },
+         "type": "CLIB",
+         "metadata": {
+            "lib_file_name": "PHOTRON_CAMERA/PDCLIB_WRAPPER_x86.dll"
+         },
+         "instrument_id": 330355862202759620,
+         "id": 11111
       }
    ]
 }

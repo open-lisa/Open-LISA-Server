@@ -408,12 +408,12 @@ int pdc_get_status(UINT n_device_no, const char * tmp_file_buffer) {
         error case (PDC_WRAPPER_FAILED):
             string with error message
 */
-int pdc_get_exist_child_device(UINT n_device_no, const char * tmp_file_buffer) {
+int pdc_get_exist_child_device_list(UINT n_device_no, const char * tmp_file_buffer) {
     HINSTANCE libHandle;
 
     PDC_GET_EXIST_CHILD_DEVICE_LIST_FUNCTION_DLL pdc_get_exist_child_device_list_function_dll;
     UINT list_size, error_code, return_value;
-    UINT* child_list;
+    UINT* child_list = NULL;
 
     FILE* output_file = open_tmp_file_buffer(tmp_file_buffer);
     if (output_file == NULL) {
