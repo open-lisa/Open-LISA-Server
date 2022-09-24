@@ -57,6 +57,7 @@ def test_clib_command_creation_returns_an_instance_of_CLibCommand():
     )
     assert isinstance(some_clib_command, CLibCommand)
 
+
 def test_execute_should_call_the_sum_function_from_the_c_lib():
     sum_clib_command = CLibCommand(
         name="a_name",
@@ -138,8 +139,10 @@ def test_execute_should_call_the_copy_image_function_from_the_c_lib_and_raise_Co
     mock_image_path = "{}/mock_libs/{}".format(
         os.path.dirname(__file__), unexisting_image)
 
-    with pytest.raises(CommandExecutionError):
+    with pytest.raises(CommandExecutionError) as exc_info:
         copy_image_clib_command.execute([mock_image_path])
+
+    assert "[copy_image] error opening input file" in exc_info.value.message
 
 
 def test_invalid_function_name_exception():

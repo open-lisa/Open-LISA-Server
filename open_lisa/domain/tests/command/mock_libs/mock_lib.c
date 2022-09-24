@@ -30,12 +30,17 @@ int copy_image(const char * mock_image_path, const char* tmp_file_buffer) {
     unsigned char buffer[512];
 
     input_file = fopen(mock_image_path,"rb");
+    output_file = fopen(tmp_file_buffer,"w+b");
     if (input_file == NULL) {
+        if (output_file != NULL) {
+            const char * message = "[copy_image] error opening input file";
+            fwrite(message, sizeof(char), strlen(message), output_file);
+            fclose(output_file);
+        }
         fprintf(stderr, "[copy_image] error opening input file: %s\n", strerror(errno));
         return -1;
     }
 
-    output_file = fopen(tmp_file_buffer,"w+b");
     if (output_file == NULL) {
         fclose(input_file);
         fprintf(stderr, "error opening output file: %s\n", strerror(errno));
