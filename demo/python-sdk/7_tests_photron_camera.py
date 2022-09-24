@@ -61,20 +61,30 @@ try:
     device_code = opened_device[1]
     device_no = opened_device[2]
 
-    # DEVICE NAME
+    # CHILD DEVICE LIST
     result = sdk.send_command(instrument_id=cam_id,
-                              command_invocation="get_device_name {} {}".format(device_no, child_no))
+                              command_invocation="get_exist_child_device_list {}".format(
+                                  device_no))
     result_bytes = result["value"]
-    # only first 8 bytes represents ints, rest is string
-    int_bytes = result_bytes[0:8]
-    device_name_bytes = result_bytes[8:]
-    print("get_device_name command result bytes = {}".format(result_bytes))
-    print("get_device_name command result ints = {}".format(
-        bytes_to_ints(int_bytes)))
-    print("get_device_name device name bytes = {}".format(
-        bytes_to_ints(device_name_bytes)))
-    print("get_device_name device name = {}".format(
-        bytes_to_ints(device_name_bytes.decode())))
+    print("get_exist_child_device_list command result bytes = {}".format(result_bytes))
+    print("get_exist_child_device_list command result = {}".format(
+        bytes_to_ints(result_bytes)))
+    child_list_result = bytes_to_ints(result_bytes)
+
+    # DEVICE NAME
+    # result = sdk.send_command(instrument_id=cam_id,
+    #                           command_invocation="get_device_name {} {}".format(device_no, child_no))
+    # result_bytes = result["value"]
+    # # only first 8 bytes represents ints, rest is string
+    # int_bytes = result_bytes[0:8]
+    # device_name_bytes = result_bytes[8:]
+    # print("get_device_name command result bytes = {}".format(result_bytes))
+    # print("get_device_name command result ints = {}".format(
+    #     bytes_to_ints(int_bytes)))
+    # print("get_device_name device name bytes = {}".format(
+    #     bytes_to_ints(device_name_bytes)))
+    # print("get_device_name device name = {}".format(
+    #     bytes_to_ints(device_name_bytes.decode())))
 
     # CLOSE DEVICE
     result = sdk.send_command(instrument_id=cam_id,
