@@ -144,6 +144,16 @@ class OpenLISA:
                         logging.info(
                             "[OpenLISA][api][start] - client order delete directory")
                         self._server_protocol.handle_delete_directory()
+                    elif command == COMMAND_SET_INSTRUMENT_VISA_ATTRIBUTE:
+                        logging.info(
+                            "[OpenLISA][api][start] - client order set visa attribute")
+                        self._server_protocol.handle_set_instrument_visa_attribute(
+                            self._instruments_repository)
+                    elif command == COMMAND_GET_INSTRUMENT_VISA_ATTRIBUTE:
+                        logging.info(
+                            "[OpenLISA][api][start] -  client order get visa attribute")
+                        self._server_protocol.handle_get_instrument_visa_attribute(
+                            self._instruments_repository)
                     elif command == COMMAND_RESET_DATABASES:
                         self._server_protocol.handle_reset_databases()
                     else:
