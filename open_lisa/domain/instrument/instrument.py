@@ -4,6 +4,7 @@ from open_lisa.domain.command.command_execution_result import CommandExecutionRe
 from open_lisa.domain.instrument.constants import INSTRUMENT_STATUS_AVAILABLE, INSTRUMENT_STATUS_UNAVAILABLE
 from open_lisa.exceptions.command_not_found_error import CommandNotFoundError
 from open_lisa.exceptions.instrument_unavailable_error import InstrumentUnavailableError
+from open_lisa.exceptions.invalid_instrument_type_for_managing_visa_attributes_error import InvalidInstrumentTypeForManagingVisaAttributes
 
 
 class InstrumentType(Enum):
@@ -85,6 +86,38 @@ class Instrument:
                 "instrument {} {} not available for sending command".format(self.brand, self.model))
         command = self.__get_command_by_name(command_name)
         return command.execute(command_parameters_values)
+
+    def set_visa_attribute(self, attribute, state):
+        if not self.status == INSTRUMENT_STATUS_AVAILABLE:
+            raise InstrumentUnavailableError(
+                "instrument {} {} not available for setting visa attribute".format(self.brand, self.model))
+
+        if not self.type == InstrumentType.SCPI:
+            raise InvalidInstrumentTypeForManagingVisaAttributes(
+                "instrument {} {} is of type {} which is not supported for setting visa atributes".format(
+                    self.brand, self.model, self.type)
+            )
+
+        # Returns pyvisa.constants.StatusCode value, check the src for the meaning of each value
+        # Src: https://pyvisa.readthedocs.io/en/latest/api/constants.html#pyvisa.constants.StatusCode
+        status_code = self.pyvisa_resource.set_visa_attribute(attribute, state)
+
+        return str(status_code.value)
+
+    def get_visa_attribute(self, attribute):
+        if not self.status == INSTRUMENT_STATUS_AVAILABLE:
+            raise InstrumentUnavailableError(
+                "instrument {} {} not available for getting visa attribute".format(self.brand, self.model))
+
+        if not self.type == InstrumentType.SCPI:
+            raise InvalidInstrumentTypeForManagingVisaAttributes(
+                "instrument {} {} is of type {} which is not supported for getting visa atributes".format(
+                    self.brand, self.model, self.type)
+            )
+
+        # Returns pyvisa.constants.StatusCode
+        # Src: https://pyvisa.readthedocs.io/en/latest/api/constants.html#pyvisa.constants.StatusCode
+        return str(self.pyvisa_resource.get_visa_attribute(attribute))
 
     def validate_command(self, command_name, command_parameters_values=[]):
         command = self.__get_command_by_name(command_name=command_name)

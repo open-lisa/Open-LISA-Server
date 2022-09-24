@@ -1,4 +1,5 @@
 import pytest
+import pyvisa
 from pytest_mock import MockerFixture
 from open_lisa.domain.command.command import Command, CommandType
 from open_lisa.domain.command.command_parameters import CommandParameters
@@ -8,9 +9,23 @@ from open_lisa.domain.instrument.constants import INSTRUMENT_STATUS_AVAILABLE, I
 from open_lisa.domain.instrument.instrument import InstrumentType, Instrument
 from open_lisa.exceptions.command_not_found_error import CommandNotFoundError
 from open_lisa.exceptions.instrument_unavailable_error import InstrumentUnavailableError
+from open_lisa.exceptions.invalid_instrument_type_for_managing_visa_attributes_error import InvalidInstrumentTypeForManagingVisaAttributes
+
 
 MOCK_COMMAND_EXECUTION_RESULT = "some result"
 COMMAND_NAME = "some_command"
+
+
+class MockPyvisaResource:
+    def __init__(self):
+        self.set_attribute_mock_result = None
+        self.get_attribute_mock_result = None
+
+    def set_visa_attribute(self, attribute, state):
+        return self.set_attribute_mock_result
+
+    def get_visa_attribute(self, attribute):
+        return self.get_attribute_mock_result
 
 
 class CommandMock(Command):
@@ -121,3 +136,99 @@ def test_send_command_should_return_command_result():
     )
     result = i.send_command(COMMAND_NAME)
     assert result == MOCK_COMMAND_EXECUTION_RESULT
+
+
+def test_set_visa_attribute_raises_if_instrument_is_not_available():
+    i = Instrument(
+        id=1,
+        physical_address="USB:1234",
+        brand="some brand",
+        model="some model",
+        type=InstrumentType.SCPI,
+    )
+    with pytest.raises(InstrumentUnavailableError):
+        i.set_visa_attribute(
+            pyvisa.constants.ResourceAttribute.interface_type, 0xFFFFFF)
+
+
+def test_set_visa_attribute_raises_if_instrument_is_not_SCPI_type():
+    i = Instrument(
+        id=1,
+        physical_address=None,
+        brand="some brand",
+        model="some model",
+        type=InstrumentType.CLIB,
+    )
+    with pytest.raises(InvalidInstrumentTypeForManagingVisaAttributes):
+        i.set_visa_attribute(
+            pyvisa.constants.ResourceAttribute.interface_type, 0xFFFFFF)
+
+
+def test_set_visa_attribute_should_call_pyvisa_resource_set_visa_attribute(mocker: MockerFixture):
+    pyvisa_resource_mock = MockPyvisaResource()
+    some_visa_attribute = pyvisa.constants.ResourceAttribute.interface_type
+    some_visa_attribute_state = 0xfeafea
+    some_visa_status_code = pyvisa.constants.StatusCode.error_abort
+    pyvisa_resource_mock.set_attribute_mock_result = some_visa_status_code
+    i = Instrument(
+        id=1,
+        physical_address="USB:1234",
+        brand="some brand",
+        model="some model",
+        type=InstrumentType.SCPI,
+        pyvisa_resource=pyvisa_resource_mock
+    )
+    set_attribute_spy = mocker.spy(pyvisa_resource_mock, "set_visa_attribute")
+    result = i.set_visa_attribute(
+        some_visa_attribute, some_visa_attribute_state)
+    set_attribute_spy.assert_called_once()
+    set_attribute_spy.assert_called_once_with(
+        some_visa_attribute, some_visa_attribute_state)
+    assert result == "{}".format(some_visa_status_code.value)
+
+
+def test_get_visa_attribute_raises_if_instrument_is_not_available():
+    i = Instrument(
+        id=1,
+        physical_address="USB:1234",
+        brand="some brand",
+        model="some model",
+        type=InstrumentType.SCPI,
+    )
+    with pytest.raises(InstrumentUnavailableError):
+        i.get_visa_attribute(
+            pyvisa.constants.ResourceAttribute.interface_type)
+
+
+def test_get_visa_attribute_raises_if_instrument_is_not_SCPI_type():
+    i = Instrument(
+        id=1,
+        physical_address=None,
+        brand="some brand",
+        model="some model",
+        type=InstrumentType.CLIB,
+    )
+    with pytest.raises(InvalidInstrumentTypeForManagingVisaAttributes):
+        i.get_visa_attribute(
+            pyvisa.constants.ResourceAttribute.interface_type)
+
+
+def test_get_visa_attribute_should_call_pyvisa_resource_get_visa_attribute(mocker: MockerFixture):
+    pyvisa_resource_mock = MockPyvisaResource()
+    some_visa_attribute = pyvisa.constants.ResourceAttribute.interface_type
+    some_visa_attribute_state = 0xfeafea
+    pyvisa_resource_mock.get_attribute_mock_result = some_visa_attribute_state
+    i = Instrument(
+        id=1,
+        physical_address="USB:1234",
+        brand="some brand",
+        model="some model",
+        type=InstrumentType.SCPI,
+        pyvisa_resource=pyvisa_resource_mock
+    )
+    get_attribute_spy = mocker.spy(pyvisa_resource_mock, "get_visa_attribute")
+    result = i.get_visa_attribute(some_visa_attribute)
+    get_attribute_spy.assert_called_once()
+    get_attribute_spy.assert_called_once_with(
+        some_visa_attribute)
+    assert result == str(some_visa_attribute_state)
