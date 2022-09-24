@@ -1,3 +1,4 @@
+import traceback
 import Open_LISA_SDK
 
 
@@ -57,7 +58,7 @@ try:
     print("open_device command result bytes = {}".format(result_bytes))
     print("open_device command result = {}".format(bytes_to_ints(result_bytes)))
     opened_device = bytes_to_ints(result_bytes)
-    # assert device_detected[0] == 1  # if it is 0 it was an error
+    assert opened_device[0] == 1  # if it is 0 it was an error
     device_code = opened_device[1]
     device_no = opened_device[2]
 
@@ -69,7 +70,8 @@ try:
     print("get_exist_child_device_list command result bytes = {}".format(result_bytes))
     print("get_exist_child_device_list command result = {}".format(
         bytes_to_ints(result_bytes)))
-    child_list_result = bytes_to_ints(result_bytes)
+    # child_list_result = bytes_to_ints(result_bytes)
+    # child_no = child_list_result[-1]  # take the last one and unique value
 
     # DEVICE NAME
     # result = sdk.send_command(instrument_id=cam_id,
@@ -86,15 +88,24 @@ try:
     # print("get_device_name device name = {}".format(
     #     bytes_to_ints(device_name_bytes.decode())))
 
+    # DEVICE STATUS
+    result = sdk.send_command(instrument_id=cam_id,
+                              command_invocation="get_status {}".format(device_no))
+    result_bytes = result["value"]
+    print("get_status command result bytes = {}".format(result_bytes))
+    print("get_status command result ints = {}".format(
+        bytes_to_ints(result_bytes)))
+
+except Exception as e:
+    print("Error")
+    print(e)
+    traceback.print_exc()
+finally:
     # CLOSE DEVICE
     result = sdk.send_command(instrument_id=cam_id,
                               command_invocation="close_device {}".format(device_no))
     result_bytes = result["value"]
     print("close_device command result bytes = {}".format(result_bytes))
     print("close_device command result = {}".format(bytes_to_ints(result_bytes)))
-except Exception as e:
-    print("Error")
-    print(e)
-finally:
     if sdk:
         sdk.disconnect()
