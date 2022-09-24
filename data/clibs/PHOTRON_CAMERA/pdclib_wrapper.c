@@ -75,6 +75,15 @@ unsigned long PDC_GetExistChildDeviceList(
 */
 typedef UINT (CALLBACK* PDC_GET_EXIST_CHILD_DEVICE_LIST_FUNCTION_DLL)(UINT, UINT*, UINT*, UINT*);
 
+/*
+unsigned long PDC_GetMaxChildDeviceCount(
+    unsigned long nDeviceNo
+    unsigned long *pCount
+    unsigned long *pErrorCode
+)
+*/
+typedef UINT (CALLBACK* PDC_GET_MAX_CHILD_DEVICE_COUNT)(UINT, UINT*, UINT*);
+
 
 FILE* open_tmp_file_buffer(const char * tmp_file_buffer) {
     FILE* output_file = fopen(tmp_file_buffer, "wb");
@@ -412,8 +421,8 @@ int pdc_get_exist_child_device_list(UINT n_device_no, const char * tmp_file_buff
     HINSTANCE libHandle;
 
     PDC_GET_EXIST_CHILD_DEVICE_LIST_FUNCTION_DLL pdc_get_exist_child_device_list_function_dll;
+    PDC_GET_MAX_CHILD_DEVICE_COUNT pdc_get_max_child_device_count_function_dll;
     UINT list_size, error_code, return_value;
-    UINT* child_list = NULL;
 
     FILE* output_file = open_tmp_file_buffer(tmp_file_buffer);
     if (output_file == NULL) {
@@ -436,6 +445,25 @@ int pdc_get_exist_child_device_list(UINT n_device_no, const char * tmp_file_buff
         return PDC_WRAPPER_FAILED;
     }
 
+    pdc_get_max_child_device_count_function_dll = (PDC_GET_MAX_CHILD_DEVICE_COUNT) GetProcAddress(libHandle, "PDC_GetMaxChildDeviceCount");
+    if (pdc_get_max_child_device_count_function_dll == NULL) {
+        const char * message = "GetProcAddress failed loading PDC_GetMaxChildDeviceCount function";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    UINT p_count;
+    return_value = pdc_get_max_child_device_count_function_dll(n_device_no, &p_count, &error_code);
+    if (error_code == PDC_FAILED) {
+        const char * message = "Error getting child device count";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    UINT* child_list = (UINT*) malloc(p_count);
+
     return_value = pdc_get_exist_child_device_list_function_dll(n_device_no, &list_size, child_list, &error_code);
 
     fwrite(&return_value, sizeof(UINT), 1, output_file);
@@ -443,6 +471,7 @@ int pdc_get_exist_child_device_list(UINT n_device_no, const char * tmp_file_buff
     fwrite(&list_size, sizeof(UINT), 1, output_file);
     fwrite(child_list, sizeof(UINT)*list_size, list_size, output_file);
     fclose(output_file);
+    free(child_list);
 
     return PDC_WRAPPER_SUCCEEDED;
 }
