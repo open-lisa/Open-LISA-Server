@@ -239,6 +239,7 @@ int pdc_open_device(UINT m_ndevice_code, UINT m_ntmp_device_no, UINT m_ninterfac
 
     fwrite(&return_value, sizeof(UINT), 1, output_file);
     if (return_value == PDC_FAILED) {
+        fclose(output_file);
         return PDC_WRAPPER_SUCCEEDED;
     }
 
