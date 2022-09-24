@@ -100,15 +100,10 @@ class CLibCommand(Command):
             command_execution_start = get_UTC_timestamp()
             error_code = self._c_function(*arguments)
             if error_code != 0:
-                error_msg = bytes()
-                # error message is saved in tmp buffer file
-                with open(TMP_BUFFER_FILE, "r") as f:
-                    error_msg = f.read()
-                os.remove(TMP_BUFFER_FILE)
-                logging.error("[CLibCommand][command={}] fail calling C function that returns bytes, error code is {} and message {}".format(
-                    self.name, error_code, error_msg))
-                raise CommandExecutionError(command=self.name, additional_info="C function {} returned error_code {} and message {}".format(
-                    self.lib_function, error_code, error_msg))
+                logging.error("[CLibCommand][command={}] fail calling C function that returns bytes, error code is {}".format(
+                    self.name, error_code))
+                raise CommandExecutionError(command=self.name, additional_info="C function {} returned error_code {}".format(
+                    self.lib_function, error_code))
             else:
                 data = bytes()
                 with open(TMP_BUFFER_FILE, "rb") as f:
