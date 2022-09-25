@@ -148,6 +148,28 @@ unsigned long PDC_GetResolution(
 */
 typedef UINT (CALLBACK* PDC_GET_RESOLUTION_FUNCTION_DLL)(UINT, UINT, UINT*, UINT*, UINT*);
 
+/*
+unsigned long PDC_GetShutterSpeedFps(
+    unsigned long nDeviceNo
+    unsigned long nChildNo
+    unsigned long *pFps
+    unsigned long *pErrorCode
+)
+*/
+typedef UINT (CALLBACK* PDC_GET_SHUTTER_SPEED_FPS_FUNCTION_DLL)(UINT, UINT, UINT*, UINT*);
+
+/*
+unsigned long PDC_GetTriggerMode(
+    unsigned long nDeviceNo
+    unsigned long *pMode
+    unsigned long *pAFrames
+    unsigned long *pRFrames
+    unsigned long *pRCount
+    unsigned long *pErrorCode
+)
+*/
+typedef UINT (CALLBACK* PDC_GET_TRIGGER_MODE_FUNCTION_DLL)(UINT, UINT*, UINT*, UINT*, UINT*, UINT*);
+
 
 FILE* open_tmp_file_buffer(const char * tmp_file_buffer) {
     FILE* output_file = fopen(tmp_file_buffer, "wb");
@@ -820,6 +842,106 @@ int pdc_get_resolution(UINT n_device_no, UINT n_child_no, const char * tmp_file_
     fwrite(&error_code, sizeof(UINT), 1, output_file);
     fwrite(&width, sizeof(UINT), 1, output_file);
     fwrite(&height, sizeof(UINT), 1, output_file);
+    fclose(output_file);
+
+    return PDC_WRAPPER_SUCCEEDED;
+}
+
+/*
+    tmp_file_buffer:
+        success case (PDC_WRAPPER_SUCCEEDED):
+            4 bytes for return_value
+            4 bytes for error_code
+            4 bytes for fps
+        error case (PDC_WRAPPER_FAILED):
+            string with error message
+*/
+int pdc_get_shutter_speed_fps(UINT n_device_no, UINT n_child_no, const char * tmp_file_buffer) {
+    HINSTANCE libHandle;
+
+    PDC_GET_SHUTTER_SPEED_FPS_FUNCTION_DLL pdc_get_shutter_speed_fps_function_dll;
+    UINT error_code, return_value;
+    UINT fps;
+
+    FILE* output_file = open_tmp_file_buffer(tmp_file_buffer);
+    if (output_file == NULL) {
+        return PDC_WRAPPER_FAILED;
+    }
+
+    libHandle = LoadLibrary("PDCLIB.dll");
+    if (libHandle == NULL) {
+        const char * message = "error loading library PDCLIB.dll";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    pdc_get_shutter_speed_fps_function_dll = (PDC_GET_SHUTTER_SPEED_FPS_FUNCTION_DLL) GetProcAddress(libHandle, "PDC_GetShutterSpeedFps");
+    if (pdc_get_shutter_speed_fps_function_dll == NULL) {
+        const char * message = "GetProcAddress failed loading PDC_GetShutterSpeedFps function";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    return_value = pdc_get_shutter_speed_fps_function_dll(n_device_no, n_child_no, &fps, &error_code);
+
+    fwrite(&return_value, sizeof(UINT), 1, output_file);
+    fwrite(&error_code, sizeof(UINT), 1, output_file);
+    fwrite(&fps, sizeof(UINT), 1, output_file);
+    fclose(output_file);
+
+    return PDC_WRAPPER_SUCCEEDED;
+}
+
+/*
+    tmp_file_buffer:
+        success case (PDC_WRAPPER_SUCCEEDED):
+            4 bytes for return_value
+            4 bytes for error_code
+            4 bytes for mode
+            4 bytes for aframes
+            4 bytes for rframes
+            4 bytes for rcount
+        error case (PDC_WRAPPER_FAILED):
+            string with error message
+*/
+int pdc_get_trigger_mode(UINT n_device_no, const char * tmp_file_buffer) {
+    HINSTANCE libHandle;
+
+    PDC_GET_TRIGGER_MODE_FUNCTION_DLL pdc_get_trigger_mode_function_dll;
+    UINT error_code, return_value;
+    UINT mode, aframes, rframes, rcount;
+
+    FILE* output_file = open_tmp_file_buffer(tmp_file_buffer);
+    if (output_file == NULL) {
+        return PDC_WRAPPER_FAILED;
+    }
+
+    libHandle = LoadLibrary("PDCLIB.dll");
+    if (libHandle == NULL) {
+        const char * message = "error loading library PDCLIB.dll";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    pdc_get_trigger_mode_function_dll = (PDC_GET_TRIGGER_MODE_FUNCTION_DLL) GetProcAddress(libHandle, "PDC_GetTriggerMode");
+    if (pdc_get_trigger_mode_function_dll == NULL) {
+        const char * message = "GetProcAddress failed loading PDC_GetTriggerMode function";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    return_value = pdc_get_trigger_mode_function_dll(n_device_no, &mode, &aframes, &rframes, &rcount, &error_code);
+
+    fwrite(&return_value, sizeof(UINT), 1, output_file);
+    fwrite(&error_code, sizeof(UINT), 1, output_file);
+    fwrite(&mode, sizeof(UINT), 1, output_file);
+    fwrite(&aframes, sizeof(UINT), 1, output_file);
+    fwrite(&rframes, sizeof(UINT), 1, output_file);
+    fwrite(&rcount, sizeof(UINT), 1, output_file);
     fclose(output_file);
 
     return PDC_WRAPPER_SUCCEEDED;
