@@ -276,6 +276,17 @@ unsigned long PDC_GetResolutionList(
 */
 typedef UINT (CALLBACK* PDC_GET_RESOLUTION_LIST_FUNCTION_DLL)(UINT, UINT, UINT*, UINT*, UINT*);
 
+/*
+unsigned long PDC_GetShutterSpeedFpsList(
+    unsigned long nDeviceNo
+    unsigned long nChildNo
+    unsigned long *pSize
+    unsigned long *pList
+    unsigned long *pErrorCode
+)
+*/
+typedef UINT (CALLBACK* PDC_GET_SHUTTER_SPEED_FPS_LIST_FUNCTION_DLL)(UINT, UINT, UINT*, UINT*, UINT*);
+
 
 FILE* open_tmp_file_buffer(const char * tmp_file_buffer) {
     FILE* output_file = fopen(tmp_file_buffer, "wb");
@@ -1570,6 +1581,61 @@ int pdc_get_resolution_list(UINT n_device_no, UINT n_child_no, const char * tmp_
     }
 
     return_value = pdc_get_resolution_list_function_dll(n_device_no, n_child_no, &list_size, list_top, &error_code);
+    if (error_code == PDC_FAILED) {
+        const char * message = "Error getting record rate list";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    fwrite(&return_value, sizeof(UINT), 1, output_file);
+    fwrite(&error_code, sizeof(UINT), 1, output_file);
+    fwrite(&list_size, sizeof(UINT), 1, output_file);
+    fwrite(list_top, sizeof(UINT)*list_size, list_size, output_file);
+    fclose(output_file);
+
+    return PDC_WRAPPER_SUCCEEDED;
+}
+
+/*
+    tmp_file_buffer:
+        success case (PDC_WRAPPER_SUCCEEDED):
+            4 bytes for return_value
+            4 bytes for error_code
+            4 bytes for size
+            4*size bytes for shutter speed fps list
+        error case (PDC_WRAPPER_FAILED):
+            string with error message
+*/
+int pdc_get_shutter_speed_fps_list(UINT n_device_no, UINT n_child_no, const char * tmp_file_buffer) {
+    HINSTANCE libHandle;
+
+    PDC_GET_SHUTTER_SPEED_FPS_LIST_FUNCTION_DLL pdc_get_shutter_speed_fps_list_function_dll;
+    UINT list_size, error_code, return_value;
+    UINT* list_top = NULL;
+
+    FILE* output_file = open_tmp_file_buffer(tmp_file_buffer);
+    if (output_file == NULL) {
+        return PDC_WRAPPER_FAILED;
+    }
+
+    libHandle = LoadLibrary("PDCLIB.dll");
+    if (libHandle == NULL) {
+        const char * message = "error loading library PDCLIB.dll";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    pdc_get_shutter_speed_fps_list_function_dll = (PDC_GET_SHUTTER_SPEED_FPS_LIST_FUNCTION_DLL) GetProcAddress(libHandle, "PDC_GetShutterSpeedFpsList");
+    if (pdc_get_shutter_speed_fps_list_function_dll == NULL) {
+        const char * message = "GetProcAddress failed loading PDC_GetShutterSpeedFpsList function";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    return_value = pdc_get_shutter_speed_fps_list_function_dll(n_device_no, n_child_no, &list_size, list_top, &error_code);
     if (error_code == PDC_FAILED) {
         const char * message = "Error getting record rate list";
         fwrite(message, sizeof(char), strlen(message), output_file);
