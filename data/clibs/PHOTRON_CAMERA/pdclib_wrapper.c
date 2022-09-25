@@ -244,6 +244,17 @@ unsigned long PDC_GetTransferOption(
 */
 typedef UINT (CALLBACK* PDC_GET_TRANSFER_OPTION_FUNCTION_DLL)(UINT, UINT, UINT*, UINT*, UINT*, UINT*);
 
+/*
+unsigned long PDC_GetExternalOutMode(
+    unsigned long nDeviceNo
+    unsigned long nPort
+    unsigned long *pMode
+    unsigned long *pErrorCode
+)
+*/
+typedef UINT (CALLBACK* PDC_GET_EXTERNAL_OUT_MODE_FUNCTION_DLL)(UINT, UINT, UINT*, UINT*);
+
+
 FILE* open_tmp_file_buffer(const char * tmp_file_buffer) {
     FILE* output_file = fopen(tmp_file_buffer, "wb");
     if (output_file == NULL) {
@@ -1391,6 +1402,53 @@ int pdc_get_transfer_option(UINT n_device_no, UINT n_child_no, const char * tmp_
     fwrite(&eight_bit_sel, sizeof(UINT), 1, output_file);
     fwrite(&bayer, sizeof(UINT), 1, output_file);
     fwrite(&interleave, sizeof(UINT), 1, output_file);
+    fclose(output_file);
+
+    return PDC_WRAPPER_SUCCEEDED;
+}
+
+/*
+    tmp_file_buffer:
+        success case (PDC_WRAPPER_SUCCEEDED):
+            4 bytes for return_value
+            4 bytes for error_code
+            4 bytes for mode
+        error case (PDC_WRAPPER_FAILED):
+            string with error message
+*/
+int pdc_get_external_out_mode(UINT n_device_no, UINT n_port, const char * tmp_file_buffer) {
+    HINSTANCE libHandle;
+
+    PDC_GET_EXTERNAL_OUT_MODE_FUNCTION_DLL pdc_get_external_out_mode_function_dll;
+    UINT error_code, return_value;
+    UINT mode;
+
+    FILE* output_file = open_tmp_file_buffer(tmp_file_buffer);
+    if (output_file == NULL) {
+        return PDC_WRAPPER_FAILED;
+    }
+
+    libHandle = LoadLibrary("PDCLIB.dll");
+    if (libHandle == NULL) {
+        const char * message = "error loading library PDCLIB.dll";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    pdc_get_external_out_mode_function_dll = (PDC_GET_EXTERNAL_OUT_MODE_FUNCTION_DLL) GetProcAddress(libHandle, "PDC_GetExternalOutMode");
+    if (pdc_get_external_out_mode_function_dll == NULL) {
+        const char * message = "GetProcAddress failed loading PDC_GetExternalOutMode function";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    return_value = pdc_get_external_out_mode_function_dll(n_device_no, n_port, &mode, &error_code);
+
+    fwrite(&return_value, sizeof(UINT), 1, output_file);
+    fwrite(&error_code, sizeof(UINT), 1, output_file);
+    fwrite(&mode, sizeof(UINT), 1, output_file);
     fclose(output_file);
 
     return PDC_WRAPPER_SUCCEEDED;
