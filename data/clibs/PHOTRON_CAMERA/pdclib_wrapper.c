@@ -297,6 +297,15 @@ unsigned long PDC_GetMemFrameInfo(
 */
 typedef UINT (CALLBACK* PDC_GET_MEM_FRAME_INFO_FUNCTION_DLL)(UINT, UINT, PPDC_FRAME_INFO*, UINT*);
 
+/*
+unsigned long PDC_SetStatus(
+    unsigned long nDeviceNo
+    unsigned long nMode
+    unsigned long *pErrorCode
+)
+*/
+typedef UINT (CALLBACK* PDC_SET_STATUS_FUNCTION_DLL)(UINT, UINT, UINT*);
+
 
 FILE* open_tmp_file_buffer(const char * tmp_file_buffer) {
     FILE* output_file = fopen(tmp_file_buffer, "wb");
@@ -1726,6 +1735,50 @@ int pdc_get_mem_frame_info(UINT n_device_no, UINT n_child_no, const char * tmp_f
     fwrite(&(pdc_frame_info->m_nEventCount), sizeof(INT), 1, output_file);
     fwrite(&(pdc_frame_info->m_nRecordedFrames), sizeof(INT), 1, output_file);
 
+    fclose(output_file);
+
+    return PDC_WRAPPER_SUCCEEDED;
+}
+
+/*
+    tmp_file_buffer:
+        success case (PDC_WRAPPER_SUCCEEDED):
+            4 bytes for return_value
+            4 bytes for error_code
+        error case (PDC_WRAPPER_FAILED):
+            string with error message
+*/
+int pdc_set_status(UINT n_device_no, UINT mode, const char * tmp_file_buffer) {
+    HINSTANCE libHandle;
+
+    PDC_SET_STATUS_FUNCTION_DLL pdc_set_status_function_dll;
+    UINT error_code, return_value;
+
+    FILE* output_file = open_tmp_file_buffer(tmp_file_buffer);
+    if (output_file == NULL) {
+        return PDC_WRAPPER_FAILED;
+    }
+
+    libHandle = LoadLibrary("PDCLIB.dll");
+    if (libHandle == NULL) {
+        const char * message = "error loading library PDCLIB.dll";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    pdc_set_status_function_dll = (PDC_SET_STATUS_FUNCTION_DLL) GetProcAddress(libHandle, "PDC_SetStatus");
+    if (pdc_set_status_function_dll == NULL) {
+        const char * message = "GetProcAddress failed loading PDC_SetStatus function";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    return_value = pdc_set_status_function_dll(n_device_no, mode, &error_code);
+
+    fwrite(&return_value, sizeof(UINT), 1, output_file);
+    fwrite(&error_code, sizeof(UINT), 1, output_file);
     fclose(output_file);
 
     return PDC_WRAPPER_SUCCEEDED;
