@@ -170,6 +170,17 @@ unsigned long PDC_GetTriggerMode(
 */
 typedef UINT (CALLBACK* PDC_GET_TRIGGER_MODE_FUNCTION_DLL)(UINT, UINT*, UINT*, UINT*, UINT*, UINT*);
 
+/*
+unsigned long PDC_GetMaxFrames(
+    unsigned long nDeviceNo
+    unsigned long nChildNo
+    unsigned long *pFrames
+    unsigned long *pBlocks
+    unsigned long *pErrorCode
+)
+*/
+typedef UINT (CALLBACK* PDC_GET_MAX_FRAMES_FUNCTION_DLL)(UINT, UINT, UINT*, UINT*, UINT*);
+
 
 FILE* open_tmp_file_buffer(const char * tmp_file_buffer) {
     FILE* output_file = fopen(tmp_file_buffer, "wb");
@@ -942,6 +953,55 @@ int pdc_get_trigger_mode(UINT n_device_no, const char * tmp_file_buffer) {
     fwrite(&aframes, sizeof(UINT), 1, output_file);
     fwrite(&rframes, sizeof(UINT), 1, output_file);
     fwrite(&rcount, sizeof(UINT), 1, output_file);
+    fclose(output_file);
+
+    return PDC_WRAPPER_SUCCEEDED;
+}
+
+/*
+    tmp_file_buffer:
+        success case (PDC_WRAPPER_SUCCEEDED):
+            4 bytes for return_value
+            4 bytes for error_code
+            4 bytes for frames
+            4 bytes for blocks
+        error case (PDC_WRAPPER_FAILED):
+            string with error message
+*/
+int pdc_get_max_frames(UINT n_device_no, UINT n_child_no, const char * tmp_file_buffer) {
+    HINSTANCE libHandle;
+
+    PDC_GET_MAX_FRAMES_FUNCTION_DLL pdc_get_max_frames_function_dll;
+    UINT error_code, return_value;
+    UINT frames, blocks;
+
+    FILE* output_file = open_tmp_file_buffer(tmp_file_buffer);
+    if (output_file == NULL) {
+        return PDC_WRAPPER_FAILED;
+    }
+
+    libHandle = LoadLibrary("PDCLIB.dll");
+    if (libHandle == NULL) {
+        const char * message = "error loading library PDCLIB.dll";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    pdc_get_max_frames_function_dll = (PDC_GET_MAX_FRAMES_FUNCTION_DLL) GetProcAddress(libHandle, "PDC_GetMaxFrames");
+    if (pdc_get_max_frames_function_dll == NULL) {
+        const char * message = "GetProcAddress failed loading PDC_GetMaxFrames function";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    return_value = pdc_get_max_frames_function_dll(n_device_no, n_child_no, &frames, &blocks, &error_code);
+
+    fwrite(&return_value, sizeof(UINT), 1, output_file);
+    fwrite(&error_code, sizeof(UINT), 1, output_file);
+    fwrite(&frames, sizeof(UINT), 1, output_file);
+    fwrite(&blocks, sizeof(UINT), 1, output_file);
     fclose(output_file);
 
     return PDC_WRAPPER_SUCCEEDED;
