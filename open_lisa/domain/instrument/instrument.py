@@ -100,7 +100,8 @@ class Instrument:
 
         # Returns pyvisa.constants.StatusCode value, check the src for the meaning of each value
         # Src: https://pyvisa.readthedocs.io/en/latest/api/constants.html#pyvisa.constants.StatusCode
-        status_code = self.pyvisa_resource.set_visa_attribute(attribute, state)
+        status_code = self.pyvisa_resource.set_visa_attribute(
+            int(attribute), state)
 
         return str(status_code.value)
 
@@ -117,7 +118,7 @@ class Instrument:
 
         # Returns pyvisa.constants.StatusCode
         # Src: https://pyvisa.readthedocs.io/en/latest/api/constants.html#pyvisa.constants.StatusCode
-        return str(self.pyvisa_resource.get_visa_attribute(attribute))
+        return str(self.pyvisa_resource.get_visa_attribute(int(attribute)))
 
     def validate_command(self, command_name, command_parameters_values=[]):
         command = self.__get_command_by_name(command_name=command_name)
