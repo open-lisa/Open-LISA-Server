@@ -330,6 +330,59 @@ unsigned long PDC_TriggerIn(
 */
 typedef UINT (CALLBACK* PDC_TRIGGER_IN_FUNCTION_DLL)(UINT, UINT*);
 
+/*
+unsigned long PDC_SetBitDepth(
+    unsigned long nDeviceNo
+    unsigned long nChildNo
+    char nDepth
+    unsigned long *pErrorCode
+)
+*/
+typedef UINT (CALLBACK* PDC_SET_BIT_DEPTH_FUNCTION_DLL)(UINT, UINT, CHAR, UINT*);
+
+/*
+unsigned long PDC_SetRecordRate(
+    unsigned long nDeviceNo
+    unsigned long nChildNo
+    unsigned long nRate
+    unsigned long *pErrorCode
+)
+*/
+typedef UINT (CALLBACK* PDC_SET_RECORD_RATE_FUNCTION_DLL)(UINT, UINT, UINT, UINT*);
+
+/*
+unsigned long PDC_SetResolution(
+    unsigned long nDeviceNo
+    unsigned long nChildNo
+    unsigned long nWidth
+    unsigned long nHeight
+    unsigned long *pErrorCode
+)
+*/
+typedef UINT (CALLBACK* PDC_SET_RESOLUTION_FUNTION_DLL)(UINT, UINT, UINT, UINT, UINT*);
+
+/*
+unsigned long PDC_SetShutterSpeedFps(
+    unsigned long nDeviceNo
+    unsigned long nChildNo
+    unsigned long nFps
+    unsigned long *pErrorCode
+)
+*/
+typedef UINT (CALLBACK* PDC_SET_SHUTTER_SPEED_FPS_FUNCTION_DLL)(UINT, UINT, UINT, UINT*);
+
+/*
+unsigned long PDC_SetTriggerMode(
+    unsigned long nDeviceNo
+    unsigned long nMode
+    unsigned long nAFrames
+    unsigned long nRFrames
+    unsigned long nRCount
+    unsigned long *pErrorCode
+)
+*/
+typedef UINT (CALLBACK* PDC_SET_TRIGGER_MODE_FUNCTION_DLL)(UINT, UINT, UINT, UINT, UINT, UINT*);
+
 
 FILE* open_tmp_file_buffer(const char * tmp_file_buffer) {
     FILE* output_file = fopen(tmp_file_buffer, "wb");
@@ -1932,6 +1985,226 @@ int pdc_trigger_in(UINT n_device_no, const char * tmp_file_buffer) {
     }
 
     return_value = pdc_trigger_in_function_dll(n_device_no, &error_code);
+
+    fwrite(&return_value, sizeof(UINT), 1, output_file);
+    fwrite(&error_code, sizeof(UINT), 1, output_file);
+    fclose(output_file);
+
+    return PDC_WRAPPER_SUCCEEDED;
+}
+
+/*
+    tmp_file_buffer:
+        success case (PDC_WRAPPER_SUCCEEDED):
+            4 bytes for return_value
+            4 bytes for error_code
+        error case (PDC_WRAPPER_FAILED):
+            string with error message
+*/
+int pdc_set_bit_depth(UINT n_device_no, UINT n_child_no, CHAR depth, const char * tmp_file_buffer) {
+    HINSTANCE libHandle;
+
+    PDC_SET_BIT_DEPTH_FUNCTION_DLL pdc_set_bit_depth_function_dll;
+    UINT error_code, return_value;
+
+    FILE* output_file = open_tmp_file_buffer(tmp_file_buffer);
+    if (output_file == NULL) {
+        return PDC_WRAPPER_FAILED;
+    }
+
+    libHandle = LoadLibrary("PDCLIB.dll");
+    if (libHandle == NULL) {
+        const char * message = "error loading library PDCLIB.dll";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    pdc_set_bit_depth_function_dll = (PDC_SET_BIT_DEPTH_FUNCTION_DLL) GetProcAddress(libHandle, "PDC_SetBitDepth");
+    if (pdc_set_bit_depth_function_dll == NULL) {
+        const char * message = "GetProcAddress failed loading PDC_SetBitDepth function";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    return_value = pdc_set_bit_depth_function_dll(n_device_no, n_child_no, depth, &error_code);
+
+    fwrite(&return_value, sizeof(UINT), 1, output_file);
+    fwrite(&error_code, sizeof(UINT), 1, output_file);
+    fclose(output_file);
+
+    return PDC_WRAPPER_SUCCEEDED;
+}
+
+/*
+    tmp_file_buffer:
+        success case (PDC_WRAPPER_SUCCEEDED):
+            4 bytes for return_value
+            4 bytes for error_code
+        error case (PDC_WRAPPER_FAILED):
+            string with error message
+*/
+int pdc_set_record_rate(UINT n_device_no, UINT n_child_no, UINT rate, const char * tmp_file_buffer) {
+    HINSTANCE libHandle;
+
+    PDC_SET_RECORD_RATE_FUNCTION_DLL pdc_set_record_rate_function_dll;
+    UINT error_code, return_value;
+
+    FILE* output_file = open_tmp_file_buffer(tmp_file_buffer);
+    if (output_file == NULL) {
+        return PDC_WRAPPER_FAILED;
+    }
+
+    libHandle = LoadLibrary("PDCLIB.dll");
+    if (libHandle == NULL) {
+        const char * message = "error loading library PDCLIB.dll";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    pdc_set_record_rate_function_dll = (PDC_SET_RECORD_RATE_FUNCTION_DLL) GetProcAddress(libHandle, "PDC_SetRecordRate");
+    if (pdc_set_record_rate_function_dll == NULL) {
+        const char * message = "GetProcAddress failed loading PDC_SetRecordRate function";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    return_value = pdc_set_record_rate_function_dll(n_device_no, n_child_no, rate, &error_code);
+
+    fwrite(&return_value, sizeof(UINT), 1, output_file);
+    fwrite(&error_code, sizeof(UINT), 1, output_file);
+    fclose(output_file);
+
+    return PDC_WRAPPER_SUCCEEDED;
+}
+
+/*
+    tmp_file_buffer:
+        success case (PDC_WRAPPER_SUCCEEDED):
+            4 bytes for return_value
+            4 bytes for error_code
+        error case (PDC_WRAPPER_FAILED):
+            string with error message
+*/
+int pdc_set_resolution(UINT n_device_no, UINT n_child_no, UINT width, UINT height, const char * tmp_file_buffer) {
+    HINSTANCE libHandle;
+
+    PDC_SET_RESOLUTION_FUNTION_DLL pdc_set_resolution_function_dll;
+    UINT error_code, return_value;
+
+    FILE* output_file = open_tmp_file_buffer(tmp_file_buffer);
+    if (output_file == NULL) {
+        return PDC_WRAPPER_FAILED;
+    }
+
+    libHandle = LoadLibrary("PDCLIB.dll");
+    if (libHandle == NULL) {
+        const char * message = "error loading library PDCLIB.dll";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    pdc_set_resolution_function_dll = (PDC_SET_RESOLUTION_FUNTION_DLL) GetProcAddress(libHandle, "PDC_SetResolution");
+    if (pdc_set_resolution_function_dll == NULL) {
+        const char * message = "GetProcAddress failed loading PDC_SetResolution function";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    return_value = pdc_set_resolution_function_dll(n_device_no, n_child_no, width, height, &error_code);
+
+    fwrite(&return_value, sizeof(UINT), 1, output_file);
+    fwrite(&error_code, sizeof(UINT), 1, output_file);
+    fclose(output_file);
+
+    return PDC_WRAPPER_SUCCEEDED;
+}
+
+/*
+    tmp_file_buffer:
+        success case (PDC_WRAPPER_SUCCEEDED):
+            4 bytes for return_value
+            4 bytes for error_code
+        error case (PDC_WRAPPER_FAILED):
+            string with error message
+*/
+int pdc_set_shutter_speed_fps(UINT n_device_no, UINT n_child_no, UINT fps, const char * tmp_file_buffer) {
+    HINSTANCE libHandle;
+
+    PDC_SET_SHUTTER_SPEED_FPS_FUNCTION_DLL pdc_set_shutter_speed_fps_function_dll;
+    UINT error_code, return_value;
+
+    FILE* output_file = open_tmp_file_buffer(tmp_file_buffer);
+    if (output_file == NULL) {
+        return PDC_WRAPPER_FAILED;
+    }
+
+    libHandle = LoadLibrary("PDCLIB.dll");
+    if (libHandle == NULL) {
+        const char * message = "error loading library PDCLIB.dll";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    pdc_set_shutter_speed_fps_function_dll = (PDC_SET_SHUTTER_SPEED_FPS_FUNCTION_DLL) GetProcAddress(libHandle, "PDC_SetShutterSpeedFps");
+    if (pdc_set_shutter_speed_fps_function_dll == NULL) {
+        const char * message = "GetProcAddress failed loading PDC_SetShutterSpeedFps function";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    return_value = pdc_set_shutter_speed_fps_function_dll(n_device_no, n_child_no, fps, &error_code);
+
+    fwrite(&return_value, sizeof(UINT), 1, output_file);
+    fwrite(&error_code, sizeof(UINT), 1, output_file);
+    fclose(output_file);
+
+    return PDC_WRAPPER_SUCCEEDED;
+}
+
+/*
+    tmp_file_buffer:
+        success case (PDC_WRAPPER_SUCCEEDED):
+            4 bytes for return_value
+            4 bytes for error_code
+        error case (PDC_WRAPPER_FAILED):
+            string with error message
+*/
+int pdc_set_trigger_mode(UINT n_device_no, UINT mode, UINT aframes, UINT rframes, UINT rcount, const char * tmp_file_buffer) {
+    HINSTANCE libHandle;
+
+    PDC_SET_TRIGGER_MODE_FUNCTION_DLL pdc_set_trigger_mode_function_dll;
+    UINT error_code, return_value;
+
+    FILE* output_file = open_tmp_file_buffer(tmp_file_buffer);
+    if (output_file == NULL) {
+        return PDC_WRAPPER_FAILED;
+    }
+
+    libHandle = LoadLibrary("PDCLIB.dll");
+    if (libHandle == NULL) {
+        const char * message = "error loading library PDCLIB.dll";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    pdc_set_trigger_mode_function_dll = (PDC_SET_TRIGGER_MODE_FUNCTION_DLL) GetProcAddress(libHandle, "PDC_SetTriggerMode");
+    if (pdc_set_trigger_mode_function_dll == NULL) {
+        const char * message = "GetProcAddress failed loading PDC_SetTriggerMode function";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    return_value = pdc_set_trigger_mode_function_dll(n_device_no, mode, aframes, rframes, rcount, &error_code);
 
     fwrite(&return_value, sizeof(UINT), 1, output_file);
     fwrite(&error_code, sizeof(UINT), 1, output_file);
