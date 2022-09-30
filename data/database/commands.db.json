@@ -365,6 +365,439 @@
          },
          "instrument_id": 330355862202759620,
          "id": 11111
+      },
+      {
+         "name": "set_record_rate",
+         "command": "pdc_set_record_rate",
+         "description": "        success case (PDC_WRAPPER_SUCCEEDED):\n            4 bytes for return_value\n            4 bytes for error_code\n        error case (PDC_WRAPPER_FAILED):\n            string with error message",
+         "params": [
+            {
+               "type": "INT",
+               "description": "device no",
+               "position": 1
+            },
+            {
+               "type": "INT",
+               "description": "device child no",
+               "position": 2
+            },
+            {
+               "type": "INT",
+               "description": "record rate",
+               "position": 3
+            }
+         ],
+         "return": {
+            "type": "BYTES",
+            "description": ""
+         },
+         "type": "CLIB",
+         "metadata": {
+            "lib_file_name": "PHOTRON_CAMERA/PDCLIB_WRAPPER_x86.dll"
+         },
+         "instrument_id": 330355862202759620,
+         "id": 214190988246588332
+      },
+      {
+         "name": "set_shutter_speed_fps",
+         "command": "pdc_set_shutter_speed_fps",
+         "description": "        success case (PDC_WRAPPER_SUCCEEDED):\n            4 bytes for return_value\n            4 bytes for error_code\n        error case (PDC_WRAPPER_FAILED):\n            string with error message",
+         "params": [
+            {
+               "type": "INT",
+               "description": "device no",
+               "position": 1
+            },
+            {
+               "type": "INT",
+               "description": "child no",
+               "position": 2
+            },
+            {
+               "type": "INT",
+               "description": "shutter fps",
+               "position": 3
+            }
+         ],
+         "return": {
+            "type": "BYTES",
+            "description": ""
+         },
+         "type": "CLIB",
+         "metadata": {
+            "lib_file_name": "PHOTRON_CAMERA/PDCLIB_WRAPPER_x86.dll"
+         },
+         "instrument_id": 330355862202759620,
+         "id": 179505257096804301
+      },
+      {
+         "name": "set_resolution",
+         "command": "pdc_set_resolution",
+         "description": "        success case (PDC_WRAPPER_SUCCEEDED):\n            4 bytes for return_value\n            4 bytes for error_code\n        error case (PDC_WRAPPER_FAILED):\n            string with error message",
+         "params": [
+            {
+               "type": "INT",
+               "description": "device no",
+               "position": 1
+            },
+            {
+               "type": "INT",
+               "description": "child no",
+               "position": 2
+            },
+            {
+               "type": "INT",
+               "description": "width",
+               "position": 3
+            },
+            {
+               "type": "INT",
+               "description": "height",
+               "position": 4
+            }
+         ],
+         "return": {
+            "type": "BYTES",
+            "description": ""
+         },
+         "type": "CLIB",
+         "metadata": {
+            "lib_file_name": "PHOTRON_CAMERA/PDCLIB_WRAPPER_x86.dll"
+         },
+         "instrument_id": 330355862202759620,
+         "id": 489555552300293795
+      },
+      {
+         "name": "set_trigger_mode",
+         "command": "pdc_set_trigger_mode",
+         "description": "        success case (PDC_WRAPPER_SUCCEEDED):\n            4 bytes for return_value\n            4 bytes for error_code\n        error case (PDC_WRAPPER_FAILED):\n            string with error message",
+         "params": [
+            {
+               "type": "INT",
+               "description": "n_device_no",
+               "position": 1
+            },
+            {
+               "type": "INT",
+               "description": "trigger mode",
+               "position": 2
+            },
+            {
+               "type": "INT",
+               "description": "aframes",
+               "position": 3
+            },
+            {
+               "type": "INT",
+               "description": "rframes",
+               "position": 4
+            },
+            {
+               "type": "INT",
+               "description": "rcount",
+               "position": 5
+            }
+         ],
+         "return": {
+            "type": "BYTES",
+            "description": ""
+         },
+         "type": "CLIB",
+         "metadata": {
+            "lib_file_name": "PHOTRON_CAMERA/PDCLIB_WRAPPER_x86.dll"
+         },
+         "instrument_id": 330355862202759620,
+         "id": 262071671466891694
+      },
+      {
+         "name": "set_lut_mode",
+         "command": "pdc_set_lut_mode",
+         "description": "        success case (PDC_WRAPPER_SUCCEEDED):\n            4 bytes for return_value\n            4 bytes for error_code\n        error case (PDC_WRAPPER_FAILED):\n            string with error message",
+         "params": [
+            {
+               "type": "INT",
+               "description": "device no",
+               "position": 1
+            },
+            {
+               "type": "INT",
+               "description": "child no",
+               "position": 2
+            },
+            {
+               "type": "INT",
+               "description": "lut mode",
+               "position": 3
+            }
+         ],
+         "return": {
+            "type": "BYTES",
+            "description": ""
+         },
+         "type": "CLIB",
+         "metadata": {
+            "lib_file_name": "PHOTRON_CAMERA/PDCLIB_WRAPPER_x86.dll"
+         },
+         "instrument_id": 330355862202759620,
+         "id": 199758705604199002
+      },
+      {
+         "name": "set_external_out_mode",
+         "command": "pdc_set_external_out_mode",
+         "description": "        success case (PDC_WRAPPER_SUCCEEDED):\n            4 bytes for return_value\n            4 bytes for error_code\n        error case (PDC_WRAPPER_FAILED):\n            string with error message",
+         "params": [
+            {
+               "type": "INT",
+               "description": "device no",
+               "position": 1
+            },
+            {
+               "type": "INT",
+               "description": "port no",
+               "position": 2
+            },
+            {
+               "type": "INT",
+               "description": "external out mode",
+               "position": 3
+            }
+         ],
+         "return": {
+            "type": "BYTES",
+            "description": ""
+         },
+         "type": "CLIB",
+         "metadata": {
+            "lib_file_name": "PHOTRON_CAMERA/PDCLIB_WRAPPER_x86.dll"
+         },
+         "instrument_id": 330355862202759620,
+         "id": 222521689550712820
+      },
+      {
+         "name": "set_status",
+         "command": "pdc_set_status",
+         "description": "        success case (PDC_WRAPPER_SUCCEEDED):\n            4 bytes for return_value\n            4 bytes for error_code\n        error case (PDC_WRAPPER_FAILED):\n            string with error message",
+         "params": [
+            {
+               "type": "INT",
+               "description": "device no",
+               "position": 1
+            },
+            {
+               "type": "INT",
+               "description": "status",
+               "position": 2
+            }
+         ],
+         "return": {
+            "type": "BYTES",
+            "description": ""
+         },
+         "type": "CLIB",
+         "metadata": {
+            "lib_file_name": "PHOTRON_CAMERA/PDCLIB_WRAPPER_x86.dll"
+         },
+         "instrument_id": 330355862202759620,
+         "id": 753643692335774068
+      },
+      {
+         "name": "trigger_in",
+         "command": "pdc_trigger_in",
+         "description": "        success case (PDC_WRAPPER_SUCCEEDED):\n            4 bytes for return_value\n            4 bytes for error_code\n        error case (PDC_WRAPPER_FAILED):\n            string with error message",
+         "params": [
+            {
+               "type": "INT",
+               "description": "device no",
+               "position": 1
+            }
+         ],
+         "return": {
+            "type": "BYTES",
+            "description": ""
+         },
+         "type": "CLIB",
+         "metadata": {
+            "lib_file_name": "PHOTRON_CAMERA/PDCLIB_WRAPPER_x86.dll"
+         },
+         "instrument_id": 330355862202759620,
+         "id": 298782603709604614
+      },
+      {
+         "name": "set_rec_ready",
+         "command": "pdc_set_rec_ready",
+         "description": "        success case (PDC_WRAPPER_SUCCEEDED):\n            4 bytes for return_value\n            4 bytes for error_code\n        error case (PDC_WRAPPER_FAILED):\n            string with error message",
+         "params": [
+            {
+               "type": "INT",
+               "description": "device no",
+               "position": 1
+            }
+         ],
+         "return": {
+            "type": "BYTES",
+            "description": ""
+         },
+         "type": "CLIB",
+         "metadata": {
+            "lib_file_name": "PHOTRON_CAMERA/PDCLIB_WRAPPER_x86.dll"
+         },
+         "instrument_id": 330355862202759620,
+         "id": 222619292169241095
+      },
+      {
+         "name": "get_mem_frame_info",
+         "command": "pdc_get_mem_frame_info",
+         "description": "        success case (PDC_WRAPPER_SUCCEEDED):\n            4 bytes for function return_value\n            4 bytes for error code\n            if return_value is success:\n                4 bytes for start\n                4 bytes for end\n                4 bytes for trigger\n                4 bytes for two stage low to high\n                4 bytes for two stage high to low\n                4*10 bytes for 10 events\n                4 bytes for event count\n                4 bytes for recorded frames\n        error case (PDC_WRAPPER_FAILED):\n            string with error message",
+         "params": [
+            {
+               "type": "INT",
+               "description": "device no",
+               "position": 1
+            },
+            {
+               "type": "INT",
+               "description": "child no",
+               "position": 2
+            }
+         ],
+         "return": {
+            "type": "BYTES",
+            "description": ""
+         },
+         "type": "CLIB",
+         "metadata": {
+            "lib_file_name": "PHOTRON_CAMERA/PDCLIB_WRAPPER_x86.dll"
+         },
+         "instrument_id": 330355862202759620,
+         "id": 111024805719264733
+      },
+      {
+         "name": "get_record_rate",
+         "command": "pdc_get_record_rate",
+         "description": "        success case (PDC_WRAPPER_SUCCEEDED):\n            4 bytes for return_value\n            4 bytes for error_code\n            4 bytes for record rate\n        error case (PDC_WRAPPER_FAILED):\n            string with error message",
+         "params": [
+            {
+               "type": "INT",
+               "description": "device no",
+               "position": 1
+            },
+            {
+               "type": "INT",
+               "description": "child no",
+               "position": 2
+            }
+         ],
+         "return": {
+            "type": "BYTES",
+            "description": ""
+         },
+         "type": "CLIB",
+         "metadata": {
+            "lib_file_name": "PHOTRON_CAMERA/PDCLIB_WRAPPER_x86.dll"
+         },
+         "instrument_id": 330355862202759620,
+         "id": 256752710839152177
+      },
+      {
+         "name": "mraw_file_save_open",
+         "command": "pdc_mraw_file_save_open",
+         "description": "        success case (PDC_WRAPPER_SUCCEEDED):\n            4 bytes for return_value\n            4 bytes for error_code\n        error case (PDC_WRAPPER_FAILED):\n            string with error message",
+         "params": [
+            {
+               "type": "INT",
+               "description": "device no",
+               "position": 1
+            },
+            {
+               "type": "INT",
+               "description": "child no",
+               "position": 2
+            },
+            {
+               "type": "STRING",
+               "description": "file path",
+               "position": 3
+            },
+            {
+               "type": "INT",
+               "description": "raw_bit_depth",
+               "position": 4
+            },
+            {
+               "type": "INT",
+               "description": "max_frame_num",
+               "position": 5
+            }
+         ],
+         "return": {
+            "type": "BYTES",
+            "description": ""
+         },
+         "type": "CLIB",
+         "metadata": {
+            "lib_file_name": "PHOTRON_CAMERA/PDCLIB_WRAPPER_x86.dll"
+         },
+         "instrument_id": 330355862202759620,
+         "id": 137208496724607943
+      },
+      {
+         "name": "mraw_file_save",
+         "command": "pdc_mraw_file_save",
+         "description": "        success case (PDC_WRAPPER_SUCCEEDED):\n            4 bytes for return_value\n            4 bytes for error_code\n        error case (PDC_WRAPPER_FAILED):\n            string with error message",
+         "params": [
+            {
+               "type": "INT",
+               "description": "device no",
+               "position": 1
+            },
+            {
+               "type": "INT",
+               "description": "child no",
+               "position": 2
+            },
+            {
+               "type": "INT",
+               "description": "frame number",
+               "position": 3
+            }
+         ],
+         "return": {
+            "type": "BYTES",
+            "description": ""
+         },
+         "type": "CLIB",
+         "metadata": {
+            "lib_file_name": "PHOTRON_CAMERA/PDCLIB_WRAPPER_x86.dll"
+         },
+         "instrument_id": 330355862202759620,
+         "id": 155531591964101832
+      },
+      {
+         "name": "mraw_file_save_close",
+         "command": "pdc_mraw_file_save_close",
+         "description": "        success case (PDC_WRAPPER_SUCCEEDED):\n            4 bytes for return_value\n            4 bytes for error_code\n        error case (PDC_WRAPPER_FAILED):\n            string with error message",
+         "params": [
+            {
+               "type": "INT",
+               "description": "device no",
+               "position": 1
+            },
+            {
+               "type": "INT",
+               "description": "child no",
+               "position": 2
+            }
+         ],
+         "return": {
+            "type": "BYTES",
+            "description": ""
+         },
+         "type": "CLIB",
+         "metadata": {
+            "lib_file_name": "PHOTRON_CAMERA/PDCLIB_WRAPPER_x86.dll"
+         },
+         "instrument_id": 330355862202759620,
+         "id": 117185924609456687
       }
    ]
 }
