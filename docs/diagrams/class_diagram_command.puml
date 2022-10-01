@@ -1,0 +1,93 @@
+@startuml
+interface Command {
+  + int id
+  + String name
+  + String command
+  + CommandType type
+  + String description
+  + CommandParameters parameters
+  + CommandReturn command_return
+
+  + from_dict(dict command_dict): Command
+  + to_dict(void): Dict
+  + execute(void): CommandExecutionResult
+}
+
+class CommandExecutionResult {
+  + UTCTimestamp timestamp_execution_start
+  + UTCTimestamp timestamp_execution_end
+  + CommandReturnType type
+  + String | int | float | bytes[] value
+
+  + get_value_for_file_save(void): String | bytes
+  + to_dict(void): Dict
+}
+
+class CommandParameter {
+  + CommandParameterType type
+  + int position
+  + String description
+
+  + validate_value(value): float | int | String
+  + from_dict(Dict): CommandParameter
+  + to_dict(void): Dict
+  + to_ctype(void): CType
+}
+
+class CommandParameters {
+  - CommandParameter[] parameters
+
+  + add(CommandParameter): void
+  + validate_parameters_values(array[]): void
+  + from_dict(Dict): CommandParameters
+  + to_dict(void): Dict
+  + parameters_values_to_c_function_arguments(array[]): CType[]
+  + sort_parameters_by_position(void): void
+}
+
+class CommandReturn {
+  + CommandReturnType type
+  + String description
+
+  + from_dict(Dict): CommandReturn
+  + to_dict(void): Dict
+  + to_ctype(void): CType
+}
+
+class ClibCommand {
+  + int id
+  + String name
+  + String lib_function
+  + String description
+  + CommandParameters parameters
+  + CommandReturn command_return
+  + String lib_file_name
+
+  + from_dict(Dict, String): ClibCommand
+  + to_dict(int): Dict
+  + execute(CommandParameters): CommandExecutionResult
+}
+
+class SCPICommand {
+  + int id
+  + String name
+  + String scpi_template_syntax
+  + String description
+  + CommandParameters parameters
+  + CommandReturn command_return
+  + PyVisa pyvisa_resource
+
+  + from_dict(Dict, PyVisa): SCPICommand
+  + to_dict(int): Dict
+  + execute(CommandParameters): CommandExecutionResult
+}
+
+Command --> CommandExecutionResult
+Command --> CommandParameters
+Command --> CommandReturn
+CommandParameters --> CommandParameter
+
+class ClibCommand implements Command
+class SCPICommand implements Command
+
+@enduml

@@ -1,4 +1,3 @@
-import logging
 import struct
 from .message_protocol import MessageProtocol
 

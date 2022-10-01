@@ -1,0 +1,60 @@
+@startuml
+interface MessageProtocol {
+
+
+  + disconnect(void): void
+  + send_msg(bytes): void
+  + receive_msg(boolean): bytes
+  - __recvall(int): bytes
+}
+
+class MessageProtocolRS232 {
+  - __rs232_connection Serial
+
+  + send_msg(bytes, boolean): void
+  + receive_msg(boolean): bytes
+  - __recvall(int): byptes
+}
+
+class MessageProtocolTCP {
+  - __rs232_connection Socket
+
+  + send_msg(bytes, boolean): void
+  + receive_msg(boolean): bytes
+  - __recvall(int): byptes
+}
+
+class ServerProtocol {
+  - __message_protocol MessageProtocol
+  - __file_manager FileManager
+
+  + get_command(void): bytes
+  + notify_unexpected_server_error_to_client(String): void
+  + handle_health_check(void): void
+  + handle_get_detected_physical_addresses(InstrumentsRepository): void
+  + handle_get_instrument(InstrumentsRepository): void
+  + handle_get_instruments(InstrumentRepository): void
+  + handle_create_instrument(InstrumentRepository): void
+  + handle_update_instrument(InstrumentRepository): void
+  + handle_delete_instrument(InstrumentRepository): void
+  + handle_delete_instrument_command(CommandsRepository): void
+  + handle_get_instrument_commands(InstrumentRepository): void
+  + handle_validate_command(InstrumentRepository): void
+  + handle_send_command(InstrumentRepository): void
+  + handle_send_file(void): void
+  + handle_delete_file(void): void
+  + handle_get_file(void): void
+  + handle_get_directory_structure(void): void
+  + handle_execute_bash_command(void): void
+  + handle_disconnect_command(void): void
+  + handle_create_directory(void): void
+  + handle_delete_directory(void): void
+  + handle_set_instrument_visa_attribute(InstrumentRepository): void
+  + handle_get_instrument_visa_attribute(InstrumentRepository): void
+  + handle_reset_databases(void): void
+}
+
+class MessageProtocolRS232 implements MessageProtocol
+class MessageProtocolTCP implements MessageProtocol
+ServerProtocol --> MessageProtocol
+@enduml

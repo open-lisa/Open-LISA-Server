@@ -204,7 +204,6 @@ class ServerProtocol:
             self._message_protocol.send_msg(ERROR_RESPONSE)
             self._message_protocol.send_msg(e.message)
 
-        # TODO: Answer a bytes checksum for error checking
         self._message_protocol.send_msg(SUCCESS_RESPONSE)
 
     def handle_delete_file(self):
