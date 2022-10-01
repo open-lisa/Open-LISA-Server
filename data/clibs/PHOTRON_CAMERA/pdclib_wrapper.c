@@ -618,11 +618,13 @@ int pdc_detect_device(UINT ip, const char * tmp_file_buffer) {
     if (pdc_detect_num_info.m_nDeviceNum == 0) {
         const char * message = "No devices detected!";
         fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
         return PDC_WRAPPER_FAILED;
     }
     if (pdc_detect_num_info.m_nDeviceNum > 1) {
         const char * message = "More than 1 device detected!";
         fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
         return PDC_WRAPPER_FAILED;
     }
 
