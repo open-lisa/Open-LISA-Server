@@ -54,7 +54,26 @@ class ServerProtocol {
   + handle_reset_databases(void): void
 }
 
+class FileManager {
+  - __folders_path Dict[String]
+
+
+  + get_server_folder_structure(String): Dict
+  + delete_file(String): void
+  + get_file_data(String, String): String | bytes
+  + create_directory(String, String): void
+  + delete_directory(String): void
+  - __list_directory_recursively(String): Dict
+  - __get_file_path(String): String
+  - __is_path_creatable(String): boolean
+  - __is_pathname_valid(String): boolean
+  - __is_path_exists_or_creatable(String): boolean
+  - __transform_directory_represented_as_dict_to_list(Dict): List[Dict]
+
+}
+
 class MessageProtocolRS232 implements MessageProtocol
 class MessageProtocolTCP implements MessageProtocol
 ServerProtocol --> MessageProtocol
+ServerProtocol --> FileManager
 @enduml
