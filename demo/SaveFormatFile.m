@@ -5,12 +5,13 @@ function fileName = SaveFormatFile(sdk, cam_id, fileID, DEVICE_NO, CHILD_NO)
 %     end
     fileName = [fileID '.mraw'];
     file_path = fullfile(pwd, 'movies', fileName);
-    assert(fileName ~= 0, sprintf('Error in %s', 'SaveFormatFile: No FileName'));
+%     assert(fileName ~= 0, sprintf('Error in %s', 'SaveFormatFile: No FileName'));
     %% Get Mem Info
     cm = sprintf('get_mem_frame_info %d %d',DEVICE_NO, CHILD_NO);
     json_out = sdk.send_command(pyargs('instrument_id', cam_id, 'command_invocation', cm));
     out = json_2_ints(json_out);  ret = out(1);
     assert(logical(ret), sprintf('Error in %s', 'SaveFormatFile: get_mem_frame_info'));
+    %%
     frameInfo = out(2);
     startNo        = frameInfo.m_nStart;
     recordedFrames = frameInfo.m_nRecordedFrames;

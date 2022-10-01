@@ -295,7 +295,7 @@ unsigned long PDC_GetMemFrameInfo(
     unsigned long *pErrorCode
 )
 */
-typedef UINT (CALLBACK* PDC_GET_MEM_FRAME_INFO_FUNCTION_DLL)(UINT, UINT, PPDC_FRAME_INFO*, UINT*);
+typedef UINT (CALLBACK* PDC_GET_MEM_FRAME_INFO_FUNCTION_DLL)(UINT, UINT, PDC_FRAME_INFO*, UINT*);
 
 /*
 unsigned long PDC_SetStatus(
@@ -1899,7 +1899,7 @@ int pdc_get_mem_frame_info(UINT n_device_no, UINT n_child_no, const char * tmp_f
     PDC_GET_MEM_FRAME_INFO_FUNCTION_DLL pdc_get_mem_frame_info_function_dll;
 
     UINT error_code, return_value;
-    PPDC_FRAME_INFO pdc_frame_info;
+    PDC_FRAME_INFO pdc_frame_info;
 
     FILE* output_file = open_tmp_file_buffer(tmp_file_buffer);
     if (output_file == NULL) {
@@ -1927,18 +1927,20 @@ int pdc_get_mem_frame_info(UINT n_device_no, UINT n_child_no, const char * tmp_f
     fwrite(&return_value, sizeof(UINT), 1, output_file);
     fwrite(&error_code, sizeof(UINT), 1, output_file);
     if (return_value == PDC_FAILED) {
+        const char * message = "PDC_GetMemFrameInfo function invocation failed";
+        fwrite(message, sizeof(char), strlen(message), output_file);
         fclose(output_file);
         return PDC_WRAPPER_SUCCEEDED;
     }
 
-    fwrite(&(pdc_frame_info->m_nStart), sizeof(INT), 1, output_file);
-    fwrite(&(pdc_frame_info->m_nEnd), sizeof(INT), 1, output_file);
-    fwrite(&(pdc_frame_info->m_nTrigger), sizeof(INT), 1, output_file);
-    fwrite(&(pdc_frame_info->m_nTwoStageLowToHigh), sizeof(INT), 1, output_file);
-    fwrite(&(pdc_frame_info->m_nTwoStageHighToLow), sizeof(INT), 1, output_file);
-    fwrite(&(pdc_frame_info->m_nEvent), sizeof(INT), 10, output_file);
-    fwrite(&(pdc_frame_info->m_nEventCount), sizeof(INT), 1, output_file);
-    fwrite(&(pdc_frame_info->m_nRecordedFrames), sizeof(INT), 1, output_file);
+    fwrite(&(pdc_frame_info.m_nStart), sizeof(INT), 1, output_file);
+    fwrite(&(pdc_frame_info.m_nEnd), sizeof(INT), 1, output_file);
+    fwrite(&(pdc_frame_info.m_nTrigger), sizeof(INT), 1, output_file);
+    fwrite(&(pdc_frame_info.m_nTwoStageLowToHigh), sizeof(INT), 1, output_file);
+    fwrite(&(pdc_frame_info.m_nTwoStageHighToLow), sizeof(INT), 1, output_file);
+    fwrite(&(pdc_frame_info.m_nEvent), sizeof(INT), 10, output_file);
+    fwrite(&(pdc_frame_info.m_nEventCount), sizeof(INT), 1, output_file);
+    fwrite(&(pdc_frame_info.m_nRecordedFrames), sizeof(INT), 1, output_file);
 
     fclose(output_file);
 
