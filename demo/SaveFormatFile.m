@@ -24,8 +24,9 @@ function fileName = SaveFormatFile(sdk, cam_id, fileID, DEVICE_NO, CHILD_NO)
     assert(logical(ret), sprintf('Error in %s', 'SaveFormatFile: get_record_rate'));
     record_rate = out(2)
     % Open File
-    cm = sprintf('mraw_file_save_open %d %d %s %d %d', DEVICE_NO, CHILD_NO, file_path, PDC_MRAW_BITDEPTH_16, 0);
-    json_out = sdk.send_command(pyargs('instrument_id', cam_id, 'command_invocation', cm));
+    PDC_MRAW_BITDEPTH_16 = 3;
+    cm = sprintf('mraw_file_save_open %d %d %d %d', DEVICE_NO, CHILD_NO, PDC_MRAW_BITDEPTH_16, 0);
+    json_out = sdk.send_command(pyargs('instrument_id', cam_id, 'command_invocation', cm, 'command_result_output_file', "sandbox/picture.mraw"));
     out = json_2_ints(json_out);  ret = out(1);
     assert(logical(ret), sprintf('Error in %s', 'SaveFormatFile: mraw_file_save_open'));
     % Load Images to file

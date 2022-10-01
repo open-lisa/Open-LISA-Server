@@ -2566,12 +2566,11 @@ int pdc_set_transfer_option(UINT n_device_no, UINT n_child_no, UINT eight_bit_se
 /*
     tmp_file_buffer:
         success case (PDC_WRAPPER_SUCCEEDED):
-            4 bytes for return_value
-            4 bytes for error_code
+            N bytes with file
         error case (PDC_WRAPPER_FAILED):
             string with error message
 */
-int pdc_bmp_file_save(UINT n_device_no, UINT n_child_no, const char * file_name, UINT frame_no, const char * tmp_file_buffer) {
+int pdc_bmp_file_save(UINT n_device_no, UINT n_child_no, UINT frame_no, const char * tmp_file_buffer) {
     HINSTANCE libHandle;
 
     PDC_BMP_FILE_SAVE_FUNCTION_DLL pdc_bmp_file_save_function_dll;
@@ -2598,11 +2597,16 @@ int pdc_bmp_file_save(UINT n_device_no, UINT n_child_no, const char * file_name,
         return PDC_WRAPPER_FAILED;
     }
 
-    return_value = pdc_bmp_file_save_function_dll(n_device_no, n_child_no, file_name, frame_no, &error_code);
-
-    fwrite(&return_value, sizeof(UINT), 1, output_file);
-    fwrite(&error_code, sizeof(UINT), 1, output_file);
     fclose(output_file);
+    return_value = pdc_bmp_file_save_function_dll(n_device_no, n_child_no, tmp_file_buffer, frame_no, &error_code);
+
+    if (return_value == PDC_FAILED) {
+        output_file = open_tmp_file_buffer(tmp_file_buffer);
+        const char * message = "Error on PDC_BMPFileSaveA function call.";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
 
     return PDC_WRAPPER_SUCCEEDED;
 }
@@ -2610,12 +2614,11 @@ int pdc_bmp_file_save(UINT n_device_no, UINT n_child_no, const char * file_name,
 /*
     tmp_file_buffer:
         success case (PDC_WRAPPER_SUCCEEDED):
-            4 bytes for return_value
-            4 bytes for error_code
+            N bytes with file
         error case (PDC_WRAPPER_FAILED):
             string with error message
 */
-int pdc_avi_file_save_open(UINT n_device_no, UINT n_child_no, const char * file_name, UINT rate, UINT show_compress, const char * tmp_file_buffer) {
+int pdc_avi_file_save_open(UINT n_device_no, UINT n_child_no, UINT rate, UINT show_compress, const char * tmp_file_buffer) {
     HINSTANCE libHandle;
 
     PDC_AVI_FILE_SAVE_OPEN_FUNCTION_DLL pdc_avi_file_save_open_function_dll;
@@ -2642,11 +2645,16 @@ int pdc_avi_file_save_open(UINT n_device_no, UINT n_child_no, const char * file_
         return PDC_WRAPPER_FAILED;
     }
 
-    return_value = pdc_avi_file_save_open_function_dll(n_device_no, n_child_no, file_name, rate, show_compress, &error_code);
-
-    fwrite(&return_value, sizeof(UINT), 1, output_file);
-    fwrite(&error_code, sizeof(UINT), 1, output_file);
     fclose(output_file);
+    return_value = pdc_avi_file_save_open_function_dll(n_device_no, n_child_no, tmp_file_buffer, rate, show_compress, &error_code);
+
+    if (return_value == PDC_FAILED) {
+        output_file = open_tmp_file_buffer(tmp_file_buffer);
+        const char * message = "Error calling PDC_AVIFileSaveOpenA function.";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
 
     return PDC_WRAPPER_SUCCEEDED;
 }
@@ -2750,7 +2758,7 @@ int pdc_avi_file_save_close(UINT n_device_no, UINT n_child_no, const char * tmp_
         error case (PDC_WRAPPER_FAILED):
             string with error message
 */
-int pdc_mraw_file_save_open(UINT n_device_no, UINT n_child_no, const char * file_name, UINT raw_bit_depth, UINT max_frame_num, const char * tmp_file_buffer) {
+int pdc_mraw_file_save_open(UINT n_device_no, UINT n_child_no, UINT raw_bit_depth, UINT max_frame_num, const char * tmp_file_buffer) {
     HINSTANCE libHandle;
 
     PDC_MRAW_FILE_SAVE_OPEN_FUNCTION_DLL pdc_mraw_file_save_open_function_dll;
@@ -2777,11 +2785,16 @@ int pdc_mraw_file_save_open(UINT n_device_no, UINT n_child_no, const char * file
         return PDC_WRAPPER_FAILED;
     }
 
-    return_value = pdc_mraw_file_save_open_function_dll(n_device_no, n_child_no, file_name, raw_bit_depth, max_frame_num, &error_code);
-
-    fwrite(&return_value, sizeof(UINT), 1, output_file);
-    fwrite(&error_code, sizeof(UINT), 1, output_file);
     fclose(output_file);
+    return_value = pdc_mraw_file_save_open_function_dll(n_device_no, n_child_no, tmp_file_buffer, raw_bit_depth, max_frame_num, &error_code);
+
+    if (return_value == PDC_FAILED) {
+        output_file = open_tmp_file_buffer(tmp_file_buffer);
+        const char * message = "Error calling PDC_MRAWFileSaveOpenA function.";
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
 
     return PDC_WRAPPER_SUCCEEDED;
 }

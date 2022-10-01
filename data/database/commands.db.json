@@ -701,7 +701,7 @@
       {
          "name": "mraw_file_save_open",
          "command": "pdc_mraw_file_save_open",
-         "description": "        success case (PDC_WRAPPER_SUCCEEDED):\n            4 bytes for return_value\n            4 bytes for error_code\n        error case (PDC_WRAPPER_FAILED):\n            string with error message",
+         "description": "        success case (PDC_WRAPPER_SUCCEEDED):\n            N bytes for file\n        error case (PDC_WRAPPER_FAILED):\n            string with error message",
          "params": [
             {
                "type": "INT",
@@ -712,11 +712,6 @@
                "type": "INT",
                "description": "child no",
                "position": 2
-            },
-            {
-               "type": "STRING",
-               "description": "file path",
-               "position": 3
             },
             {
                "type": "INT",
