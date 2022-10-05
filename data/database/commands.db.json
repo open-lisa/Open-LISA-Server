@@ -793,6 +793,48 @@
          },
          "instrument_id": 330355862202759620,
          "id": 117185924609456687
+      },
+      {
+         "name": "download_mraw_video_from_camera",
+         "command": "pdc_download_mraw_video_from_camera",
+         "description": "Downloads frames to mraw file",
+         "params": [
+            {
+               "type": "INT",
+               "description": "device no",
+               "position": 1
+            },
+            {
+               "type": "INT",
+               "description": "child no",
+               "position": 2
+            },
+            {
+               "type": "INT",
+               "description": "raw bit depth",
+               "position": 3
+            },
+            {
+               "type": "INT",
+               "description": "max frame num",
+               "position": 4
+            },
+            {
+               "type": "INT",
+               "description": "frames to save",
+               "position": 5
+            }
+         ],
+         "return": {
+            "type": "BYTES",
+            "description": "the video"
+         },
+         "type": "CLIB",
+         "metadata": {
+            "lib_file_name": "PHOTRON_CAMERA/PDCLIB_WRAPPER_x86.dll"
+         },
+         "instrument_id": 330355862202759620,
+         "id": 844195832817342407
       }
    ]
 }

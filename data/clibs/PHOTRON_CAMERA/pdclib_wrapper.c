@@ -2762,7 +2762,7 @@ int pdc_mraw_file_save_open(UINT n_device_no, UINT n_child_no, UINT raw_bit_dept
     HINSTANCE libHandle;
 
     PDC_MRAW_FILE_SAVE_OPEN_FUNCTION_DLL pdc_mraw_file_save_open_function_dll;
-    UINT error_code, return_value;
+    UINT error_code = 0, return_value;
 
     FILE* output_file = open_tmp_file_buffer(tmp_file_buffer);
     if (output_file == NULL) {
@@ -2790,7 +2790,8 @@ int pdc_mraw_file_save_open(UINT n_device_no, UINT n_child_no, UINT raw_bit_dept
 
     if (return_value == PDC_FAILED) {
         output_file = open_tmp_file_buffer(tmp_file_buffer);
-        const char * message = "Error calling PDC_MRAWFileSaveOpenA function.";
+        const char * message = "Error calling PDC_MRAWFileSaveOpenW function.";
+        fprintf(stderr, "[pdc_mraw_file_save_open] %s, error_code=%d\n", message, error_code);
         fwrite(message, sizeof(char), strlen(message), output_file);
         fclose(output_file);
         return PDC_WRAPPER_FAILED;
