@@ -716,12 +716,12 @@
             {
                "type": "INT",
                "description": "raw_bit_depth",
-               "position": 4
+               "position": 3
             },
             {
                "type": "INT",
                "description": "max_frame_num",
-               "position": 5
+               "position": 4
             }
          ],
          "return": {
