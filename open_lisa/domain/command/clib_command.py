@@ -12,7 +12,7 @@ from open_lisa.exceptions.invalid_clib_command_function_name import InvalidCLibC
 from open_lisa.exceptions.invalid_clib_command_lib_file import InvalidCLibCommandLibFileError
 from open_lisa.utils.date import get_UTC_timestamp
 
-TMP_BUFFER_FILE = "tmp_file_buffer.bin"
+TMP_BUFFER_FILE = os.path.join(os.getcwd(), "tmp_file_buffer.bin")
 
 
 class CLibCommand(Command):
