@@ -2886,3 +2886,126 @@ int pdc_mraw_file_save_close(UINT n_device_no, UINT n_child_no, const char * tmp
 
     return PDC_WRAPPER_SUCCEEDED;
 }
+
+
+int pdc_download_mraw_video_from_camera(UINT n_device_no, UINT n_child_no, UINT raw_bit_depth, UINT max_frame_num, UINT frames_to_save, const char * tmp_file_buffer) {
+    HINSTANCE libHandle;
+    PDC_GET_MEM_FRAME_INFO_FUNCTION_DLL pdc_get_mem_frame_info_function_dll;
+    PDC_MRAW_FILE_SAVE_OPEN_FUNCTION_DLL pdc_mraw_file_save_open_function_dll;
+    PDC_MRAW_FILE_SAVE_FUNCTION_DLL pdc_mraw_file_save_function_dll;
+    PDC_MRAW_FILE_SAVE_CLOSE_FUNCTION_DLL pdc_mraw_file_save_close_function_dll;
+    PDC_FRAME_INFO pdc_frame_info;
+    UINT error_code, return_value;
+
+    // tmp buffer file initialization
+    FILE* output_file = open_tmp_file_buffer(tmp_file_buffer);
+    if (output_file == NULL) {
+        fprintf(stderr, "[pdc_download_mraw_video_from_camera] could not open tmp file\n");
+        return PDC_WRAPPER_FAILED;
+    }
+
+    // DLL initialization
+    libHandle = LoadLibrary("PDCLIB.dll");
+    if (libHandle == NULL) {
+        const char * message = "error loading library PDCLIB.dll";
+        fprintf(stderr, "[pdc_download_mraw_video_from_camera] %s\n", message);
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    // DLL functions initialization
+    pdc_get_mem_frame_info_function_dll = (PDC_GET_MEM_FRAME_INFO_FUNCTION_DLL) GetProcAddress(libHandle, "PDC_GetMemFrameInfo");
+    if (pdc_get_mem_frame_info_function_dll == NULL) {
+        const char * message = "GetProcAddress failed loading PDC_GetMemFrameInfo function";
+        fprintf(stderr, "[pdc_download_mraw_video_from_camera] %s\n", message);
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+    pdc_mraw_file_save_open_function_dll = (PDC_MRAW_FILE_SAVE_OPEN_FUNCTION_DLL) GetProcAddress(libHandle, "PDC_MRAWFileSaveOpenA");
+    if (pdc_mraw_file_save_open_function_dll == NULL) {
+        const char * message = "GetProcAddress failed loading PDC_MRAWFileSaveOpenA function";
+        fprintf(stderr, "[pdc_download_mraw_video_from_camera] %s\n", message);
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+    pdc_mraw_file_save_function_dll = (PDC_MRAW_FILE_SAVE_FUNCTION_DLL) GetProcAddress(libHandle, "PDC_MRAWFileSave");
+    if (pdc_mraw_file_save_function_dll == NULL) {
+        const char * message = "GetProcAddress failed loading PDC_MRAWFileSave function";
+        fprintf(stderr, "[pdc_download_mraw_video_from_camera] %s\n", message);
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+    pdc_mraw_file_save_close_function_dll = (PDC_MRAW_FILE_SAVE_CLOSE_FUNCTION_DLL) GetProcAddress(libHandle, "PDC_MRAWFileSaveClose");
+    if (pdc_mraw_file_save_close_function_dll == NULL) {
+        const char * message = "GetProcAddress failed loading PDC_MRAWFileSaveClose function";
+        fprintf(stderr, "[pdc_download_mraw_video_from_camera] %s\n", message);
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    // pdc_download_mraw_video_from_camera logic start
+    // get mem frame info
+    return_value = pdc_get_mem_frame_info_function_dll(n_device_no, n_child_no, &pdc_frame_info, &error_code);
+    if (return_value == PDC_FAILED) {
+        const char * message = "PDC_GetMemFrameInfo function invocation failed";
+        fprintf(stderr, "[pdc_download_mraw_video_from_camera] %s, error_code=%d\n", message, error_code);
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_SUCCEEDED;
+    }
+
+    // open file
+    fclose(output_file); // We should close the file because save_open open the file again?
+    return_value = pdc_mraw_file_save_open_function_dll(n_device_no, n_child_no, tmp_file_buffer, raw_bit_depth, max_frame_num, &error_code);
+    if (return_value == PDC_FAILED) {
+        output_file = open_tmp_file_buffer(tmp_file_buffer); // the file is already open maybe?
+        const char * message = "Error calling PDC_MRAWFileSaveOpenA function.";
+        fprintf(stderr, "[pdc_download_mraw_video_from_camera] %s, error_code=%d\n", message, error_code);
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+
+    // save frames loop
+    UINT start_no = pdc_frame_info.m_nStart;
+    UINT end_no = pdc_frame_info.m_nEnd;
+
+    for (int i = 0; i < max_frame_num; i++) {
+        int frame_no = start_no + i;
+        if (frame_no < 0) {
+            fprintf(stdout, "[pdc_download_mraw_video_from_camera] frame_no=%d\n", frame_no);
+            frame_no = end_no + abs(start_no) + frame_no + 1;
+        }
+
+        return_value = pdc_mraw_file_save_function_dll(n_device_no, n_child_no, frame_no, &error_code);
+        if (return_value == PDC_FAILED) {
+            // output_file = open_tmp_file_buffer(tmp_file_buffer); // the file is already open maybe?
+            const char * message = "Error calling PDC_MRAWFileSave function.";
+            fprintf(stderr, "[pdc_download_mraw_video_from_camera] %s, error_code=%d\n", message, error_code);
+            fwrite(message, sizeof(char), strlen(message), output_file);
+            fclose(output_file);
+            return PDC_WRAPPER_FAILED;
+        }
+    }
+
+    // close file
+    return_value = pdc_mraw_file_save_close_function_dll(n_device_no, n_child_no, &error_code);
+    if (return_value == PDC_FAILED) {
+        // output_file = open_tmp_file_buffer(tmp_file_buffer); // the file is already open maybe?
+        const char * message = "Error calling PDC_MRAWFileSaveClose function.";
+        fprintf(stderr, "[pdc_download_mraw_video_from_camera] %s, error_code=%d\n", message, error_code);
+        fwrite(message, sizeof(char), strlen(message), output_file);
+        fclose(output_file);
+        return PDC_WRAPPER_FAILED;
+    }
+    // pdc_download_mraw_video_from_camera logic ends
+
+    // fclose(output_file); // the file is already close by PDC_MRAWFileSaveClose?
+
+    return PDC_WRAPPER_SUCCEEDED;
+}
