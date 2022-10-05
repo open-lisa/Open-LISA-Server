@@ -2887,7 +2887,13 @@ int pdc_mraw_file_save_close(UINT n_device_no, UINT n_child_no, const char * tmp
     return PDC_WRAPPER_SUCCEEDED;
 }
 
-
+/*
+    tmp_file_buffer:
+        success case (PDC_WRAPPER_SUCCEEDED):
+            bytes of frames_to_save
+        error case (PDC_WRAPPER_FAILED):
+            string with error message
+*/
 int pdc_download_mraw_video_from_camera(UINT n_device_no, UINT n_child_no, UINT raw_bit_depth, UINT max_frame_num, UINT frames_to_save, const char * tmp_file_buffer) {
     HINSTANCE libHandle;
     PDC_GET_MEM_FRAME_INFO_FUNCTION_DLL pdc_get_mem_frame_info_function_dll;
