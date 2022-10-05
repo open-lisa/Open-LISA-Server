@@ -13,23 +13,23 @@ function fileName = SaveFormatFile(sdk, cam_id, fileID, DEVICE_NO, CHILD_NO)
     assert(logical(ret), sprintf('Error in %s', 'SaveFormatFile: get_mem_frame_info'));
     %%
     frameInfo = out(2);
-    startNo        = frameInfo.m_nStart;
-    recordedFrames = frameInfo.m_nRecordedFrames;
-    endNo          = frameInfo.m_nEnd;
+    startNo        = out(3);
+    recordedFrames = out(19);
+    endNo          = out(4);
     SAVEDFRAMES    = 300;
-    % Get Record Rate 
+    %% Get Record Rate 
     cm = sprintf('get_record_rate %d %d', DEVICE_NO, CHILD_NO);
     json_out = sdk.send_command(pyargs('instrument_id', cam_id, 'command_invocation', cm));
     out = json_2_ints(json_out);  ret = out(1);
     assert(logical(ret), sprintf('Error in %s', 'SaveFormatFile: get_record_rate'));
-    record_rate = out(2)
-    % Open File
+    record_rate = out(3)
+    %% Open File
     PDC_MRAW_BITDEPTH_16 = 3;
     cm = sprintf('mraw_file_save_open %d %d %d %d', DEVICE_NO, CHILD_NO, PDC_MRAW_BITDEPTH_16, 0);
     json_out = sdk.send_command(pyargs('instrument_id', cam_id, 'command_invocation', cm, 'command_result_output_file', "sandbox/picture.mraw"));
     out = json_2_ints(json_out);  ret = out(1);
     assert(logical(ret), sprintf('Error in %s', 'SaveFormatFile: mraw_file_save_open'));
-    % Load Images to file
+    %% Load Images to file
     for i=1:SAVEDFRAMES+1
         frameNo = startNo + int32(i - 1);
         if frameNo < 0

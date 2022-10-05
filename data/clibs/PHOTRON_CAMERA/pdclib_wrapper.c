@@ -2777,9 +2777,9 @@ int pdc_mraw_file_save_open(UINT n_device_no, UINT n_child_no, UINT raw_bit_dept
         return PDC_WRAPPER_FAILED;
     }
 
-    pdc_mraw_file_save_open_function_dll = (PDC_MRAW_FILE_SAVE_OPEN_FUNCTION_DLL) GetProcAddress(libHandle, "PDC_MRAWFileSaveOpenW");
+    pdc_mraw_file_save_open_function_dll = (PDC_MRAW_FILE_SAVE_OPEN_FUNCTION_DLL) GetProcAddress(libHandle, "PDC_MRAWFileSaveOpenA");
     if (pdc_mraw_file_save_open_function_dll == NULL) {
-        const char * message = "GetProcAddress failed loading PDC_MRAWFileSaveOpenW function";
+        const char * message = "GetProcAddress failed loading PDC_MRAWFileSaveOpenA function";
         fwrite(message, sizeof(char), strlen(message), output_file);
         fclose(output_file);
         return PDC_WRAPPER_FAILED;
@@ -2790,7 +2790,7 @@ int pdc_mraw_file_save_open(UINT n_device_no, UINT n_child_no, UINT raw_bit_dept
 
     if (return_value == PDC_FAILED) {
         output_file = open_tmp_file_buffer(tmp_file_buffer);
-        const char * message = "Error calling PDC_MRAWFileSaveOpenW function.";
+        const char * message = "Error calling PDC_MRAWFileSaveOpenA function.";
         fprintf(stderr, "[pdc_mraw_file_save_open] %s, error_code=%d\n", message, error_code);
         fwrite(message, sizeof(char), strlen(message), output_file);
         fclose(output_file);
