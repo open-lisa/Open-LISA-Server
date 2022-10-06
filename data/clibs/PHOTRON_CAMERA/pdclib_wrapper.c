@@ -2983,9 +2983,9 @@ int pdc_download_mraw_video_from_camera(UINT n_device_no, UINT n_child_no, UINT 
     // save frames loop
     UINT start_no = pdc_frame_info.m_nStart;
     UINT end_no = pdc_frame_info.m_nEnd;
-    fprintf("[pdc_download_mraw_video_from_camera] start_no=%d\n", start_no);
-    fprintf("[pdc_download_mraw_video_from_camera] end_no=%d\n", end_no);
-    fprintf("[pdc_download_mraw_video_from_camera] max_frame_num=%d\n", max_frame_num);
+    fprintf(stdout, "[pdc_download_mraw_video_from_camera] start_no=%d\n", start_no);
+    fprintf(stdout, "[pdc_download_mraw_video_from_camera] end_no=%d\n", end_no);
+    fprintf(stdout, "[pdc_download_mraw_video_from_camera] max_frame_num=%d\n", max_frame_num);
 
     for (int i = 0; i < max_frame_num; i++) {
         int frame_no = start_no + i;
@@ -2993,7 +2993,7 @@ int pdc_download_mraw_video_from_camera(UINT n_device_no, UINT n_child_no, UINT 
             fprintf(stdout, "[pdc_download_mraw_video_from_camera] frame_no=%d\n", frame_no);
             frame_no = end_no + abs(start_no) + frame_no + 1;
         }
-        fprintf("[pdc_download_mraw_video_from_camera] frame_no=%d\t", frame_no);
+        fprintf(stdout, "[pdc_download_mraw_video_from_camera] frame_no=%d\t", frame_no);
 
         return_value = pdc_mraw_file_save_function_dll(n_device_no, n_child_no, frame_no, &error_code);
         if (return_value == PDC_FAILED) {
@@ -3020,7 +3020,7 @@ int pdc_download_mraw_video_from_camera(UINT n_device_no, UINT n_child_no, UINT 
     }
     // pdc_download_mraw_video_from_camera logic ends
 
-    fprintf("[pdc_download_mraw_video_from_camera] closed successfully\n");
+    fprintf(stdout, "[pdc_download_mraw_video_from_camera] closed successfully\n");
     // fclose(output_file); // the file is already close by PDC_MRAWFileSaveClose?
 
     return PDC_WRAPPER_SUCCEEDED;
