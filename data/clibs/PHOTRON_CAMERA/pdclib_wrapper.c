@@ -2985,9 +2985,9 @@ int pdc_download_mraw_video_from_camera(UINT n_device_no, UINT n_child_no, UINT 
     UINT end_no = pdc_frame_info.m_nEnd;
     fprintf(stdout, "[pdc_download_mraw_video_from_camera] start_no=%d\n", start_no);
     fprintf(stdout, "[pdc_download_mraw_video_from_camera] end_no=%d\n", end_no);
-    fprintf(stdout, "[pdc_download_mraw_video_from_camera] max_frame_num=%d\n", max_frame_num);
+    fprintf(stdout, "[pdc_download_mraw_video_from_camera] frames_to_save=%d\n", frames_to_save);
 
-    for (int i = 0; i < max_frame_num; i++) {
+    for (int i = 0; i < frames_to_save; i++) {
         int frame_no = start_no + i;
         if (frame_no < 0) {
             fprintf(stdout, "[pdc_download_mraw_video_from_camera] frame_no=%d\n", frame_no);
