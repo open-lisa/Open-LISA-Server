@@ -156,3 +156,6 @@ yarn-error.log*
 
 data_test/database/commands.db.json
 *.json.lock
+
+# MRAW Videos
+*.mraw

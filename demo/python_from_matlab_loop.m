@@ -279,9 +279,14 @@ json_out = sdk.send_command(pyargs('instrument_id', cam_id, 'command_invocation'
 out = json_2_ints(json_out);  ret = out(1);
 assert(logical(ret), sprintf('Error in %s', 'set_status playback'));
 %%
-fileID = 'openlisa_video';
-fileName = SaveFormatFile(sdk, cam_id, fileID, DEVICE_NO, CHILD_NO);
-
+%fileID = 'openlisa_video';
+%fileName = SaveFormatFile(sdk, cam_id, fileID, DEVICE_NO, CHILD_NO);
+PDC_MRAW_BITDEPTH_16 = 3;
+PDC_MAX_FRAMES_NUM = 0;
+SAVEDFRAMES    = 300;
+cm = sprintf('download_mraw_video_from_camera %d %d %d %d %d',...
+    DEVICE_NO, CHILD_NO, PDC_MRAW_BITDEPTH_16, PDC_MAX_FRAMES_NUM, SAVEDFRAMES);
+json_out = sdk.send_command(pyargs('instrument_id', cam_id, 'command_invocation', cm, 'command_result_output_file', "sandbox/videito.mraw"));
 %% Set Live Status back
 cm = sprintf('set_status %d %d', DEVICE_NO, PDC_STATUS_LIVE);
 json_out = sdk.send_command(pyargs('instrument_id', cam_id, 'command_invocation', cm));
