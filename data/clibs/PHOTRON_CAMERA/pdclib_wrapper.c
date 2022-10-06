@@ -2797,6 +2797,8 @@ int pdc_mraw_file_save_open(UINT n_device_no, UINT n_child_no, UINT raw_bit_dept
         return PDC_WRAPPER_FAILED;
     }
 
+    fclose(output_file);
+
     return PDC_WRAPPER_SUCCEEDED;
 }
 
