@@ -18,6 +18,9 @@ class InstrumentRepository(JSONRepository):
         super().__init__(path)
         self._commands_repository = CommandsRepository()
 
+        # stores opened resources in order to only open once
+        self._pyvisa_resources_cache = {}
+
     def get_all(self):
         instruments = []
         instrument_dicts = super().get_all()
@@ -25,12 +28,14 @@ class InstrumentRepository(JSONRepository):
         resources = rm.list_resources()
         for instrument_dict in instrument_dicts:
             physical_address = instrument_dict["physical_address"]
-            pyvisa_resource = None
+            pyvisa_resource = self._pyvisa_resources_cache[physical_address] \
+                if physical_address in self._pyvisa_resources_cache else None
             instrument_id = instrument_dict["id"]
 
-            if physical_address in resources:
+            if physical_address in resources and not pyvisa_resource:
                 try:
                     pyvisa_resource = rm.open_resource(physical_address)
+                    self._pyvisa_resources_cache[physical_address] = pyvisa_resource
                 except pyvisa.errors.VisaIOError as ex:
                     # Registered instruments should never be detected as BUSY
                     logging.error(
