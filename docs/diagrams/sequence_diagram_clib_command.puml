@@ -1,0 +1,51 @@
+@startuml
+participant Instrument as I
+participant CLibCommand as C
+participant CommandParameters as CP
+participant "C Library" as CLib
+participant "Camera DLL" as DLL
+control "High Speed Camera" as CAM
+
+activate CAM
+activate I
+  I -> C : execute(command_parameters_values)
+  activate C
+  C -> CP : validate_parameters_values(command_parameters_values)
+    activate CP
+    C <-- CP
+    deactivate CP
+
+  C -> CP : parameters_values_to_c_function_arguments(command_parameters_values)
+    activate CP
+    C <-- CP : c_arguments[]
+    deactivate CP
+
+  C -> C : add file buffer name for\ncommand that returns bytes
+  C -> CLib : call_C_function(c_arguments)
+  activate CLib
+    CLib -> DLL : LoadLibrary("PDCLIB.dll")
+    activate DLL
+      CLib <-- DLL : HINSTANCE
+
+      CLib -> DLL : GetProcAddress(HINSTANCE, "PDC_MRAWFileSave")
+      CLib <-- DLL : PDC_MRAW_FILE_SAVE_FUNCTION_DLL
+
+      CLib -> DLL : pdc_mraw_file_save_function_dll(c_arguments)
+
+      DLL -> CAM : internal_DLL_execution(c_arguments)
+      DLL <- CAM : result
+      DLL -> DLL : saves video bytes \nin specific file
+
+      CLib <-- DLL : int
+    deactivate DLL
+
+    CLib -> CLib : moves bytes to file buffer
+
+    C <-- CLib : int
+  deactivate CLib
+
+  C -> C : init CommandExecutionResult
+  I <-- C : CommandExecutionResult
+  deactivate C
+
+@enduml

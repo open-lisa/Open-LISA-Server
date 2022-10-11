@@ -39,3 +39,7 @@ Each command is modeled by a corresponding class which implements `Command` inte
 The diagram below shows an example of execution for a SCPI command for turning on a channel in a oscilloscope
 
 [![SCPI Command Example](https://tinyurl.com/2knrx67r)](https://tinyurl.com/2knrx67r)<!--![SCPI Command Example](./sequence_diagram_scpi_command.puml)-->
+
+Finally, the diagram below shows an example for C Library Command. In this case we assume that we have a High Speed Camera with a DLL and specific functions for get a video record. It is important to understand that what it is executed in `C Library` depends on Open LISA User and what it is in `Camera DLL` depends on the instrument maker.
+
+[![C Library Command Example](https://tinyurl.com/2mbatxgm)](https://tinyurl.com/2mbatxgm)<!--![C Library Command Example](./sequence_diagram_clib_command.puml)-->
