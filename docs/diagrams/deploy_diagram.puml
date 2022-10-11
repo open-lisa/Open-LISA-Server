@@ -1,0 +1,25 @@
+@startuml
+
+node "Client PC" {
+  [OpenLISA-SDK]
+}
+
+node "Server PC" {
+  [OpenLISA-Server]
+}
+
+rectangle "Instruments" {
+    node "Instrument 1" {
+      [SCPI Interface]
+    }
+
+    node "Instrument 2" {
+      [Manufaturer Custom\nInterface]
+    }
+}
+
+
+[OpenLISA-SDK] -right-> [OpenLISA-Server] : Serial or TCP Connection
+[OpenLISA-Server] -right-> Instruments : USB, Serial or Ethernet Connection
+
+@enduml
