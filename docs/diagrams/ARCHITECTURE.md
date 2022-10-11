@@ -3,6 +3,8 @@
 ## Physical View
 
 TODO
+![open_lisa_architecture](https://user-images.githubusercontent.com/45921171/195215569-f92946ba-066e-493d-a0c1-76c4ffdb0531.png)
+
 
 ## Logic view
 
