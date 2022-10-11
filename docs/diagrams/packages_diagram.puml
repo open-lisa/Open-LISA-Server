@@ -1,0 +1,47 @@
+@startuml
+package "Open LISA Server" {
+  package api {
+    object Api
+  }
+  package domain {
+    package command {
+      object Command
+      object SCPICommand
+      object CLibCommand
+      object CommandParameters
+      object CommandParameter
+      object CommandReturn
+      object CommandExecutionResult
+    }
+
+    package filesystem {
+      object FileManager
+    }
+
+    package instrument {
+      object Instrument
+    }
+  }
+
+  package exceptions {}
+
+  package protocol {
+    object MessageProtocol
+    object MessageProtocolRS232
+    object RS232Configuration
+    object MessageProtocolTCP
+    object ServerProtocol
+  }
+
+  package repositories {
+    object CommandsRepository
+    object InstrumentsRepository
+    object JSONRepository
+  }
+  package utils {}
+
+  package config {}
+
+  package tests {}
+}
+@enduml
