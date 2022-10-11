@@ -21,6 +21,10 @@ The packages diagram below, shows how the modules are organized in the server si
 
 For the processes view, below are some sequence diagrams detailing interactions of interest involve in Open LISA Server
 
+First, is important to understand the high level interactions between the client, server and their communication channel in the process of handling any generic command. The following diagram show the main interactions for handling a generic command with name `COMMAND_ID` which receives `command_params`
+
+[![Generic Open LISA Command Execution](https://tinyurl.com/2jrjozob)](https://tinyurl.com/2jrjozob)<!--![Generic Open LISA Command Execution](./sequence_diagram_client_interaction_for_generic_command.puml)-->
+
 In the following diagram we can see the actors involved in handling a request of command execution for an instrument (regardless if it is SCPI or CLib type)
 
-[![Generic Command Execution Request](https://tinyurl.com/2h9l3s2u)](https://tinyurl.com/2h9l3s2u) <!--![Generic Command Execution Request](./sequence_diagram_generic_command.puml)-->
+[![Generic Command Execution Request](https://tinyurl.com/2gnnfclw)](https://tinyurl.com/2gnnfclw)<!--![Generic Command Execution Request](./sequence_diagram_generic_instrument_command.puml)-->

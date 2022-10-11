@@ -1,20 +1,23 @@
 @startuml
 
-actor "Client" as CLIENT
-control "Open LISA Server" as SERVER
+control "Server API" as SERVER
 participant ServerProtocol as SP
+participant "MessageProtocol \nTCP or SERIAL" as MP
 entity InstrumentRepository as IREPO
 entity CommandsRepository as CREPO
 participant Instrument as INSTRUMENT
 participant "SCPI Command\nor\n C Lib Command" as COMMAND
 
 
- CLIENT -> SERVER : command(send_command)
  activate SERVER
 
-  SERVER -> SP : handle_send_command
+
+  SERVER -> SP : handle_send_command()
   activate SP
-  SP -> SP : receive params \nthrough MessageProtocol from Client
+  SP -> MP : receive_msg()
+    activate MP
+    SP <-- MP : send command params
+    deactivate MP
   SP -> IREPO : get_by_id(instrument_id)
     activate IREPO
     IREPO -> CREPO : get_instrument_commands(instrument_id)
@@ -28,7 +31,7 @@ participant "SCPI Command\nor\n C Lib Command" as COMMAND
   SP -> SP : parse command invocation
     SP -> INSTRUMENT : send_command(command_name, command_params)
     activate INSTRUMENT
-    INSTRUMENT -> COMMAND : execute
+    INSTRUMENT -> COMMAND : execute()
       activate COMMAND
         COMMAND -> COMMAND : communicate with \nphysical instrument
         INSTRUMENT <-- COMMAND : CommandExecutionResult
@@ -37,11 +40,10 @@ participant "SCPI Command\nor\n C Lib Command" as COMMAND
     deactivate INSTRUMENT
 
   SP -> SP : save result in server if client request it\nor send back to client
-  SERVER <-- SP : CommandExecutionResult
-  CLIENT <-- SERVER : CommandExecutionResult
+  SERVER <-- SP
   deactivate SP
 
-  SERVER -> SERVER : wait new request
+  SERVER -> SERVER : wait new command
 
 
 

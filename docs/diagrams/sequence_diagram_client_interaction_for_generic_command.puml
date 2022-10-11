@@ -1,0 +1,63 @@
+@startuml
+
+control "Server API" as SERVER
+participant ServerProtocol as SP
+participant "MessageProtocol \nTCP or SERIAL" as MP
+control "Communication Channel \nTCP Socket or Serial Wire" as CHANNEL
+actor "Client" as CLIENT
+
+
+
+activate CHANNEL
+
+activate SERVER
+
+SERVER -> SP : get_command()
+activate SP
+  SP -> MP : receive_msg()
+  activate MP
+
+  MP -> CHANNEL : read()
+
+
+CLIENT -> CHANNEL : write("COMMAND_ID")
+CLIENT -> CHANNEL : write(command_params)
+CLIENT -> CHANNEL : blocking read
+
+  MP <-- CHANNEL : "COMMAND_ID"
+
+  SP <-- MP : "COMMAND_ID"
+  deactivate MP
+  SERVER <-- SP : "COMMAND_ID"
+  deactivate SP
+  SERVER -> SERVER : choose ServerProtocol\nhandler based on "COMMAND_ID"
+
+  SERVER -> SP : handler()
+  activate SP
+    SP -> MP : receive_msg()
+    activate MP
+      MP -> CHANNEL : read()
+      MP <-- CHANNEL : command_params
+      SP <-- MP : command_params
+    deactivate MP
+    SP -> SP : execute handler\nbusiness logic
+
+    SP -> MP : send_msg(CommandExecutionResult)
+    activate MP
+      MP -> CHANNEL : write(CommandExecutionResult)
+      MP <-- CHANNEL
+
+
+CLIENT <-- CHANNEL : CommandExecutionResult
+
+
+      SP <-- MP
+    deactivate MP
+
+  SERVER <-- SP
+  deactivate SP
+
+SERVER -> SERVER : blocks trying to get \nnext command
+
+
+@enduml
