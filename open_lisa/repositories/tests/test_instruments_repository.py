@@ -65,7 +65,7 @@ def test_get_all_should_return_a_list_of_Instrument_instances():
 def test_get_by_physical_address_should_return_an_Instrument_if_there_is_a_match():
     repo = InstrumentRepository()
     i = repo.get_by_physical_address(
-        physical_addres=SOME_VALID_PHYSICAL_ADDRESS)
+        physical_address=SOME_VALID_PHYSICAL_ADDRESS)
     assert i.physical_address == SOME_VALID_PHYSICAL_ADDRESS
 
 
@@ -73,7 +73,7 @@ def test_get_by_physical_address_should_raise_exception_if_there_is_no_match():
     with pytest.raises(InstrumentNotFoundError):
         repo = InstrumentRepository()
         repo.get_by_physical_address(
-            physical_addres=SOME_INVALID_PHYSICAL_ADDRESS)
+            physical_address=SOME_INVALID_PHYSICAL_ADDRESS)
 
 
 def test_get_by_id_should_return_an_Instrument_if_there_is_a_match():

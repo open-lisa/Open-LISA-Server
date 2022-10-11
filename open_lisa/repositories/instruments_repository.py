@@ -88,17 +88,17 @@ class InstrumentRepository(JSONRepository):
 
         return json.dumps(formatted_instruments)
 
-    def get_by_physical_address(self, physical_addres):
+    def get_by_physical_address(self, physical_address):
         instruments = self.get_all()
         match = None
         for ins in instruments:
-            if ins.physical_address == physical_addres:
+            if ins.physical_address == physical_address:
                 match = ins
                 break
 
         if not match:
             raise InstrumentNotFoundError(
-                "instrument not found for physical address {}".format(physical_addres))
+                "instrument not found for physical address {}".format(physical_address))
 
         return match
 

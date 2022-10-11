@@ -15,17 +15,72 @@ class OpenLISA {
 }
 
 class RS232_Configuration {
-  - Serial _rs232_connection
-  - ServerProtocol _server_protocol
-  - String _mode
-  - RS232_Configuration _rs232_config
-  - InstrumentsRepository _instruments_repository
-  - CommandsRepository _commands_repository
-
-  + start(void): void
-  - _rs232_wait_connection(void): ServerProtocol
-  - _rs232_create_connection(void): void
-  - _tcp_wait_connection(void): ServerProtocol
+  + int port
+  + int baudrate
+  + int timeout
 }
 
+class JSONRepository {
+  - JsonDatabase _db
+
+  + get_by_id(int id): Dict
+  + get_first_by_key_value(string key, string value): Dict
+  + get_by_key_value(string key, string value): List<Dict>
+  + get_all(void): List<Dict>
+  + add(Dict dict): Dict
+  + update_by_id(int id, Dict dict): Dict
+  + update_all(Dict query, Dict update): List<Dict>
+  + remove_by_id(int id): Dict
+}
+
+class InstrumentsRepository {
+  - CommandsRepository _commands_repository
+
+  + get_all(void): List<Instrument>
+  + get_pyvisa_available_physical_addresses(void): List<Dict>
+  + get_all_as_json(void): Dict
+  + get_by_physical_address(string physical_address): Instrument
+  + get_by_id(int id): Instrument
+  + create_instrument(Dict instrument): Instrument
+  + update_instrument(int id, Dict updated_instrument): Instrument
+  + delete_instrument(int id): Instrument
+}
+
+class CommandsRepository {
+  - string _clibs_path
+
+  + add(command Command, string instrument_id): Dict
+  + create_command(Dict command, string instrument_id, PyVisa pyvisa_resource): Command
+  + get_by_id(int id, PyVisa pyvisa_resource, string lib_base_path): Command
+  + get_instrument_commands(int instrument_id, PyVisa pyvisa_resource): List<Dict>
+  + delete_command(string command_id): void
+  - __deserialize_command(Dict command_dict, PyVisa pyvisa_resource): Command
+}
+
+class Instrument {
+  + string id
+  + string physical_address
+  + string brand
+  + string model
+  + string type
+  + string description
+  + PyVisa pyvisa_resource
+  - List<Command> _commands
+
+  + from_dict(Dict dict, List<Dict> commands, PyVisa pyvisa_resource): Instrument
+  + commands_map(void): Dict
+  + to_dict(void): Dict
+  + send_command(string command_name, List<string> parameters): CommandExecutionResult
+  + set_visa_attribute(string attribute, string state): string
+  + get_visa_attribute(string attribute): string
+  + validate_command(string command_name, List<string> parameters): void
+  - __get_command_by_name(string command_name): Command
+}
+
+OpenLISA --> RS232_Configuration
+OpenLISA --> JSONRepository
+InstrumentsRepository --> Instrument
+
+class InstrumentsRepository extends JSONRepository
+class CommandsRepository extends JSONRepository
 @enduml
