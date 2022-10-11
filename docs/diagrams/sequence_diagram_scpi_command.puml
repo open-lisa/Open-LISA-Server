@@ -1,0 +1,27 @@
+@startuml
+participant Instrument as I
+participant SCPICommand as C
+participant CommandParameters as CP
+participant PyVISA as PV
+control Oscilloscope as O
+
+activate O
+activate I
+  I -> C : execute(command_parameters_values)
+  activate C
+  C -> CP : validate_parameters_values(command_parameters_values)
+    activate CP
+    C <-- CP
+    deactivate CP
+  C -> C : generate SCPI string\nwith values
+  C -> PV : write(":CH1:DISP ON")
+    activate PV
+    PV -> O : write(":CH1:DISP ON")
+    PV <-- O
+    C <-- PV
+    deactivate PV
+  C -> C : init CommandExecutionResult
+  I <-- C : CommandExecutionResult
+  deactivate C
+
+@enduml

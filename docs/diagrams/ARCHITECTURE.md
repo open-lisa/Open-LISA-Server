@@ -28,3 +28,14 @@ First, is important to understand the high level interactions between the client
 In the following diagram we can see the actors involved in handling a request of command execution for an instrument (regardless if it is SCPI or CLib type)
 
 [![Generic Command Execution Request](https://tinyurl.com/2gnnfclw)](https://tinyurl.com/2gnnfclw)<!--![Generic Command Execution Request](./sequence_diagram_generic_instrument_command.puml)-->
+
+In Open LISA there are two types of commands supported
+
+* SCPI Command
+* C Library Command
+
+Each command is modeled by a corresponding class which implements `Command` interface.
+
+The diagram below shows an example of execution for a SCPI command for turning on a channel in a oscilloscope
+
+[![SCPI Command Example](https://tinyurl.com/2knrx67r)](https://tinyurl.com/2knrx67r)<!--![SCPI Command Example](./sequence_diagram_scpi_command.puml)-->
