@@ -15,3 +15,12 @@ The main classes involved for the server are shown in the following class diagra
 The packages diagram below, shows how the modules are organized in the server side of Open LISA project
 
 [![Packages Diagram](https://tinyurl.com/2pnxuaj3)](https://tinyurl.com/2pnxuaj3)
+
+
+## Processes view
+
+For the processes view, below are some sequence diagrams detailing interactions of interest involve in Open LISA Server
+
+In the following diagram we can see the actors involved in handling a request of command execution for an instrument (regardless if it is SCPI or CLib type)
+
+[![Generic Command Execution Request](https://tinyurl.com/2krwv6wq)](https://tinyurl.com/2krwv6wq)<!--![Generic Command Execution Request](./sequence_diagram_generic_command.puml)-->

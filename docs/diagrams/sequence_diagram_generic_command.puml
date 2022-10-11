@@ -1,0 +1,47 @@
+@startuml
+
+control "Open LISA Server" as SERVER
+participant ServerProtocol as SP
+entity InstrumentRepository as IREPO
+entity CommandsRepository as CREPO
+participant Instrument as INSTRUMENT
+participant "SCPI Command\nor\n C Lib Command" as COMMAND
+
+
+ -> SERVER : receives request "send_command" \nfor SCPI instrument
+ activate SERVER
+
+SERVER -> SP : handle_send_command
+  activate SP
+  SP -> SP : receive params \nthrough MessageProtocol
+  SP -> IREPO : get_by_id(instrument_id)
+    activate IREPO
+    IREPO -> CREPO : get_instrument_commands(instrument_id)
+      activate CREPO
+      IREPO <- CREPO : Commands[]
+      deactivate CREPO
+    IREPO -> IREPO : init Instrument \nwith commands
+    SP <- IREPO : Instrument
+    deactivate IREPO
+
+  SP -> SP : parse command invocation
+    SP -> INSTRUMENT : send_command(command_name, command_params)
+    activate INSTRUMENT
+    INSTRUMENT -> COMMAND : execute
+      activate COMMAND
+        COMMAND -> COMMAND : communicate with \nphysical instrument
+        INSTRUMENT <- COMMAND : CommandExecutionResult
+      deactivate COMMAND
+      SP <- INSTRUMENT : CommandExecutionResult
+    deactivate INSTRUMENT
+
+  SP -> SP : save result in server if client request it\nor send back to client
+  SERVER <- SP
+  deactivate SP
+
+  SERVER -> SERVER : wait new request
+
+
+
+
+@enduml
