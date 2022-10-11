@@ -1,5 +1,9 @@
 # Open LISA Server - Architecture
 
+## Physical View
+
+TODO
+
 ## Logic view
 
 The main classes involved for the server are shown in the following class diagram
