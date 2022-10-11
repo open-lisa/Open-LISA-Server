@@ -159,3 +159,5 @@ data_test/database/commands.db.json
 
 # MRAW Videos
 *.mraw
+
+.pre-commit-config.yaml

@@ -17,7 +17,7 @@ class MessageProtocolRS232 {
 }
 
 class MessageProtocolTCP {
-  - __rs232_connection Socket
+  - _socket Socket
 
   + send_msg(bytes, boolean): void
   + receive_msg(boolean): bytes

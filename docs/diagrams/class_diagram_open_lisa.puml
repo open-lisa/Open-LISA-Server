@@ -1,0 +1,31 @@
+@startuml
+
+class OpenLISA {
+  - Serial _rs232_connection
+  - ServerProtocol _server_protocol
+  - String _mode
+  - RS232_Configuration _rs232_config
+  - InstrumentsRepository _instruments_repository
+  - CommandsRepository _commands_repository
+
+  + start(void): void
+  - _rs232_wait_connection(void): ServerProtocol
+  - _rs232_create_connection(void): void
+  - _tcp_wait_connection(void): ServerProtocol
+}
+
+class RS232_Configuration {
+  - Serial _rs232_connection
+  - ServerProtocol _server_protocol
+  - String _mode
+  - RS232_Configuration _rs232_config
+  - InstrumentsRepository _instruments_repository
+  - CommandsRepository _commands_repository
+
+  + start(void): void
+  - _rs232_wait_connection(void): ServerProtocol
+  - _rs232_create_connection(void): void
+  - _tcp_wait_connection(void): ServerProtocol
+}
+
+@enduml
