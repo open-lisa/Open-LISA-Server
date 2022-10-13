@@ -1,6 +1,6 @@
-from pyvisa import constants
 from enum import Enum
 from open_lisa.domain.command.command_execution_result import CommandExecutionResult
+
 from open_lisa.domain.instrument.constants import INSTRUMENT_STATUS_AVAILABLE, INSTRUMENT_STATUS_UNAVAILABLE
 from open_lisa.exceptions.command_not_found_error import CommandNotFoundError
 from open_lisa.exceptions.instrument_unavailable_error import InstrumentUnavailableError
@@ -100,10 +100,8 @@ class Instrument:
 
         # Returns pyvisa.constants.StatusCode value, check the src for the meaning of each value
         # Src: https://pyvisa.readthedocs.io/en/latest/api/constants.html#pyvisa.constants.StatusCode
-        print("File: instrument.py ~ line 104 ~ constants.ResourceAttribute.read_buffer_size",
-              constants.ResourceAttribute.read_buffer_size)
         status_code = self.pyvisa_resource.set_visa_attribute(
-            constants.ResourceAttribute.read_buffer_size, state)
+            int(attribute), state)
 
         return str(status_code.value)
 
