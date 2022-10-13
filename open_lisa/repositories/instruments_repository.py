@@ -24,18 +24,23 @@ class InstrumentRepository(JSONRepository):
     def get_all(self):
         instruments = []
         instrument_dicts = super().get_all()
-        rm = pyvisa.ResourceManager()
-        resources = rm.list_resources()
+        resources = None
+
         for instrument_dict in instrument_dicts:
             physical_address = instrument_dict["physical_address"]
             pyvisa_resource = self._pyvisa_resources_cache[physical_address] \
                 if physical_address in self._pyvisa_resources_cache else None
             instrument_id = instrument_dict["id"]
 
-            if physical_address in resources and not pyvisa_resource:
+            if not pyvisa_resource:
                 try:
-                    pyvisa_resource = rm.open_resource(physical_address)
-                    self._pyvisa_resources_cache[physical_address] = pyvisa_resource
+                    if not resources:
+                        rm = pyvisa.ResourceManager()
+                        resources = rm.list_resources()
+
+                    if physical_address in resources:
+                        pyvisa_resource = rm.open_resource(physical_address)
+                        self._pyvisa_resources_cache[physical_address] = pyvisa_resource
                 except pyvisa.errors.VisaIOError as ex:
                     # Registered instruments should never be detected as BUSY
                     logging.error(
