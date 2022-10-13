@@ -331,6 +331,8 @@ class ServerProtocol:
             attribute = set_visa_instrument_req["attribute"]
             state = set_visa_instrument_req["state"]
             instrument = instruments_repository.get_by_id(instrument_id)
+            logging.info(
+                "[OpenLISA][ServerProtocol][handle_set_instrument_visa_attribute] setting instrument {}, visa attribute={} to state={}".format(instrument_id, attribute, state))
             result = instrument.set_visa_attribute(
                 attribute=attribute, state=state)
             self._message_protocol.send_msg(result)
@@ -349,6 +351,8 @@ class ServerProtocol:
             instrument_id = get_visa_instrument_req["instrument_id"]
             attribute = get_visa_instrument_req["attribute"]
             instrument = instruments_repository.get_by_id(instrument_id)
+            logging.info(
+                "[OpenLISA][ServerProtocol][handle_get_instrument_visa_attribute] getting instrument {}, visa attribute={}".format(instrument_id, attribute))
             result = instrument.get_visa_attribute(attribute=attribute)
             self._message_protocol.send_msg(result)
             self._message_protocol.send_msg(SUCCESS_RESPONSE)
