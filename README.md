@@ -1,12 +1,11 @@
 # Open LISA Server
 
-This repository is part of Open LISA project:
-* Open LISA Server
-* Open LISA SDK
-* Open LISA UI
+This repository is part of [Open LISA project](https://github.com/open-lisa):
+* [Open LISA Server](https://github.com/open-lisa/Open-LISA-Server)
+* [Open LISA SDK](https://github.com/open-lisa/Open-LISA-SDK)
+* [Open LISA UI](https://github.com/open-lisa/Open-LISA-UI)
 
-Open LISA Server provides services that can be integrated with SDK in node clients
-[Open LISA SDK](https://github.com/aalvarezwindey/Open-LISA-SDK).
+Open LISA Server provides services that can be integrated with SDK in node clients [Open LISA SDK](https://github.com/open-lisa/Open-LISA-SDK).
 
 ## Dependencies
 
@@ -72,7 +71,7 @@ Will run server using productive databases in TCP-socket mode, listening connect
 
 ## Admin
 
-This project has a [UI Admin](https://github.com/aalvarezwindey/Open-LISA-UI) that allows the creation, deletion and
+This project has a [UI Admin](https://github.com/open-lisa/Open-LISA-UI) that allows the creation, deletion and
 modification of instruments and commands. In addition, allows the manipulation of the user file system in this Server
 (files in data, data_test and data_dev folders depending on the environment).
 
