@@ -8,7 +8,7 @@ actor "Client" as CLIENT
 
 
 
-activate CHANNEL
+
 
 activate SERVER
 
@@ -18,13 +18,31 @@ activate SP
   activate MP
 
   MP -> CHANNEL : read()
+  activate CHANNEL
 
 
 CLIENT -> CHANNEL : write("COMMAND_ID")
-CLIENT -> CHANNEL : write(command_params)
-CLIENT -> CHANNEL : blocking read
+activate CHANNEL
+CHANNEL --> CLIENT
+deactivate CHANNEL
 
-  MP <-- CHANNEL : "COMMAND_ID"
+MP <-- CHANNEL : "COMMAND_ID"
+deactivate CHANNEL
+
+
+CLIENT -> CHANNEL : write(command_params)
+activate CHANNEL
+CHANNEL --> CLIENT
+deactivate CHANNEL
+
+
+
+CLIENT -> CHANNEL : blocking read
+activate CHANNEL
+
+
+
+
 
   SP <-- MP : "COMMAND_ID"
   deactivate MP
@@ -37,7 +55,10 @@ CLIENT -> CHANNEL : blocking read
     SP -> MP : receive_msg()
     activate MP
       MP -> CHANNEL : read()
+      activate CHANNEL
+
       MP <-- CHANNEL : command_params
+      deactivate CHANNEL
       SP <-- MP : command_params
     deactivate MP
     SP -> SP : execute handler\nbusiness logic
@@ -45,10 +66,16 @@ CLIENT -> CHANNEL : blocking read
     SP -> MP : send_msg(CommandExecutionResult)
     activate MP
       MP -> CHANNEL : write(CommandExecutionResult)
+      activate CHANNEL
       MP <-- CHANNEL
+      deactivate CHANNEL
+
+
 
 
 CLIENT <-- CHANNEL : CommandExecutionResult
+deactivate CHANNEL
+
 
 
       SP <-- MP

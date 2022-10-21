@@ -1,21 +1,38 @@
 # Open LISA Server - Architecture
 
-## Physical View
-
-The following device and deploy diagrams shows the different hardware components and his services/interfaces involved
-in end-to-end Open LISA experience.
+## Overview
+In the following diagram there is an overview of the different components in Open LISA platform:
+* Client PCs that runs SDK and/or UI
+* PC running Open LISA Server which communicates with instruments and stores configurations
 
 ![open_lisa_architecture](https://user-images.githubusercontent.com/45921171/195215569-f92946ba-066e-493d-a0c1-76c4ffdb0531.png)
 
-[![Deploy Diagram](https://tinyurl.com/2lqddl5b)](https://tinyurl.com/2lqddl5b)<!--![Deploy Diagram](./deploy_diagram.puml)-->
+## Physical View
+
+The following deploy diagram shows the different hardware components, and their services/interfaces involved
+in end-to-end Open LISA experience.
+
+[![Deploy Diagram](https://tinyurl.com/27a7x6sc)](https://tinyurl.com/27a7x6sc)<!--![Deploy Diagram](./deploy_diagram.puml)-->
 
 ## Logic view
 
-The main classes involved for the server are shown in the following class diagram
+The main classes involved for the server are shown in the following classes diagrams
+
+At the first level we have Open LISA main class which is the entry point of the application which stands on `ServerProtocol` class and repositories classes. The `JSONRepository` class implements the Repository Pattern with JSON flavour. At Open LISA, Instruments and Commands are the main entities that have their corresponding repository for being persisted.
+
+The `Instrument` class models the physical instruments that the server will interact with.
 
 [![Class Diagram OpenLISA](https://tinyurl.com/2pl3aads)](https://tinyurl.com/2pl3aads)
 
+The `ServerProtocol` class has the responsibility of communicate with the client (Open LISA SDK) interchanging messages using `MessageProtocol` interface (which could be RS232 or TCP).
+
+Also, it uses `FileManager` class which encapsulates the business logic related to filesystem Open LISA functionalities.
+
 [![Class Diagram Protocol](https://tinyurl.com/2nbx5fss)](https://tinyurl.com/2nbx5fss)
+
+The following classes are involved for modelling the commands that the instruments supports, in both types:
+* SCPI Commands
+* C Library Commands
 
 [![Class Diagram Command](https://tinyurl.com/2n8rdg5z)](https://tinyurl.com/2n8rdg5z)
 
@@ -32,7 +49,7 @@ For the processes view, below are some sequence diagrams detailing interactions 
 
 First, is important to understand the high level interactions between the client, server and their communication channel in the process of handling any generic command. The following diagram show the main interactions for handling a generic command with name `COMMAND_ID` which receives `command_params`
 
-[![Generic Open LISA Command Execution](https://tinyurl.com/2jrjozob)](https://tinyurl.com/2jrjozob)<!--![Generic Open LISA Command Execution](./sequence_diagram_client_interaction_for_generic_command.puml)-->
+[![Generic Open LISA Command Execution](https://tinyurl.com/2bkhua77)](https://tinyurl.com/2bkhua77)<!--![Generic Open LISA Command Execution](./sequence_diagram_client_interaction_for_generic_command.puml)-->
 
 In the following diagram we can see the actors involved in handling a request of command execution for an instrument (regardless if it is SCPI or CLib type)
 

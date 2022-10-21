@@ -1,11 +1,12 @@
 @startuml
 
 node "Client PC" {
-  [OpenLISA-SDK]
+  [Open LISA SDK] as SDK
+  [Open LISA UI] as UI
 }
 
 node "Server PC" {
-  [OpenLISA-Server]
+  [Open LISA Server] as SERVER
 }
 
 rectangle "Instruments" {
@@ -14,12 +15,13 @@ rectangle "Instruments" {
     }
 
     node "Instrument 2" {
-      [Manufaturer Custom\nInterface]
+      [Manufacturer Custom\nInterface]
     }
 }
 
 
-[OpenLISA-SDK] -right-> [OpenLISA-Server] : Serial or TCP Connection
-[OpenLISA-Server] -right-> Instruments : USB, Serial or Ethernet Connection
+SDK -right-> SERVER : Serial or TCP Connection
+UI -right-> SERVER : Serial or TCP Connection
+SERVER -right-> Instruments : USB, Serial or Ethernet Connection
 
 @enduml
