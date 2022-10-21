@@ -1,6 +1,11 @@
-# Open-LISA-Server
+# Open LISA Server
 
-This program provides services that can be integrated with SDK in node clients
+This repository is part of Open LISA project:
+* Open LISA Server
+* Open LISA SDK
+* Open LISA UI
+
+Open LISA Server provides services that can be integrated with SDK in node clients
 [Open LISA SDK](https://github.com/aalvarezwindey/Open-LISA-SDK).
 
 ## Dependencies
